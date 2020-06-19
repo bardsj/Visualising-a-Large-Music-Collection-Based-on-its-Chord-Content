@@ -1,2 +1,9 @@
 .vscode
 venv
+node_modules
+package.json
+package-lock.json
+
+
+genDataTest.py
+takeaway_fi.json

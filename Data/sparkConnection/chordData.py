@@ -5,6 +5,7 @@ import pyspark.sql.functions as F
 from pyspark.sql.types import ArrayType,StringType,DataType
 from pyspark.ml.fpm import FPGrowth
 from time import time
+import pickle
 
 os.environ['PYSPARK_SUBMIT_ARGS'] = '"--packages" "org.mongodb.spark:mongo-spark-connector_2.11:2.4.1" "--driver-memory" "4g" "pyspark-shell"'
 
@@ -34,5 +35,7 @@ model = fpGrowth.fit(df_chord_items)
 
 # Display frequent itemsets
 print(model.freqItemsets.show())
-print(f"Time elapsed: {time()-startTime}")
 
+print(model.associationRules.show())
+
+print(f"Time elapsed: {time()-startTime}")
