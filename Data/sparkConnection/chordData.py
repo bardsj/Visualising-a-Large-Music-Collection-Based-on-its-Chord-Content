@@ -33,6 +33,8 @@ startTime = time()
 fpGrowth = FPGrowth(itemsCol="chordItems", minSupport=0.2, minConfidence=0.5)
 model = fpGrowth.fit(df_chord_items)
 
+model.freqItemsets.collect()
+
 # Display frequent itemsets
 print(model.freqItemsets.show())
 

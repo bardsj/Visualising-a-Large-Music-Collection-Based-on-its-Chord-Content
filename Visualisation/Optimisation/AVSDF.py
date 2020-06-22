@@ -3,7 +3,7 @@ from itertools import chain
 
 class AVSDF:
     """
-    Implementation of the AVSDF algorithm as proposed in:
+    Implementation of the AVSDF (Adjacent Vertex with Smallest Degree First) algorithm as proposed in:
     
         "He, H. & Sykora, O., 2009. New circular drawing algorithms. [Online] Available at: https://repository.lboro.ac.uk/articles/New_circular_drawing_algorithms/9403790"
     """
@@ -33,7 +33,7 @@ class AVSDF:
         stack = []
 
         # Get the vertex with the smallest degree from the given graph, and push it into S
-        stack.insert(0,self.nodes[np.argmin(self.nodes_degree)])
+        stack.append(self.nodes[np.argmin(self.nodes_degree)])
 
         # while (S is not empty) do
         while(len(stack)>0):
@@ -54,6 +54,7 @@ class AVSDF:
 
                 for av in adjacent_v:
                     if av not in order:
-                        stack.insert(0,av)
+                        #stack.insert(0,av)
+                        stack.append(av)
 
         return order
