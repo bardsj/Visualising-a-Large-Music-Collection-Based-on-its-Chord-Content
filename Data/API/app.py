@@ -3,7 +3,8 @@ from flask_cors import CORS
 import pickle
 
 import sys
-sys.path.append("C:\\Users\\jackb\\Documents\\MSc\\Individual Project\\Visualising a Large Music Collection Based on its Chord Content\\")
+import os
+sys.path.append(os.getcwd())
 
 from Visualisation.Optimisation.AVSDF import AVSDF
 
