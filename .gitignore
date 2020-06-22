@@ -4,5 +4,5 @@ node_modules
 package.json
 package-lock.json
 __pycache__
-pymongoConnection
-sparkConnection
+Data/pymongoConnection
+Data/sparkConnection

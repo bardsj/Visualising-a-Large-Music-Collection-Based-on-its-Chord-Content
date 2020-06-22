@@ -3,7 +3,8 @@ from pyspark.sql.types import ArrayType,StringType
 from pyspark.ml.fpm import FPGrowth
 
 class SparkFrequentItemsets:
-    def __init__(self,spark,params={"minSupport":0.2, "minConfidence":0.5}):
+    def __init__(self,spark,limit,params={"minSupport":0.2, "minConfidence":0.5}):
+        self.limit = limit
         self.spark = spark
         self.params = params
         self.df = self._loadData(self.spark)
@@ -11,7 +12,11 @@ class SparkFrequentItemsets:
 
     def _loadData(self,spark):
         # Load data from mongodb source
-        df = spark.read.format("mongo").option('database', 'jamendo').option('collection', 'chords').load().limit(10000)
+        if self.limit:
+            df = spark.read.format("mongo").option('database', 'jamendo').option('collection', 'chords').load().limit(self.limit)
+        else:
+            df = spark.read.format("mongo").option('database', 'jamendo').option('collection', 'chords').load()
+
         df = df.sample(withReplacement=False,fraction=1.0)
 
         # User defined function to get key values (chords) from nested structure in dataframe
@@ -28,28 +33,3 @@ class SparkFrequentItemsets:
 
     def getItemsets(self):
         return self.model.freqItemsets.toPandas()
-
-
-
-if __name__ == "__main__":
-    ## Create temp file that can be served by the API
-    import findspark
-    import pyspark
-    from sparkFrequentItemsets import SparkFrequentItemsets
-    import os
-    import pickle
-
-    os.environ['PYSPARK_SUBMIT_ARGS'] = '"--packages" "org.mongodb.spark:mongo-spark-connector_2.11:2.4.1" "--driver-memory" "4g" "pyspark-shell"'
-    findspark.init()
-    # Spark context
-    sc = pyspark.SparkContext.getOrCreate()
-    spark = pyspark.sql.SparkSession.builder \
-        .config("spark.mongodb.input.uri", os.environ['MSC_CHORD_DB_URI'])\
-        .getOrCreate()
-
-    params={"minSupport":0.1, "minConfidence":0.5}
-    items = SparkFrequentItemsets(spark,params)
-    itemsets = items.getItemsets()
-
-    with open(f"Data/API/chordItemsets.pkl","wb") as filename:
-        pickle.dump(itemsets,filename)
