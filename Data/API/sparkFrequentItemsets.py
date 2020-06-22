@@ -11,7 +11,7 @@ class SparkFrequentItemsets:
 
     def _loadData(self,spark):
         # Load data from mongodb source
-        df = spark.read.format("mongo").option('database', 'jamendo').option('collection', 'chords').load()
+        df = spark.read.format("mongo").option('database', 'jamendo').option('collection', 'chords').load().limit(10000)
         df = df.sample(withReplacement=False,fraction=1.0)
 
         # User defined function to get key values (chords) from nested structure in dataframe
@@ -47,9 +47,9 @@ spark = pyspark.sql.SparkSession.builder \
     .config("spark.mongodb.input.uri", os.environ['MSC_CHORD_DB_URI'])\
     .getOrCreate()
 
-
-items = SparkFrequentItemsets(spark)
+params={"minSupport":0.1, "minConfidence":0.5}
+items = SparkFrequentItemsets(spark,params)
 itemsets = items.getItemsets()
 
-with open("Data/API/chordItemsets.pkl","wb") as filename:
+with open(f"Data/API/chordItemsets.pkl","wb") as filename:
     pickle.dump(itemsets,filename)
