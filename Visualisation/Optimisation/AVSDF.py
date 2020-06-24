@@ -13,6 +13,7 @@ class AVSDF:
         self.nodes = np.unique(np.array(edge_list))
         self.nodes_degree = np.array([self._degree(n,edge_list) for n in self.nodes])
         self.nodes = self.nodes[self.nodes_degree.argsort()]
+        self.order = []
 
     def _degree(self,node,edge_list):
     # Get degree of vertex/node
@@ -29,7 +30,6 @@ class AVSDF:
     def run_AVSDF(self):
         # Initialise an array order[n], and a stack, S.
         #order = np.empty(len(nodes),dtype=str)
-        order = []
         stack = []
 
         # Get the vertex with the smallest degree from the given graph, and push it into S
@@ -40,9 +40,9 @@ class AVSDF:
             # Pop a vertex v, from S
             v = stack.pop()
             # if (v is not in order) then
-            if v not in order:
+            if v not in self.order:
                 # Append the vertex v into order
-                order.append(v)
+                self.order.append(v)
 
                 # Get all adjacent vertices of v; and push those vertices, which are not in order
                 # into S with descending degree towards the top of the stack (the vertex with
@@ -53,8 +53,8 @@ class AVSDF:
                 adjacent_v = adjacent_v[adjacent_degree.argsort()]
 
                 for av in adjacent_v:
-                    if av not in order:
+                    if av not in self.order:
                         #stack.insert(0,av)
                         stack.append(av)
 
-        return order
+        return self.order

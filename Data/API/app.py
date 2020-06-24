@@ -15,6 +15,7 @@ CORS(app)
 with open("Data/API/chordItemsets.pkl","rb") as filename:
     itemsets = pickle.load(filename)
 
+
 @app.route('/circular',methods=['GET'])
 def returnData():
     ksets = itemsets[itemsets['items'].str.len()==2]
