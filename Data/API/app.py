@@ -15,16 +15,17 @@ CORS(app)
 with open("Data/API/chordItemsets.pkl","rb") as filename:
     itemsets = pickle.load(filename)
 
+ksets = itemsets[itemsets['items'].str.len()==2]
+ksets = ksets.rename(columns={"items":"labels","freq":"values"})
+sets = ksets.to_dict("records")
+
+# Order
+avsdf = AVSDF([s['labels'] for s in sets])
+order = avsdf.run_AVSDF()
+
 
 @app.route('/circular',methods=['GET'])
 def returnData():
-    ksets = itemsets[itemsets['items'].str.len()==2]
-    ksets = ksets.rename(columns={"items":"labels","freq":"values"})
-    sets = ksets.to_dict("records")
-
-    # Order
-    avsdf = AVSDF([s['labels'] for s in sets])
-    order = avsdf.run_AVSDF()
     return jsonify({"sets":sets,"order":order})
 
 
