@@ -1,7 +1,7 @@
 from flask import Flask,jsonify
 from flask_cors import CORS
 import pickle
-
+from itertools import chain
 import sys
 import os
 sys.path.append(os.getcwd())
@@ -29,9 +29,11 @@ def returnDataCirc():
 
 @app.route('/parallel',methods=['GET'])
 def returnDataParallel():
-    ksets_par = itemsets.rename(columns={"items":"labels","freq":"values"})
+    ksets_par = itemsets[itemsets['items'].str.len()>1]
+    order = list(itemsets[itemsets['items'].str.len()==1].sort_values(by='freq')[::-1]['items'].apply(lambda x: x[0]))
+    ksets_par = ksets_par.rename(columns={"items":"labels","freq":"values"})
+    ksets_par['labels'] = ksets_par['labels'].apply(lambda x: sorted(x))
     sets_par = ksets_par.to_dict("records")
-    order = None
     return jsonify({"sets":sets_par,"order":order})
 
 
