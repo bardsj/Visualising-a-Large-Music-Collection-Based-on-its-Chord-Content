@@ -15,19 +15,24 @@ CORS(app)
 with open("Data/API/chordItemsets.pkl","rb") as filename:
     itemsets = pickle.load(filename)
 
-ksets = itemsets[itemsets['items'].str.len()==2]
-ksets = ksets.rename(columns={"items":"labels","freq":"values"})
-sets = ksets.to_dict("records")
-
+ksets_circ = itemsets[itemsets['items'].str.len()==2]
+ksets_circ = ksets_circ.rename(columns={"items":"labels","freq":"values"})
+sets_circ = ksets_circ.to_dict("records")
 # Order
-avsdf = AVSDF([s['labels'] for s in sets])
-order = avsdf.run_AVSDF()
+avsdf = AVSDF([s['labels'] for s in sets_circ])
+order_circ = avsdf.run_AVSDF()
 
 
 @app.route('/circular',methods=['GET'])
-def returnData():
-    return jsonify({"sets":sets,"order":order})
+def returnDataCirc():
+    return jsonify({"sets":sets_circ,"order":order_circ})
 
+@app.route('/parallel',methods=['GET'])
+def returnDataParallel():
+    ksets_par = itemsets.rename(columns={"items":"labels","freq":"values"})
+    sets_par = ksets_par.to_dict("records")
+    order = None
+    return jsonify({"sets":sets_par,"order":order})
 
 
 app.run(debug=True)

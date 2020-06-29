@@ -8,12 +8,13 @@ class AVSDF:
         "He, H. & Sykora, O., 2009. New circular drawing algorithms. [Online] Available at: https://repository.lboro.ac.uk/articles/New_circular_drawing_algorithms/9403790"
     """
 
-    def __init__(self,edge_list):
+    def __init__(self,edge_list,local_adjusting=False):
         self.edge_list = edge_list
         self.nodes = np.unique(np.array(edge_list))
         self.nodes_degree = np.array([self._degree(n) for n in self.nodes])
         self.nodes = self.nodes[self.nodes_degree.argsort()]
         self.order = []
+        self.local_adjusting = local_adjusting
 
     def _degree(self,node):
     # Get degree of vertex/node
@@ -26,6 +27,9 @@ class AVSDF:
         edge_set = set(chain(*edges))
         edge_set.remove(v)
         return list(edge_set)
+
+    ###################################################################################
+    ## Needs fixing
 
     def _count_crossings_edge(self,v,order):
         n_crossings = 0
@@ -70,7 +74,7 @@ class AVSDF:
                 self.order[ix_old] = pList[swap_ix]
                 self.order[ix_swap] = edge[0]
                 
-
+    ####################################################################################
     
     def run_AVSDF(self):
         # Initialise an array order[n], and a stack, S.
@@ -102,6 +106,7 @@ class AVSDF:
                         #stack.insert(0,av)
                         stack.append(av)
 
-        self._local_adjusting()
+        if self.local_adjusting:
+            self._local_adjusting()
 
         return self.order
