@@ -4,6 +4,7 @@ import pyspark
 from sparkFrequentItemsets import SparkFrequentItemsets
 import os
 import pickle
+import time
 
 os.environ['PYSPARK_SUBMIT_ARGS'] = '"--packages" "org.mongodb.spark:mongo-spark-connector_2.11:2.4.1" "--driver-memory" "4g" "pyspark-shell"'
 findspark.init()
@@ -13,9 +14,9 @@ spark = pyspark.sql.SparkSession.builder \
     .config("spark.mongodb.input.uri", os.environ['MSC_CHORD_DB_URI'])\
     .getOrCreate()
 
-params={"minSupport":0.1, "minConfidence":0.5}
-items = SparkFrequentItemsets(spark,10000,params)
+params={"minSupport":0.05, "minConfidence":1}
+items = SparkFrequentItemsets(spark,None,params)
 itemsets = items.getItemsets()
 
-with open(f"Data/API/chordItemsets.pkl","wb") as filename:
+with open("Data/API/chordItemsets"+time.strftime("%Y-%m-%d-%H-%M-%S")+".pkl","wb") as filename:
     pickle.dump(itemsets,filename)

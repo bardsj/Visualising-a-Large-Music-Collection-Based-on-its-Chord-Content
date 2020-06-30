@@ -32,4 +32,6 @@ class SparkFrequentItemsets:
         return model
 
     def getItemsets(self):
-        return self.model.freqItemsets.toPandas()
+        n_items = self.df.count()
+        itemsets = self.model.freqItemsets.withColumn("supportPc",self.model.freqItemsets['freq']/n_items)
+        return itemsets.toPandas()
