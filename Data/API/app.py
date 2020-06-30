@@ -9,7 +9,7 @@ from itertools import chain
 import sys
 import os
 sys.path.append(os.getcwd())
-from Visualisation.Optimisation.AVSDF import AVSDF
+from Data.Optimisation.AVSDF import AVSDF
 
 # Create instance of Flask app with
 app = Flask(__name__)
