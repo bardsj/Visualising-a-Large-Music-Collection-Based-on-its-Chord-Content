@@ -1,4 +1,9 @@
-## Create temp file that can be served by the API
+"""
+Create temp file that can be served by the API.
+Generates pickled dataframe of results from running the spark FPGrowth algorithm 
+and saves this in the API folder so that it can be accessed by the Flask app.
+
+"""
 import findspark
 import pyspark
 from sparkFrequentItemsets import SparkFrequentItemsetsFPG
