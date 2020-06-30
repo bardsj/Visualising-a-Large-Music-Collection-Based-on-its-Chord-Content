@@ -21,7 +21,7 @@ spark = pyspark.sql.SparkSession.builder \
 
 params={"minSupport":0.05, "minConfidence":1}
 items = SparkFrequentItemsetsFPG(spark,None,params)
-itemsets = items.getItemsets()
+itemsets = items.get_itemsets()
 
 with open("Data/API/chordItemsets"+time.strftime("%Y-%m-%d-%H-%M-%S")+".pkl","wb") as filename:
     pickle.dump(itemsets,filename)

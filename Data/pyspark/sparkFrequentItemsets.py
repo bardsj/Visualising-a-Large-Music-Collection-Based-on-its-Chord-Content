@@ -22,10 +22,10 @@ class SparkFrequentItemsetsFPG:
         self.limit = limit
         self.spark = spark
         self.params = params
-        self.df = self._loadData(self.spark)
-        self.model = self._runFPGrowth(self.df)
+        self.df = self._load_data(self.spark)
+        self.model = self._run_FPGrowth(self.df)
 
-    def _loadData(self):
+    def _load_data(self):
         # Load data from mongodb source
         if self.limit:
             df = self.spark.read.format("mongo").option('database', 'jamendo').option('collection', 'chords').load().limit(self.limit)
@@ -40,13 +40,13 @@ class SparkFrequentItemsetsFPG:
         # Apply UDF and select only chord and id cols
         return df.withColumn("chordItems",getKeysUDF(df['chordRatio'])).select("_id","chordItems")
 
-    def _runFPGrowth(self):
+    def _run_FPGrowth(self):
         # Apply spark ml libs FP-growth algorithm for frequent itemset mining
         fpGrowth = FPGrowth(itemsCol="chordItems", minSupport = self.params["minSupport"], minConfidence=self.params["minConfidence"])
         model = fpGrowth.fit(self.df)
         return model
 
-    def getItemsets(self):
+    def get_itemsets(self):
         n_items = self.df.count()
         itemsets = self.model.freqItemsets.withColumn("supportPc",self.model.freqItemsets['freq']/n_items)
         return itemsets.toPandas()
