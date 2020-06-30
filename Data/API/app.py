@@ -1,3 +1,7 @@
+"""
+    Simple Flask app to serve pre-generated frequent itemset data for circular layout and parallel coordinates
+"""
+
 from flask import Flask,jsonify
 from flask_cors import CORS
 import pickle
