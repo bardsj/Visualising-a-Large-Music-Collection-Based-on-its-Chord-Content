@@ -1,7 +1,7 @@
 ## Create temp file that can be served by the API
 import findspark
 import pyspark
-from sparkFrequentItemsets import SparkFrequentItemsets
+from sparkFrequentItemsets import SparkFrequentItemsetsFPG
 import os
 import pickle
 import time
@@ -15,7 +15,7 @@ spark = pyspark.sql.SparkSession.builder \
     .getOrCreate()
 
 params={"minSupport":0.05, "minConfidence":1}
-items = SparkFrequentItemsets(spark,None,params)
+items = SparkFrequentItemsetsFPG(spark,None,params)
 itemsets = items.getItemsets()
 
 with open("Data/API/chordItemsets"+time.strftime("%Y-%m-%d-%H-%M-%S")+".pkl","wb") as filename:

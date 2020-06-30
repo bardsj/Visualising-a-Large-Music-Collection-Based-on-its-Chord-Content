@@ -2,20 +2,35 @@ import pyspark.sql.functions as F
 from pyspark.sql.types import ArrayType,StringType
 from pyspark.ml.fpm import FPGrowth
 
-class SparkFrequentItemsets:
-    def __init__(self,spark,limit,params={"minSupport":0.2, "minConfidence":0.5}):
+class SparkFrequentItemsetsFPG:
+    """
+        Apply the FP Growth frequent itemset mining algorithm from the spark ml lib to the chord data
+
+        Parameters
+        ----------
+        spark : SparkSession
+            The spark session object
+        limit : int, optional
+            Limit the number of documents loaded from mongodb source
+        params : dict, optional
+            Parameter key/value pairs for minSupport (the algorithms support threshold) and 
+            minConfidence (for generating association rules, can ignore here as we are only 
+            interested in generating frequent itemsets)
+    """
+
+    def __init__(self,spark,limit=None,params={"minSupport":0.2, "minConfidence":0.5}):
         self.limit = limit
         self.spark = spark
         self.params = params
         self.df = self._loadData(self.spark)
         self.model = self._runFPGrowth(self.df)
 
-    def _loadData(self,spark):
+    def _loadData(self):
         # Load data from mongodb source
         if self.limit:
-            df = spark.read.format("mongo").option('database', 'jamendo').option('collection', 'chords').load().limit(self.limit)
+            df = self.spark.read.format("mongo").option('database', 'jamendo').option('collection', 'chords').load().limit(self.limit)
         else:
-            df = spark.read.format("mongo").option('database', 'jamendo').option('collection', 'chords').load()
+            df = self.spark.read.format("mongo").option('database', 'jamendo').option('collection', 'chords').load()
 
         df = df.sample(withReplacement=False,fraction=1.0)
 
@@ -25,10 +40,10 @@ class SparkFrequentItemsets:
         # Apply UDF and select only chord and id cols
         return df.withColumn("chordItems",getKeysUDF(df['chordRatio'])).select("_id","chordItems")
 
-    def _runFPGrowth(self,df):
+    def _runFPGrowth(self):
         # Apply spark ml libs FP-growth algorithm for frequent itemset mining
         fpGrowth = FPGrowth(itemsCol="chordItems", minSupport = self.params["minSupport"], minConfidence=self.params["minConfidence"])
-        model = fpGrowth.fit(df)
+        model = fpGrowth.fit(self.df)
         return model
 
     def getItemsets(self):
