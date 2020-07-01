@@ -1,6 +1,8 @@
 import pyspark.sql.functions as F
 from pyspark.sql.types import ArrayType,StringType
 from pyspark.ml.fpm import FPGrowth
+from collections import Counter
+from itertools import combinations
 
 class ChordLoader:
     """
@@ -20,6 +22,25 @@ class ChordLoader:
         self.df = self._load_data()
 
     def _load_data(self):
+        """
+        Loads data from mongodb source and extracts non zero chord values
+
+        Returns
+        -------
+        pyspark.sql.DataFrame
+            In the form:
+                +---+--------------------+
+                |_id|          chordItems|
+                +---+--------------------+
+                |214|[Bbmin7, Emin7, B...|
+                |215|[Emaj, A7, Gmin, ...|
+                |216|[Emaj, Dbmin7, Gb...|
+                |217|[Ab7, F7, Abmaj, ...|
+                |218|[Emaj, Dbmin7, Ab...|
+                |219|[Emaj, Bbmin7, Em...|
+                |220|[Emin7, Bmaj, Dbm...|
+
+        """
         # Load data from mongodb source
         if self.limit:
             df = self.spark.read.format("mongo").option('database', 'jamendo').option('collection', 'chords').load().limit(self.limit)
@@ -69,3 +90,51 @@ class SparkFrequentItemsetsFPG(ChordLoader):
         # Add support % val
         itemsets = self.model.freqItemsets.withColumn("supportPc",self.model.freqItemsets['freq']/n_items)
         return itemsets.toPandas()
+
+
+class SparkFrequentItemsetsSON(ChordLoader):
+    """
+    Implementation of the SON algorithm - 
+    
+    "Savasere, A., Omiecinski, E. & Navathe, S. B., 1995. 
+    An Efficient Algorithm for Mining Association Rules in Large Databases. s.l., 
+    Proceedings of the 21st International Conference on Very Large Data Bases."
+
+    """
+    def __init__(self,spark,limit=None,params={"minSupport":0.2}):
+        ChordLoader.__init__(self,spark,limit)
+        self.params = params
+
+
+    def get_itemsets(self):
+        chord_rdd = self.df.select(self.df['chordItems']).rdd
+        # TODO Add filtering step between passes over data (see apriori)
+        # TODO Finish SON implemenation
+        def apriori(part,support):
+            frequent_itemsets = []
+            # Init combination length
+            n = 1
+            while(True):
+                # Init counter
+                cnt = Counter()
+                # Iterate over items in RDD
+                for row in part:
+                    # Get chord from spark Row items
+                    chords = row['chordItems']
+                    # Count combinations
+                    for comb in combinations(chords,n):
+                        cnt[comb] += 1
+                # Filter by support value threshold
+                k_fi = [{k:v} for k,v in cnt.items() if v > support]
+                # If frequent sets still present add to fi list else break
+                if len(k_fi) > 0:
+                    frequent_itemsets += k_fi
+                    n += 1
+                else:
+                    break
+            return frequent_itemsets
+        # Support threshold determined by no. partitions
+        ps = (self.params['minSupport']*chord_rdd.count())/chord_rdd.getNumPartitions()
+        itemset_rdd = chord_rdd.mapPartitions(lambda x: apriori(x,ps))        
+
+        return itemset_rdd.collect()
