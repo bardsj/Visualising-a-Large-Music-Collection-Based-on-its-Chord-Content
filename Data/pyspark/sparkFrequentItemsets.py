@@ -2,28 +2,22 @@ import pyspark.sql.functions as F
 from pyspark.sql.types import ArrayType,StringType
 from pyspark.ml.fpm import FPGrowth
 
-class SparkFrequentItemsetsFPG:
+class ChordLoader:
     """
-        Apply the FP Growth frequent itemset mining algorithm from the spark ml lib to the chord data
+    Load chord data into a spark dataframe and apply some preprocessing to extract chord values
+    
+    Parameters
+    ----------
+    spark : SparkSession
+        The spark session object
+    limit : int, optional
+        Limit the number of documents loaded from mongodb source
 
-        Parameters
-        ----------
-        spark : SparkSession
-            The spark session object
-        limit : int, optional
-            Limit the number of documents loaded from mongodb source
-        params : dict, optional
-            Parameter key/value pairs for minSupport (the algorithms support threshold) and 
-            minConfidence (for generating association rules, can ignore here as we are only 
-            interested in generating frequent itemsets)
     """
-
-    def __init__(self,spark,limit=None,params={"minSupport":0.2, "minConfidence":0.5}):
+    def __init__(self,spark,limit=None):
         self.limit = limit
         self.spark = spark
-        self.params = params
-        self.df = self._load_data(self.spark)
-        self.model = self._run_FPGrowth(self.df)
+        self.df = self._load_data()
 
     def _load_data(self):
         # Load data from mongodb source
@@ -32,6 +26,7 @@ class SparkFrequentItemsetsFPG:
         else:
             df = self.spark.read.format("mongo").option('database', 'jamendo').option('collection', 'chords').load()
 
+        # Times out without this? 
         df = df.sample(withReplacement=False,fraction=1.0)
 
         # User defined function to get key values (chords) from nested structure in dataframe
@@ -40,13 +35,37 @@ class SparkFrequentItemsetsFPG:
         # Apply UDF and select only chord and id cols
         return df.withColumn("chordItems",getKeysUDF(df['chordRatio'])).select("_id","chordItems")
 
-    def _run_FPGrowth(self):
+
+class SparkFrequentItemsetsFPG(ChordLoader):
+    """
+    Apply FPGrowth frequent itemset mining algorithm from Spark ML lib to chord data
+
+    Parameters
+    ----------
+    spark : SparkSession
+        The spark session object
+    limit : int, optional
+        Limit the number of documents loaded from mongodb source
+    params : dict, optional
+        Parameter key/value pairs for minSupport (the algorithms support threshold) and 
+        minConfidence (for generating association rules, can ignore here as we are only 
+        interested in generating frequent itemsets)
+
+    """
+
+    def __init__(self,spark,limit=None,params={"minSupport":0.2, "minConfidence":0.5}):
+        ChordLoader.__init__(self,spark,limit)
+        self.params = params
+
+    def _run_FPGrowth(self,df):
         # Apply spark ml libs FP-growth algorithm for frequent itemset mining
         fpGrowth = FPGrowth(itemsCol="chordItems", minSupport = self.params["minSupport"], minConfidence=self.params["minConfidence"])
-        model = fpGrowth.fit(self.df)
+        model = fpGrowth.fit(df)
         return model
 
     def get_itemsets(self):
         n_items = self.df.count()
+        self.model = self._run_FPGrowth(self.df)
+        # Add support % val
         itemsets = self.model.freqItemsets.withColumn("supportPc",self.model.freqItemsets['freq']/n_items)
         return itemsets.toPandas()
