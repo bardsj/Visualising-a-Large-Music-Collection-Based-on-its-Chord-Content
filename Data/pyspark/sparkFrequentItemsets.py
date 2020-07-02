@@ -2,7 +2,8 @@ import pyspark.sql.functions as F
 from pyspark.sql.types import ArrayType,StringType
 from pyspark.ml.fpm import FPGrowth
 from collections import Counter
-from itertools import combinations
+from itertools import combinations,chain
+from operator import add
 
 class ChordLoader:
     """
@@ -107,34 +108,60 @@ class SparkFrequentItemsetsSON(ChordLoader):
 
 
     def get_itemsets(self):
-        chord_rdd = self.df.select(self.df['chordItems']).rdd
-        # TODO Add filtering step between passes over data (see apriori)
-        # TODO Finish SON implemenation
+        # Apriori algorithm implementation for frequent itemsets
         def apriori(part,support):
             frequent_itemsets = []
             # Init combination length
             n = 1
+            # Get chord from spark Row items
+            part = [row['chordItems'] for row in part]
             while(True):
+                print(f"ap {n}")
+                print(len(part))
                 # Init counter
                 cnt = Counter()
                 # Iterate over items in RDD
                 for row in part:
-                    # Get chord from spark Row items
-                    chords = row['chordItems']
                     # Count combinations
-                    for comb in combinations(chords,n):
+                    for comb in combinations(row,n):
                         cnt[comb] += 1
                 # Filter by support value threshold
-                k_fi = [{k:v} for k,v in cnt.items() if v > support]
+                k_fi = [(k,v) for k,v in cnt.items() if v > support]
+                # Filter data
+                # Get keys from filtered k length frequent itemsets
+                item_keys = [k[0] for k in k_fi]
+                item_set = set(chain(*item_keys))
+                # Filter out items not in frequent itemsets
+                part = [list(set(row).intersection(item_set)) for row in part]
+                # Remove items with length 0
+                part = list(filter(lambda x: len(x)>0,part))
                 # If frequent sets still present add to fi list else break
-                if len(k_fi) > 0:
+                if len(part) > 0:
                     frequent_itemsets += k_fi
                     n += 1
                 else:
                     break
             return frequent_itemsets
-        # Support threshold determined by no. partitions
-        ps = (self.params['minSupport']*chord_rdd.count())/chord_rdd.getNumPartitions()
-        itemset_rdd = chord_rdd.mapPartitions(lambda x: apriori(x,ps))        
 
-        return itemset_rdd.collect()
+        # Convert dataframe to rdd
+        chord_rdd = self.df.select(self.df['chordItems']).rdd
+        print(f"N Partitions: {chord_rdd.getNumPartitions()}")
+        # Support threshold determined by no. partitions
+        s = self.params['minSupport']*chord_rdd.count()
+        ps = s/chord_rdd.getNumPartitions()
+        # 1st map function, generate candidate itemsets
+        itemset_kv = dict(chord_rdd.mapPartitions(lambda x: apriori(x,ps)).reduceByKey(add).map(lambda x: (x[0],0)).collect())
+
+        def count_sets(part,sets):
+            for row in part:
+                row = row['chordItems']
+                for freq_set in sets:
+                    if set(freq_set).issubset(set(row)):
+                        sets[freq_set] += 1
+            return sets.items()
+
+        frequent_itemsets = chord_rdd.mapPartitions(lambda x: count_sets(x,itemset_kv)) \
+                                     .reduceByKey(add)
+        frequent_itemsets = frequent_itemsets.filter(lambda x: x[1]>s)
+
+        return frequent_itemsets.collect()

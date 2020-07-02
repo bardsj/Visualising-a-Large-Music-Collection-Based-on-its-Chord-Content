@@ -14,7 +14,7 @@ spark = pyspark.sql.SparkSession.builder \
     .getOrCreate()
 
 params={"minSupport":0.05, "minConfidence":1}
-items = SparkFrequentItemsetsSON(spark,None,params)
+items = SparkFrequentItemsetsSON(spark,10000,params)
 itemsets = items.get_itemsets()
 
 from pprint import pprint
