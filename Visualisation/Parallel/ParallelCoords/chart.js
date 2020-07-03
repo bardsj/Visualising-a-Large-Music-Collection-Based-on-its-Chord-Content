@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
             const width = 1400
             const height = 800
 
-            const margin = ({top:20,bottom:20,left:50,right:10})
+            const margin = ({top:20,bottom:20,left:60,right:10})
 
             // Remove existing chart ready for update
             d3.select("#chart")
@@ -40,9 +40,9 @@ document.addEventListener("DOMContentLoaded", function (event) {
             const data_ax = data.map(d => ({ labels: d.labels.map((l, i) => ({ node: l, ax: i })), values: d.values }))
 
             // Categorical y scale
-            const scY = d3.scalePoint().domain(node_list).range([20, height - 20])
+            const scY = d3.scalePoint().domain(node_list).range([margin.top, height - margin.bottom])
             // Linear x scale for parallel axes
-            const scX = d3.scaleLinear().domain([0, n_ax - 1]).range([40, width - 10])
+            const scX = d3.scaleLinear().domain([0, n_ax - 1]).range([margin.left, width - margin.right])
 
             // Add node groups to create parallel axes
             const nodes_group = svg.selectAll("g")
@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
             const labels = nodes_group.append("text")
                 .text(d => d.node)
                 .attr("class","label")
-                .attr("font-size", 8)
+                .attr("font-size", 10)
                 .attr("dx", -4)
                 .attr("dy", 2)
                 .attr("text-anchor", "end")
@@ -83,7 +83,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
                 .attr("stroke", "grey")
                 .attr("fill", "none")
                 .attr("stroke-width", 1)
-                .attr("stroke-opacity", d => (d.values / d3.max(data.map(x => x.values))) ** 3)
+                .attr("stroke-opacity", d => (d.values / d3.max(data.map(x => x.values))) ** 2.5)
 
             // Highlight paths when hovering on node
             label_bg.on("mouseenter",(sel)=>{
@@ -91,7 +91,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
                 d3.selectAll(".label")
                 .filter(l=>l == sel)
                 .transition(0.1)
-                .attr("font-size","12")
+                .attr("font-size",15)
                 
                 
               d3.selectAll(".link")
@@ -108,7 +108,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
               d3.selectAll(".label")
                 .filter(l=>l == sel)
                 .transition(0.1)
-                .attr("font-size","8")
+                .attr("font-size",10)
               
               d3.selectAll(".link")
                 .filter(d=>d.labels[sel.ax] ? d.labels[sel.ax].node===sel.node : null)
