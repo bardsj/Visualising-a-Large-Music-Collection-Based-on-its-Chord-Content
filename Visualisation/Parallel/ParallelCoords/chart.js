@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
             const width = 1400
             const height = 800
 
-            const margin = ({top:20,bottom:20,left:40,right:10})
+            const margin = ({top:20,bottom:20,left:50,right:10})
 
             // Remove existing chart ready for update
             d3.select("#chart")
@@ -56,6 +56,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
             // Append labels to node groups
             const labels = nodes_group.append("text")
                 .text(d => d.node)
+                .attr("class","label")
                 .attr("font-size", 8)
                 .attr("dx", -4)
                 .attr("dy", 2)
@@ -79,29 +80,42 @@ document.addEventListener("DOMContentLoaded", function (event) {
                 .attr("class", "link")
                 .attr("d", d => lineGen(d.labels))
                 .attr("fill", "none")
-                .attr("stroke", "black")
+                .attr("stroke", "grey")
                 .attr("fill", "none")
                 .attr("stroke-width", 1)
                 .attr("stroke-opacity", d => (d.values / d3.max(data.map(x => x.values))) ** 3)
 
             // Highlight paths when hovering on node
-            label_bg.on("mouseenter", (sel) => {
-                d3.selectAll(".link")
-                    //.filter(d=>d.labels.includes(sel.label))
-                    .filter(d => d.labels[sel.ax] ? d.labels[sel.ax].node === sel.node : null)
-                    .transition(0.1)
-                    .attr("stroke", "red")
-                    .attr("stroke-width", 3)
-                    .attr("stroke-opacity", d => (d.values / d3.max(data.map(x => x.values))) ** 1.5)
+            label_bg.on("mouseenter",(sel)=>{
+      
+                d3.selectAll(".label")
+                .filter(l=>l == sel)
+                .transition(0.1)
+                .attr("font-size","12")
+                
+                
+              d3.selectAll(".link")
+                //.filter(d=>d.labels.includes(sel.label))
+                .filter(d=>d.labels[sel.ax] ? d.labels[sel.ax].node===sel.node : null)
+                .transition(0.1)
+                .attr("stroke","red")
+                .attr("stroke-width",3)
+                .attr("stroke-opacity",d=>(d.values/d3.max(data.map(x=>x.values)))**1.5)
             })
-
-            label_bg.on("mouseleave", (sel) => {
-                d3.selectAll(".link")
-                    .filter(d => d.labels[sel.ax] ? d.labels[sel.ax].node === sel.node : null)
-                    .transition(0.1)
-                    .attr("stroke", "black")
-                    .attr("stroke-width", 1)
-                    .attr("stroke-opacity", d => (d.values / d3.max(data.map(x => x.values))) ** 3)
+            
+            label_bg.on("mouseleave",(sel)=>{
+              
+              d3.selectAll(".label")
+                .filter(l=>l == sel)
+                .transition(0.1)
+                .attr("font-size","8")
+              
+              d3.selectAll(".link")
+                .filter(d=>d.labels[sel.ax] ? d.labels[sel.ax].node===sel.node : null)
+                .transition(0.1)
+                .attr("stroke","grey")
+                .attr("stroke-width",1)
+                .attr("stroke-opacity",d=>(d.values/d3.max(data.map(x=>x.values)))**3)
             })
 
             
