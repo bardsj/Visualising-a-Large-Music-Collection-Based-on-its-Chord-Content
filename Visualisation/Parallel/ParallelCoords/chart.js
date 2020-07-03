@@ -8,6 +8,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
             const width = 1400
             const height = 800
 
+            const margin = ({top:20,bottom:20,left:40,right:10})
+
             // Remove existing chart ready for update
             d3.select("#chart")
                 .selectAll("*")
@@ -59,6 +61,13 @@ document.addEventListener("DOMContentLoaded", function (event) {
                 .attr("dy", 2)
                 .attr("text-anchor", "end")
 
+            // Add transparent rectangle to labels for easier hover selection
+            const label_bg = nodes_group.append("rect")
+                                        .attr("width",30)
+                                        .attr("height",20)
+                                        .attr("fill","transparent")
+                                        .attr("transform","translate(-34,-6)")
+
             // Path generator
             const lineGen = d3.line().y(d => scY(d.node)).x(d => scX(d.ax))
 
@@ -76,19 +85,17 @@ document.addEventListener("DOMContentLoaded", function (event) {
                 .attr("stroke-opacity", d => (d.values / d3.max(data.map(x => x.values))) ** 3)
 
             // Highlight paths when hovering on node
-            nodes_group.on("mouseenter", (sel) => {
-                d3.select(this).raise()
+            label_bg.on("mouseenter", (sel) => {
                 d3.selectAll(".link")
                     //.filter(d=>d.labels.includes(sel.label))
                     .filter(d => d.labels[sel.ax] ? d.labels[sel.ax].node === sel.node : null)
-                    .raise()
                     .transition(0.1)
                     .attr("stroke", "red")
                     .attr("stroke-width", 3)
                     .attr("stroke-opacity", d => (d.values / d3.max(data.map(x => x.values))) ** 1.5)
             })
 
-            nodes_group.on("mouseleave", (sel) => {
+            label_bg.on("mouseleave", (sel) => {
                 d3.selectAll(".link")
                     .filter(d => d.labels[sel.ax] ? d.labels[sel.ax].node === sel.node : null)
                     .transition(0.1)
@@ -96,6 +103,11 @@ document.addEventListener("DOMContentLoaded", function (event) {
                     .attr("stroke-width", 1)
                     .attr("stroke-opacity", d => (d.values / d3.max(data.map(x => x.values))) ** 3)
             })
+
+            
+            // Raise label groups above paths
+            nodes_group.raise()
+            label_bg.raise()
 
         })
 

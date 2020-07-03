@@ -20,12 +20,9 @@ spark = pyspark.sql.SparkSession.builder \
     .config("spark.mongodb.input.uri", os.environ['MSC_CHORD_DB_URI'])\
     .getOrCreate()
 
-params = {"minSupport": 0.3, "minConfidence": 1}
-items = SparkFrequentItemsetsFPG(spark, 10000, params)
+params = {"minSupport": 0.05, "minConfidence": 1}
+items = SparkFrequentItemsetsFPG(spark, None, params)
 itemsets = items.get_itemsets()
 
-
-pprint(itemsets)
-
-# with open("Data/API/chordItemsets"+time.strftime("%Y-%m-%d-%H-%M-%S")+".pkl","wb") as filename:
-#    pickle.dump(itemsets,filename)
+with open("Data/API/chordItemsets"+time.strftime("%Y-%m-%d-%H-%M-%S")+".pkl","wb") as filename:
+        pickle.dump(itemsets,filename)
