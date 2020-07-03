@@ -1,6 +1,6 @@
 import findspark
 import pyspark
-from sparkFrequentItemsets import SparkFrequentItemsetsSON
+from sparkFrequentItemsets import SparkFrequentItemsetsSON, SparkFrequentItemsetsFPG
 import os
 import pickle
 import time
@@ -13,10 +13,27 @@ spark = pyspark.sql.SparkSession.builder \
     .config("spark.mongodb.input.uri", os.environ['MSC_CHORD_DB_URI'])\
     .getOrCreate()
 
-params={"minSupport":0.05, "minConfidence":1}
-items = SparkFrequentItemsetsSON(spark,10000,params)
-itemsets = items.get_itemsets()
+results = []
 
-from pprint import pprint
+for s in range(5, 40, 5):
 
-pprint(itemsets)
+    params = {"minSupport": s/100, "minConfidence": 1}
+
+    st_SON = time.time()
+    items = SparkFrequentItemsetsSON(spark, 10000, params).get_itemsets()
+    time_elapsed_SON = time.time() - st_SON
+
+    st_FPG = time.time()
+    items = SparkFrequentItemsetsFPG(spark, 10000, params).get_itemsets()
+    time_elapsed_FPG = time.time() - st_FPG
+
+    results.append({"support": s/100,
+                    "time":
+                        {
+                            "SON": time_elapsed_SON,
+                            "FPG": time_elapsed_FPG
+                        }
+                    })
+
+with open("SON_FPG_timecomp_results.pkl","wb+") as filename:
+    pickle.dump(results,filename)

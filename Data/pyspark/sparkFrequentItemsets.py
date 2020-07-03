@@ -101,6 +101,18 @@ class SparkFrequentItemsetsSON(ChordLoader):
     An Efficient Algorithm for Mining Association Rules in Large Databases. s.l., 
     Proceedings of the 21st International Conference on Very Large Data Bases."
 
+    Parameters
+    ----------
+    spark : SparkSession
+        The spark session object
+    limit : int, optional
+        Limit the number of documents loaded from mongodb source
+    params : dict, optional
+        Parameter key/value pairs for minSupport (the algorithms support threshold) and 
+        minConfidence (for generating association rules, can ignore here as we are only 
+        interested in generating frequent itemsets)
+
+
     """
     def __init__(self,spark,limit=None,params={"minSupport":0.2}):
         ChordLoader.__init__(self,spark,limit)
@@ -108,6 +120,14 @@ class SparkFrequentItemsetsSON(ChordLoader):
 
 
     def get_itemsets(self):
+        """
+            MapReduce calculation of frequent itemsets
+
+            Returns
+            -------
+            frequent_itemsets : list[tuple]
+                Key value pairs of frequent itemsets with support value
+        """
         # Apriori algorithm implementation for frequent itemsets
         def apriori(part,support):
             frequent_itemsets = []
@@ -116,8 +136,6 @@ class SparkFrequentItemsetsSON(ChordLoader):
             # Get chord from spark Row items
             part = [row['chordItems'] for row in part]
             while(True):
-                print(f"ap {n}")
-                print(len(part))
                 # Init counter
                 cnt = Counter()
                 # Iterate over items in RDD
@@ -160,8 +178,10 @@ class SparkFrequentItemsetsSON(ChordLoader):
                         sets[freq_set] += 1
             return sets.items()
 
+        # Count the sets present in data from candidate list
         frequent_itemsets = chord_rdd.mapPartitions(lambda x: count_sets(x,itemset_kv)) \
                                      .reduceByKey(add)
+        # Filter by min support value
         frequent_itemsets = frequent_itemsets.filter(lambda x: x[1]>s)
 
         return frequent_itemsets.collect()

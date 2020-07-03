@@ -4,6 +4,7 @@ Generates pickled dataframe of results from running the spark FPGrowth algorithm
 and saves this in the API folder so that it can be accessed by the Flask app.
 
 """
+from pprint import pprint
 import findspark
 import pyspark
 from sparkFrequentItemsets import SparkFrequentItemsetsFPG
@@ -19,13 +20,12 @@ spark = pyspark.sql.SparkSession.builder \
     .config("spark.mongodb.input.uri", os.environ['MSC_CHORD_DB_URI'])\
     .getOrCreate()
 
-params={"minSupport":0.3, "minConfidence":1}
-items = SparkFrequentItemsetsFPG(spark,10000,params)
+params = {"minSupport": 0.3, "minConfidence": 1}
+items = SparkFrequentItemsetsFPG(spark, 10000, params)
 itemsets = items.get_itemsets()
 
-from pprint import pprint
 
 pprint(itemsets)
 
-#with open("Data/API/chordItemsets"+time.strftime("%Y-%m-%d-%H-%M-%S")+".pkl","wb") as filename:
+# with open("Data/API/chordItemsets"+time.strftime("%Y-%m-%d-%H-%M-%S")+".pkl","wb") as filename:
 #    pickle.dump(itemsets,filename)
