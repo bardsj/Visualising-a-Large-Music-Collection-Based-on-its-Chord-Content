@@ -129,10 +129,10 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
     let slider = document.getElementById("supportThreshold")
     creatChart(slider.value)
-
+    document.getElementById("sliderValue").innerText = slider.value
 
     slider.onchange = () => {
         creatChart(slider.value)
+        document.getElementById("sliderValue").innerText = slider.value
     }
-
 });

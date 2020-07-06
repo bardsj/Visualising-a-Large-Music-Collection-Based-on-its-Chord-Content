@@ -28,51 +28,57 @@ class AVSDF:
         edge_set.remove(v)
         return list(edge_set)
 
+    def _count_all_crossings(self,order,edge_list):
+        """
+            Count total number of crossings
+        """
+        # Map of index values in order for items
+        ix_map = {x:i for i,x in enumerate(order)}
+        #edge_list_sorted = sorted(edge_list,key=lambda x: ix_map[x[0]])
+
+        edge_mat = np.zeros((len(edge_list),len(edge_list)))
+
+        for i,edge in enumerate(edge_list):
+            edge_s = sorted([ix_map[edge[0]],ix_map[edge[1]]])
+            for j,comp in enumerate(edge_list):
+                comp_s = sorted([ix_map[comp[0]],ix_map[comp[1]]])
+                # If any edges share a vertices they cannot cross
+                if (edge_s[0] in comp_s) or (edge_s[1] in comp_s):
+                    pass
+                # If one edge vertex ix falls between the other edge vertices and the other does not then they must cross
+                elif (edge_s[0] < comp_s[0] < edge_s[1]) and not (edge_s[0] < comp_s[1] < edge_s[1]) or \
+                    (edge_s[0] < comp_s[1] < edge_s[1]) and not (edge_s[0] < comp_s[0] < edge_s[1]):
+                    edge_mat[i][j] = 1
+        # Return upper triangle of matrix (no duplicate crossing counts)
+        return np.triu(edge_mat).sum()
+        
+    def _count_crossings_edge(self,order,edge_list,edge):
+        """
+            Count number of crossings for a particular edge
+        """
+        # Map of index values in order for items
+        ix_map = {x:i for i,x in enumerate(order)}
+        #edge_list_sorted = sorted(edge_list,key=lambda x: ix_map[x[0]])
+        edge_mat = np.zeros(len(edge_list))
+
+        edge_s = sorted([ix_map[edge[0]],ix_map[edge[1]]])
+        for j,comp in enumerate(edge_list):
+            comp_s = sorted([ix_map[comp[0]],ix_map[comp[1]]])
+            # If any edges share a vertices they cannot cross
+            if (edge_s[0] in comp_s) or (edge_s[1] in comp_s):
+                pass
+            # If one edge vertex ix falls between the other edge vertices and the other does not then they must cross
+            elif (edge_s[0] < comp_s[0] < edge_s[1]) and not (edge_s[0] < comp_s[1] < edge_s[1]) or \
+                (edge_s[0] < comp_s[1] < edge_s[1]) and not (edge_s[0] < comp_s[0] < edge_s[1]):
+                edge_mat[j] = 1
+        # Return sum of crossings
+        return edge_mat.sum()
+
     ###################################################################################
     ## Needs fixing
 
-    def _count_crossings_edge(self,v,order):
-        n_crossings = 0
-        edge_cross_list = []
-        v_edge_list = [e for e in self.edge_list if v in e]
-        for edge in v_edge_list:
-            for c_edge in self.edge_list:
-                c_edge = sorted(c_edge)
-                edge = sorted(edge)
-
-                e_ix = list(order).index(edge[0])
-                order_tmp = order[e_ix:] + order[:e_ix]
-                e_ix2 = order_tmp.index(edge[1])
-
-                if order_tmp.index(c_edge[0]) < e_ix2 and order_tmp.index(c_edge[1]) > e_ix2:
-                    if edge[0] not in c_edge and edge[1] not in c_edge:
-                        cross_sort = sorted([edge,c_edge])
-                        if cross_sort not in edge_cross_list:
-                            n_crossings += 1
-                            edge_cross_list.append(cross_sort)
-        
-        return n_crossings
-        
     def _local_adjusting(self):
-        edge_crossings = sorted([(e,self._count_crossings_edge(e,self.order)) for e in self.nodes],key=lambda x: x[1])[::-1]
-        for edge in edge_crossings:
-            min_cross = edge[1]
-            pList = self._adjacent_vertices(edge[0])
-            cross_res = []
-            for p in pList:
-                ix_old = list(self.order).index(edge[0])
-                ix_swap = list(self.order).index(p)
-                local_order = self.order
-                local_order[ix_old] = p
-                local_order[ix_swap] = edge[0]
-                cross_res.append(self._count_crossings_edge(edge[0],local_order))
-            
-            if min(cross_res) < edge[1]:
-                swap_ix = np.argmin(cross_res)
-                ix_old = list(self.order).index(edge[0])
-                ix_swap = list(self.order).index(pList[swap_ix])
-                self.order[ix_old] = pList[swap_ix]
-                self.order[ix_swap] = edge[0]
+        pass
                 
     ####################################################################################
     

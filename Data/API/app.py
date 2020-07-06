@@ -46,7 +46,7 @@ def returnDataCirc(thresh):
         # Convert to "record" style dictionary to be parsed by visualisation framework 
         sets_circ = ksets_circ.to_dict("records")
         # Pass list of edges to AVSDF to apply node reordering
-        avsdf = AVSDF([s['labels'] for s in sets_circ])
+        avsdf = AVSDF([s['labels'] for s in sets_circ],local_adjusting=True)
         order_circ = avsdf.run_AVSDF()
     else:
         order_circ = []
