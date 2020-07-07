@@ -17,9 +17,10 @@ class ChordLoader:
         Limit the number of documents loaded from mongodb source
 
     """
-    def __init__(self,spark,limit=None):
+    def __init__(self,spark,params,limit=None):
         self.limit = limit
         self.spark = spark
+        self.params = params
         self.df = self._load_data()
 
     def _load_data(self):
@@ -50,9 +51,10 @@ class ChordLoader:
 
         # Times out without this? 
         df = df.sample(withReplacement=False,fraction=1.0)
+        f_ratio = self.params['filterRatio']
 
-        # User defined function to get key values (chords) from nested structure in dataframe
-        getKeysUDF = F.udf(lambda x: list({k for k,v in x.asDict().items() if type(v) is float}),ArrayType(StringType()))
+        # User defined function to get key values (chords) from nested structure in dataframe and filter below value
+        getKeysUDF = F.udf(lambda x: list({k for k,v in x.asDict().items() if (type(v) is float) and (v > f_ratio)}),ArrayType(StringType()))
 
         # Apply UDF and select only chord and id cols
         return df.withColumn("chordItems",getKeysUDF(df['chordRatio'])).select("_id","chordItems")
@@ -75,9 +77,8 @@ class SparkFrequentItemsetsFPG(ChordLoader):
 
     """
 
-    def __init__(self,spark,limit=None,params={"minSupport":0.2, "minConfidence":0.5}):
-        ChordLoader.__init__(self,spark,limit)
-        self.params = params
+    def __init__(self,spark,limit=None,params={"minSupport":0.2, "minConfidence":0.5,"filterRatio":None}):
+        ChordLoader.__init__(self,spark,params,limit)
 
     def _run_FPGrowth(self,df):
         # Apply spark ml libs FP-growth algorithm for frequent itemset mining
@@ -114,9 +115,8 @@ class SparkFrequentItemsetsSON(ChordLoader):
 
 
     """
-    def __init__(self,spark,limit=None,params={"minSupport":0.2}):
-        ChordLoader.__init__(self,spark,limit)
-        self.params = params
+    def __init__(self,spark,params={"minSupport":0.2,"filterRatio":None},limit=None):
+        ChordLoader.__init__(self,spark,params,limit)
 
 
     def get_itemsets(self):

@@ -17,7 +17,7 @@ results = []
 
 for s in range(5, 40, 5):
 
-    params = {"minSupport": s/100, "minConfidence": 1}
+    params = {"minSupport": s/100, "minConfidence": 1,"filterRatio":None}
 
     st_SON = time.time()
     items = SparkFrequentItemsetsSON(spark, 10000, params).get_itemsets()

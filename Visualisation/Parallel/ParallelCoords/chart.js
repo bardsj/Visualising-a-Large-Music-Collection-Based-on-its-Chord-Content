@@ -115,7 +115,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
                 .transition(0.1)
                 .attr("stroke","grey")
                 .attr("stroke-width",1)
-                .attr("stroke-opacity",d=>(d.values/d3.max(data.map(x=>x.values)))**3)
+                .attr("stroke-opacity",d=>(d.values/d3.max(data.map(x=>x.values)))**2.5)
             })
 
             

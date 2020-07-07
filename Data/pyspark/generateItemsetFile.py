@@ -20,7 +20,7 @@ spark = pyspark.sql.SparkSession.builder \
     .config("spark.mongodb.input.uri", os.environ['MSC_CHORD_DB_URI'])\
     .getOrCreate()
 
-params = {"minSupport": 0.05, "minConfidence": 1}
+params = {"minSupport": 0.01, "minConfidence": 1,"filterRatio":0.05}
 items = SparkFrequentItemsetsFPG(spark, None, params)
 itemsets = items.get_itemsets()
 
