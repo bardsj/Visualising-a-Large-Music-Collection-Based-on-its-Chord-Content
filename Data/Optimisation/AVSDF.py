@@ -16,12 +16,14 @@ class AVSDF:
         self.order = []
         self.local_adjusting = local_adjusting
 
+
     def _degree(self,node):
         """
             Return number of edges containing each vertex (i.e. the degree)
         """
         # Get degree of vertex/node
         return len(self._adjacent_vertices(node))
+
 
     def _adjacent_vertices(self,v):
         """
@@ -33,6 +35,7 @@ class AVSDF:
         #edge_set = set(chain(*edges))
         #edge_set.remove(v)
         return list(edges)
+
 
     def _count_all_crossings(self,order,edge_list):
         """
@@ -58,6 +61,7 @@ class AVSDF:
         # Return upper triangle of matrix (no duplicate crossing counts)
         return np.triu(edge_mat).sum()
         
+
     def _count_crossings_edge(self,order,edge_list,edge):
         """
             Count number of crossings for a particular edge
@@ -81,8 +85,6 @@ class AVSDF:
         # Return sum of crossings
         return edge_mat.sum()
 
-    ###################################################################################
-    ## Needs fixing
 
     def _local_adjusting(self):
         """
@@ -98,8 +100,7 @@ class AVSDF:
         # for (all vertices) do
         for currentV in v_crossings_sort:
             # Get the positions of adjacent vertices of currentV into pList array.
-            adjacent_edges = np.array(self._adjacent_vertices(currentV))
-            pList = list(set(chain(*adjacent_edges)))
+            pList = list(np.unique(self._adjacent_vertices(currentV)))
             pList.remove(currentV)
             # Try all these positions and calculate the crossing number to find the best location for currentV
             crossNo = v_crossings[currentV]
@@ -119,11 +120,8 @@ class AVSDF:
                     crossNo = newCrossNo
                     self.order[np_ix] = currentV
                     self.order[op_ix] = newV
-
-
-                
-    ####################################################################################
     
+
     def run_AVSDF(self):
         # Initialise an array order[n], and a stack, S.
         #order = np.empty(len(nodes),dtype=str)
@@ -144,8 +142,7 @@ class AVSDF:
                 # Get all adjacent vertices of v; and push those vertices, which are not in order
                 # into S with descending degree towards the top of the stack (the vertex with
                 # smallest degree is at top of S).
-                adjacent_edges = np.array(self._adjacent_vertices(v))
-                adjacent_v = list(set(chain(*adjacent_edges)))
+                adjacent_v = list(np.unique(self._adjacent_vertices(v)))
                 adjacent_v.remove(v)
                 adjacent_degree = np.array([self._degree(n) for n in adjacent_v],dtype=int)
                 adjacent_v = np.array(adjacent_v)[adjacent_degree.argsort()]
