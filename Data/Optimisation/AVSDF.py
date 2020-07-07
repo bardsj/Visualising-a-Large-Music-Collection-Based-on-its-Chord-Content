@@ -3,7 +3,7 @@ from itertools import chain
 
 class AVSDF:
     """
-    Implementation of the AVSDF (Adjacent Vertex with Smallest Degree First) algorithm as proposed in:
+    Implementation of the AVSDF (Adjacent Vertex with Smallest Degree First) algorithm with local adjusting as proposed in:
     
         "He, H. & Sykora, O., 2009. New circular drawing algorithms. [Online] Available at: https://repository.lboro.ac.uk/articles/New_circular_drawing_algorithms/9403790"
     """
@@ -17,16 +17,22 @@ class AVSDF:
         self.local_adjusting = local_adjusting
 
     def _degree(self,node):
-    # Get degree of vertex/node
-        return sum([node in edge for edge in self.edge_list])
+        """
+            Return number of edges containing each vertex (i.e. the degree)
+        """
+        # Get degree of vertex/node
+        return len(self._adjacent_vertices(node))
 
     def _adjacent_vertices(self,v):
+        """
+            Return filtered list of edges containing vertex v
+        """
         # Filter edge list for edges that contain v
         edges = list(filter(lambda x: v in x, self.edge_list))
         # Get adjacent vertices with v
-        edge_set = set(chain(*edges))
-        edge_set.remove(v)
-        return list(edge_set)
+        #edge_set = set(chain(*edges))
+        #edge_set.remove(v)
+        return list(edges)
 
     def _count_all_crossings(self,order,edge_list):
         """
@@ -58,6 +64,7 @@ class AVSDF:
         """
         # Map of index values in order for items
         ix_map = {x:i for i,x in enumerate(order)}
+
         #edge_list_sorted = sorted(edge_list,key=lambda x: ix_map[x[0]])
         edge_mat = np.zeros(len(edge_list))
 
@@ -78,7 +85,42 @@ class AVSDF:
     ## Needs fixing
 
     def _local_adjusting(self):
-        pass
+        """
+            Run local adjusting algorithm
+        """
+        # For every vertex calculate the crossings on edges incident to them
+        v_crossings = {}
+        for vertex in self.nodes:
+            v_crossings[vertex] = sum([self._count_crossings_edge(self.order,self.edge_list,e) for e in self._adjacent_vertices(vertex)])
+        # Sort the vertices according to descending number of crossings
+        v_crossings_sort = sorted(v_crossings,key=v_crossings.get,reverse=True)
+        # Let variable, currentV, point to the vertex whose incident edges have the largest number of crossings.
+        # for (all vertices) do
+        for currentV in v_crossings_sort:
+            # Get the positions of adjacent vertices of currentV into pList array.
+            adjacent_edges = np.array(self._adjacent_vertices(currentV))
+            pList = list(set(chain(*adjacent_edges)))
+            pList.remove(currentV)
+            # Try all these positions and calculate the crossing number to find the best location for currentV
+            crossNo = v_crossings[currentV]
+            for newV in pList:
+                # Original position index of currentV
+                op_ix = self.order.index(currentV)
+                # New position index of adjacent vertex
+                np_ix = self.order.index(newV)
+                # Swap places in order
+                order_temp = self.order
+                order_temp[op_ix] = newV
+                order_temp[np_ix] = currentV
+                # Calculate new no. edge crossings
+                newCrossNo = sum([self._count_crossings_edge(order_temp,self.edge_list,e) for e in self._adjacent_vertices(currentV)])
+                # If cross number is smaller then swap in order
+                if newCrossNo < crossNo:
+                    crossNo = newCrossNo
+                    self.order[np_ix] = currentV
+                    self.order[op_ix] = newV
+
+
                 
     ####################################################################################
     
@@ -102,10 +144,11 @@ class AVSDF:
                 # Get all adjacent vertices of v; and push those vertices, which are not in order
                 # into S with descending degree towards the top of the stack (the vertex with
                 # smallest degree is at top of S).
-                adjacent_v = np.array(self._adjacent_vertices(v))
-                adjacent_degree = np.array([self._degree(n) for n in adjacent_v])
-
-                adjacent_v = adjacent_v[adjacent_degree.argsort()]
+                adjacent_edges = np.array(self._adjacent_vertices(v))
+                adjacent_v = list(set(chain(*adjacent_edges)))
+                adjacent_v.remove(v)
+                adjacent_degree = np.array([self._degree(n) for n in adjacent_v],dtype=int)
+                adjacent_v = np.array(adjacent_v)[adjacent_degree.argsort()]
 
                 for av in adjacent_v:
                     if av not in self.order:
