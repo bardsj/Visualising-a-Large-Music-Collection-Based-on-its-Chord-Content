@@ -3,22 +3,28 @@ __MSc. Project__
 
 # Quickstart
 
-### 1. Start the Flask development server.
+### 1. Install requirements.
 
 ```
-$ python3 Data/API/app.py
+$ pip install -r requirements.txt
 ```
 
-### 2. Start the client HTTP server.
+### 2. Start the Flask development server.
+
+```
+$ python3 Project/Data/API/app.py
+```
+
+### 3. Start the client HTTP server.
 
 Parallel coordinates:
 
 ```
-$ python3 -m http.server --bind 127.0.0.1 --directory "Visualisation/Parallel/ParallelCoords"
+$ python3 -m http.server --bind 127.0.0.1 --directory "Project/Visualisation/Parallel/ParallelCoords"
 ```
 
 Circular layout:
 
 ```
-$ python3 -m http.server --bind 127.0.0.1 --directory "Visualisation/Circular/CircularLayout"
+$ python3 -m http.server --bind 127.0.0.1 --directory "Project/Visualisation/Circular/CircularLayout"
 ```
