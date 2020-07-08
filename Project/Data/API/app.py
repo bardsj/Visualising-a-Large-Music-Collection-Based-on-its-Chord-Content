@@ -9,7 +9,7 @@ from itertools import chain
 import sys
 import os
 sys.path.append(os.getcwd())
-from Data.Optimisation.AVSDF import AVSDF
+from Project.Data.Optimisation.AVSDF import AVSDF
 
 # Create instance of Flask app with
 app = Flask(__name__)
@@ -17,7 +17,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Load frequent itemsets dataframe
-with open("Data\API\chordItemsetsNoLimit5pcSupportwpc.pkl","rb") as filename:
+with open("Project\Data\API\chordItemsetsNoLimit5pcSupportwpc.pkl","rb") as filename:
     itemsets = pickle.load(filename)
 
 # Drop raw frequency column
