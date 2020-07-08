@@ -73,6 +73,10 @@ def returnDataParallel(thresh):
         ksets_par = ksets_par_filt[ksets_par_filt['items'].str.len()>1]
         # Generate list of singletons and order by support value to generate initial axes ordering
         order = list(ksets_par_filt[ksets_par_filt['items'].str.len()==1].sort_values(by='supportPc')[::-1]['items'].apply(lambda x: x[0]))
+        # Remove labels from order that are only singletons
+        single_labels = set(chain(*ksets_par_filt[ksets_par_filt['items'].str.len()==1]['items']))
+        k_labels = set(chain(*ksets_par_filt[ksets_par_filt['items'].str.len()!=1]['items']))
+        order = [x for x in order if x not in single_labels.difference(k_labels)]
         # Rename columns to match visualisation implementation
         ksets_par = ksets_par.rename(columns={"items":"labels","supportPc":"values"})
         # Reorder sets in order of support value descending
