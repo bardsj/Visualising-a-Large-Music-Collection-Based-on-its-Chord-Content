@@ -17,7 +17,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Load frequent itemsets dataframe
-with open("Data\API\chordItemsetsNoLimit1pcSupportwpcfilter05pc.pkl","rb") as filename:
+with open("Data\API\chordItemsetsNoLimit5pcSupportwpc.pkl","rb") as filename:
     itemsets = pickle.load(filename)
 
 # Drop raw frequency column
