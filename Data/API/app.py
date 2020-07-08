@@ -75,8 +75,9 @@ def returnDataParallel(thresh):
         order = list(ksets_par_filt[ksets_par_filt['items'].str.len()==1].sort_values(by='supportPc')[::-1]['items'].apply(lambda x: x[0]))
         # Rename columns to match visualisation implementation
         ksets_par = ksets_par.rename(columns={"items":"labels","supportPc":"values"})
-        # Sort nodes in list of edges
-        ksets_par['labels'] = ksets_par['labels'].apply(lambda x: sorted(x))
+        # Reorder sets in order of support value descending
+        order_map = {k:i for i,k in enumerate(order)}
+        ksets_par['labels'] = ksets_par['labels'].apply(lambda x: sorted(x,key=lambda x: order_map[x],reverse=False))
         # Convert to "record" style dictionary to be parsed by visualisation framework
         sets_par = ksets_par.to_dict("records")
     else:
