@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
                                         .attr("transform","translate(-34,-6)")
 
             // Path generator
-            const lineGen = d3.line().y(d => scY(d.node)).x(d => scX(d.ax))
+            const lineGen = d3.line().y(d => scY(d.node)).x(d => scX(d.ax)).curve(d3.curveCardinal)
 
             // Append paths
             const links = svg.selectAll("path")
