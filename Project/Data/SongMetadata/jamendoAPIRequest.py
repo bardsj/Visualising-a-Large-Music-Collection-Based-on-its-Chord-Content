@@ -19,8 +19,6 @@ class DBGen():
         self.d = db.find()
         # total n documents in collection
         self.d_n = db.count_documents({})
-        # set to false when end of collection reached
-        self._finish_flag = True
 
     def take(self,num):
         vals = []
@@ -57,5 +55,5 @@ while True:
 
 print(time.time()-st)
 
-with open("jamendo_api_scrape_test.pkl","wb+") as filename:
+with open("Project/Data/SongMetadada/jamendo_api_scrape_test.pkl","wb+") as filename:
     pickle.dump(res,filename)
