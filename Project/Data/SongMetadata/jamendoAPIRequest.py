@@ -18,7 +18,7 @@ class DBGen():
         # db cursor
         self.d = db.find()
         # total n documents in collection
-        self.d_n = db.count_documents()
+        self.d_n = db.count_documents({})
         # set to false when end of collection reached
         self._finish_flag = True
 
@@ -40,7 +40,10 @@ res = []
 
 st = time.time()
 
+i = 0
+
 while True:
+    i += 1
     id_list = dbg.take(50)
     if len(id_list) > 0:
         time.sleep(0.05)
@@ -49,6 +52,8 @@ while True:
         res += r.json()['results']
     else:
         break
+    if i > 2000:
+        print("Call number exceeds expected value - i = " + i)
 
 print(time.time()-st)
 
