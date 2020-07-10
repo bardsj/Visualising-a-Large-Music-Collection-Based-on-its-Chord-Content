@@ -41,7 +41,6 @@ st = time.time()
 i = 0
 
 while True:
-    i += 1
     id_list = dbg.take(50)
     if len(id_list) > 0:
         time.sleep(0.05)
@@ -50,10 +49,13 @@ while True:
         res += r.json()['results']
     else:
         break
+    # 99960 docs in collection - with 50 docs/request, should expect just short of 2000 requests 
     if i > 2000:
         print("Call number exceeds expected value - i = " + i)
+        break
+    i += 1
 
-print(time.time()-st)
+print("Time elapsed: " + str(time.time()-st))
 
 with open("Project/Data/SongMetadada/jamendo_api_scrape_test.pkl","wb+") as filename:
     pickle.dump(res,filename)
