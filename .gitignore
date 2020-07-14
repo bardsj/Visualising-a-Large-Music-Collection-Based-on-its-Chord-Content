@@ -8,4 +8,4 @@ Data/pymongoConnection
 Data/sparkConnection
 
 # local data, too large for github
-*/jamendo_api_scrape
+jamendo_api_scrape.pkl
