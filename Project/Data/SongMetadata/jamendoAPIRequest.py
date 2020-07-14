@@ -1,3 +1,6 @@
+"""
+Get metadata for tracks in db -> save pkl file of results and write to free tier mongo cluster
+"""
 from pymongo import MongoClient
 import requests
 import time
@@ -52,10 +55,21 @@ while True:
     # 99960 docs in collection - with 50 docs/request, should expect just short of 2000 requests 
     if i > 2000:
         print("Call number exceeds expected value - i = " + i)
-        break
     i += 1
 
 print("Time elapsed: " + str(time.time()-st))
 
+# Save pkl file with results
 with open("Project/Data/SongMetadada/jamendo_api_scrape_test.pkl","wb+") as filename:
     pickle.dump(res,filename)
+
+# Write to free mongo cluster
+client_write = MongoClient(f"mongodb+srv://jamapi:{os.environ['MSC_MONGO_PERSONAL']}@msc.5jje5.gcp.mongodb.net/MSC?retryWrites=true&w=majority")
+
+db_write = client_write['jamendo']
+
+with open("Project/Data/SongMetadata/jamendo_api_scrape.pkl","rb") as filename:
+    res = pickle.load(filename)
+
+col = db_write['songMetadata']
+col.insert_many(res)
