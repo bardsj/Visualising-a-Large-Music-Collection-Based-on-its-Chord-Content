@@ -21,7 +21,8 @@ spark = pyspark.sql.SparkSession.builder \
     .getOrCreate()
 
 params = {"minSupport": 0.01, "minConfidence": 1,"filterRatio":0.05}
-items = SparkFrequentItemsetsFPG(spark, None, params)
+tag_filt = {"tag_name":"genres","tag_val":"jazz"}
+items = SparkFrequentItemsetsFPG(spark, None, params,tag_filter=tag_filt)
 itemsets = items.get_itemsets()
 
 with open("Data/API/chordItemsets"+time.strftime("%Y-%m-%d-%H-%M-%S")+".pkl","wb") as filename:

@@ -74,8 +74,12 @@ print("Time elapsed: " + str(time.time()-st))
 with open("Project/Data/SongMetadada/jamendo_api_scrape_test.pkl","wb+") as filename:
     pickle.dump(res,filename)
 
+# Rename id field to set mongodb id field
+for r in res:
+    r['_id'] = r.pop('id')
+
 # Write to free mongo cluster
-client_write = MongoClient(f"mongodb+srv://jamapi:{os.environ['MSC_MONGO_PERSONAL']}@msc.5jje5.gcp.mongodb.net/MSC?retryWrites=true&w=majority")
+client_write = MongoClient(os.environ['MSC_MONGO_PERSONAL_URI'])
 
 db_write = client_write['jamendo']
 

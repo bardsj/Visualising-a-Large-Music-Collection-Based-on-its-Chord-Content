@@ -4,6 +4,8 @@ from pyspark.ml.fpm import FPGrowth
 from collections import Counter
 from itertools import combinations,chain
 from operator import add
+from pymongo import MongoClient
+import os
 
 class ChordLoader:
     """
@@ -15,12 +17,15 @@ class ChordLoader:
         The spark session object
     limit : int, optional
         Limit the number of documents loaded from mongodb source
+    tag_filter : dict, optional
+        Filter the dataframe by metadata tags - in the form {'tag_name':'genres','tag_val':'jazz'}
 
     """
-    def __init__(self,spark,params,limit=None):
+    def __init__(self,spark,params,limit=None,tag_filter=None):
         self.limit = limit
         self.spark = spark
         self.params = params
+        self.tag_filter = tag_filter
         self.df = self._load_data()
 
     def _load_data(self):
@@ -57,7 +62,39 @@ class ChordLoader:
         getKeysUDF = F.udf(lambda x: list({k for k,v in x.asDict().items() if (type(v) is float) and (v > f_ratio)}),ArrayType(StringType()))
 
         # Apply UDF and select only chord and id cols
-        return df.withColumn("chordItems",getKeysUDF(df['chordRatio'])).select("_id","chordItems")
+        df = df.withColumn("chordItems",getKeysUDF(df['chordRatio'])).select("_id","chordItems")
+
+        def getMeta(_id,tag_res):
+            """
+                Grab metadata from db for particular track id
+            """
+            # Link with metadata taken from jamendo API for tracks in db stored in seperate mongodb (restricted to my account/network details)
+            try:
+                r = tag_res[int(_id)]
+            except:
+                r = None
+            return r
+
+        # If filter params specified, join relevant metadata and filter
+        if self.tag_filter:
+            tag_name = self.tag_filter['tag_name']
+            tag_val = self.tag_filter['tag_val']
+            # Get metadata for genre tags to pass to udf, saves having to create a new db connection for every row
+            # Resulting filtered selection should be small enough to not have to worry
+            client = MongoClient(os.environ['MSC_MONGO_PERSONAL_URI'])
+            col = client.jamendo.songMetadata
+            tag_res = col.find({"musicinfo.tags."+tag_name:tag_val},{"musicinfo.tags."+tag_name:1})
+            # Set id to dict key for faster indexing
+            tag_res = {int(t['_id']):t['musicinfo']['tags'][tag_name] for t in tag_res}
+            # Join metadata
+            def getMetaUDF(tag_res):
+                return F.udf(lambda x: getMeta(x,tag_res),ArrayType(StringType()))
+            # Apply UDF
+            df = df.withColumn(tag_name,getMetaUDF(tag_res)('_id'))
+            # Filter so only rows with filtered genre category is present
+            df = df.na.drop()
+
+        return df
 
 
 class SparkFrequentItemsetsFPG(ChordLoader):
@@ -74,11 +111,13 @@ class SparkFrequentItemsetsFPG(ChordLoader):
         Parameter key/value pairs for minSupport (the algorithms support threshold) and 
         minConfidence (for generating association rules, can ignore here as we are only 
         interested in generating frequent itemsets)
+    tag_filter : dict, optional
+        Filter the dataframe by metadata tags - in the form {'tag_name':'genres','tag_val':'jazz'}
 
     """
 
-    def __init__(self,spark,limit=None,params={"minSupport":0.2, "minConfidence":0.5,"filterRatio":None}):
-        ChordLoader.__init__(self,spark,params,limit)
+    def __init__(self,spark,limit=None,params={"minSupport":0.2, "minConfidence":0.5,"filterRatio":None},tag_filter=None):
+        ChordLoader.__init__(self,spark,params,limit,tag_filter)
 
     def _run_FPGrowth(self,df):
         # Apply spark ml libs FP-growth algorithm for frequent itemset mining
@@ -112,11 +151,13 @@ class SparkFrequentItemsetsSON(ChordLoader):
         Parameter key/value pairs for minSupport (the algorithms support threshold) and 
         minConfidence (for generating association rules, can ignore here as we are only 
         interested in generating frequent itemsets)
+    tag_filter : dict, optional
+        Filter the dataframe by metadata tags - in the form {'tag_name':'genres','tag_val':'jazz'}
 
 
     """
-    def __init__(self,spark,params={"minSupport":0.2,"filterRatio":None},limit=None):
-        ChordLoader.__init__(self,spark,params,limit)
+    def __init__(self,spark,params={"minSupport":0.2,"filterRatio":None},limit=None,tag_filter=None):
+        ChordLoader.__init__(self,spark,params,limit,tag_filter)
 
 
     def get_itemsets(self):
