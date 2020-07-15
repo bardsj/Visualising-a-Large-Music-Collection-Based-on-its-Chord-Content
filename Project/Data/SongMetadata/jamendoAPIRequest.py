@@ -79,8 +79,5 @@ client_write = MongoClient(f"mongodb+srv://jamapi:{os.environ['MSC_MONGO_PERSONA
 
 db_write = client_write['jamendo']
 
-with open("Project/Data/SongMetadata/jamendo_api_scrape.pkl","rb") as filename:
-    res = pickle.load(filename)
-
 col = db_write['songMetadata']
 col.insert_many(res)
