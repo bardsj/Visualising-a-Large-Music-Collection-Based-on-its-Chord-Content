@@ -1,7 +1,3 @@
-import sys
-import os
-sys.path.append(os.getcwd())
-
 from Project.Data.Optimisation.AVSDF import AVSDF
 import unittest
 
@@ -12,5 +8,25 @@ class CircularLogicTest(unittest.TestCase):
         ]
         self.order1 = ["A","B"]
 
+        self.edge_list2 = [
+            ["B","H"],
+            ["H","D"],
+            ["C","F"],
+            ["D","G"]
+        ]
+        self.order2 = ["A","B","C","D","E","F","G","H"]
+
     def test_total_crossing_number_count1(self):
         self.assertEqual(AVSDF([])._count_all_crossings(self.order1,self.edge_list1),0)
+
+    def test_total_crossing_number_count2(self):
+        self.assertEqual(AVSDF([])._count_all_crossings(self.order2,self.edge_list2),2)
+
+    def test_edge_crossings_number1(self):
+        self.assertEqual(AVSDF([])._count_crossings_edge(self.order2,self.edge_list2,["H","D"]),1)
+
+    def test_edge_crossings_number2(self):
+        self.assertEqual(AVSDF([])._count_crossings_edge(self.order2,self.edge_list2,["H","B"]),0)
+    
+    def test_edge_crossings_number3(self):
+        self.assertEqual(AVSDF([])._count_crossings_edge(self.order2,self.edge_list2,["F","C"]),2)
