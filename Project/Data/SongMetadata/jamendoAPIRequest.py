@@ -6,6 +6,7 @@ import requests
 import time
 import os
 import pickle
+import sys
 
 # Cursor to collection of chords documents
 client = MongoClient(os.environ['MSC_CHORD_DB_URI'])
@@ -24,6 +25,9 @@ class DBGen():
         self.d_n = db.count_documents({})
 
     def take(self,num):
+        """
+            Take num id values from the db and update the cursor index
+        """
         vals = []
         if self.n+num <= self.d_n:
             for i in range(self.n,self.n+num):
@@ -46,10 +50,17 @@ i = 0
 while True:
     id_list = dbg.take(50)
     if len(id_list) > 0:
-        time.sleep(0.05)
-        request_params = {"client_id":os.environ['JAMENDO_CLIENT_ID'],"limit":50,"id":id_list,"include":"musicinfo"}
-        r = requests.get("https://api.jamendo.com/v3.0/tracks/",params=request_params)
+        try:
+            request_params = {"client_id":os.environ['JAMENDO_CLIENT_ID'],"limit":50,"id":id_list,"include":"musicinfo"}
+            r = requests.get("https://api.jamendo.com/v3.0/tracks/",params=request_params)
+            r.raise_for_status()
+        except requests.exceptions.RequestException as err:
+            print("Request exception:",err)
+            sys.exit(1)
+   
         res += r.json()['results']
+        time.sleep(0.05)
+
     else:
         break
     # 99960 docs in collection - with 50 docs/request, should expect just short of 2000 requests 
