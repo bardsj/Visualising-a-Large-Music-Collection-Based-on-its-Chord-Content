@@ -26,7 +26,7 @@ params = {"minSupport": 0.01, "minConfidence": 1,"filterRatio":0.02}
 
 # Empty any previous results
 with open("Project/Data/pyspark/itemsets.json","w+") as filename:
-        json.dump(None,filename)
+        pass
 
 st = time.time()
 
@@ -51,6 +51,6 @@ for i,genre in enumerate(['jazz','electronic','chillout','ambient','pop','rock',
     }
 
     with open("Project/Data/pyspark/itemsets.json","a+") as filename:
-        json.dump(itemsets,filename)
+        json.dump(write_results,filename)
 
 print("Total time: " + str(time.time()-st))
