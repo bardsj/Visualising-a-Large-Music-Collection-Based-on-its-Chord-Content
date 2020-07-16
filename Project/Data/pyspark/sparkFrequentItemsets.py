@@ -81,9 +81,9 @@ class ChordLoader:
             tag_val = self.tag_filter['tag_val']
             # Get metadata for genre tags to pass to udf, saves having to create a new db connection for every row
             # Resulting filtered selection should be small enough to not have to worry
-            client = MongoClient(os.environ['MSC_MONGO_PERSONAL_URI'])
-            col = client.jamendo.songMetadata
-            tag_res = col.find({"musicinfo.tags."+tag_name:tag_val},{"musicinfo.tags."+tag_name:1})
+            with MongoClient(os.environ['MSC_MONGO_PERSONAL_URI']) as client:
+                col = client.jamendo.songMetadata
+                tag_res = col.find({"musicinfo.tags."+tag_name:tag_val},{"musicinfo.tags."+tag_name:1})
             # Set id to dict key for faster indexing
             tag_res = {int(t['_id']):t['musicinfo']['tags'][tag_name] for t in tag_res}
             # Join metadata
