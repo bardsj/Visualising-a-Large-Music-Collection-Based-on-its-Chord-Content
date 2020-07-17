@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function (event) {
     creatChart = (thresh) => {
-        fetch("http://localhost:5000/circular/" + thresh).then(r => r.json()).then(data => {
+        fetch("http://localhost:5000/circular").then(r => r.json()).then(data => {
 
             const order = data.order
             const sets = data.sets

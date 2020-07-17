@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function (event) {
     creatChart = (thresh) => {
-        fetch("http://localhost:5000/parallel/" + thresh).then(r => r.json()).then(d => {
+        fetch("http://localhost:5000/parallel").then(r => r.json()).then(d => {
 
             const node_list = d.order
             const data = d.sets
