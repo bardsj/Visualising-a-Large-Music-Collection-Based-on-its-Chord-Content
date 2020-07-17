@@ -1,10 +1,10 @@
-from flask import Flask,jsonify,request
+from flask import Flask,jsonify,request,abort
 from flask_cors import CORS
 import sys
 import os
 sys.path.append(os.getcwd())
 from Project.Data.Optimisation.AVSDF import AVSDF
-from pymongo import MongoClient
+from pymongo import MongoClient,errors
 import numpy as np
 
 # Create instance of Flask app with
@@ -20,10 +20,20 @@ col = client.jamendo.itemsetData
 def returnDataCirc():
     if 'tag_name' and 'tag_val' in request.args:
         # Get tag request
-        data = col.find_one({"tag_params":{"tag_name":request.args['tag_name'],"tag_val":request.args['tag_val']}})
+        try:
+            data = col.find_one({"tag_params":{"tag_name":request.args['tag_name'],"tag_val":request.args['tag_val']}})
+        except errors.PyMongoError as e:
+            abort(500,description="Could not connect to the database - " + str(e))
+        if not data:
+            abort(404,description="Error retrieving data")
     else:
         # If no tags return data for all tracks
-        data = col.find_one({"tag_params":None})
+        try:
+            data = col.find_one({"tag_params":None})
+        except errors.PyMongoError as e:
+            abort(500,description="Could not connect to the database - " + str(e))
+        if not data:
+            abort(404,description="Error retrieving data")
 
     itemsets = data['itemsets']
 
@@ -36,10 +46,20 @@ def returnDataCirc():
 def returnDataParallel():
     if 'tag_name' and 'tag_val' in request.args:
         # Get tag request
-        data = col.find_one({"tag_params":{"tag_name":request.args['tag_name'],"tag_val":request.args['tag_val']}})
+        try:
+            data = col.find_one({"tag_params":{"tag_name":request.args['tag_name'],"tag_val":request.args['tag_val']}})
+        except errors.PyMongoError as e:
+            abort(500,description="Could not connect to the database - " + str(e))
+        if not data:
+            abort(404,description="Error retrieving data")
     else:
         # If no tags return data for all tracks
-        data = col.find_one({"tag_params":None})
+        try:
+            data = col.find_one({"tag_params":None})
+        except errors.PyMongoError as e:
+            abort(500,description="Could not connect to the database - " + str(e))
+        if not data:
+            abort(404,description="Error retrieving data")
 
     itemsets = data['itemsets']
 
@@ -56,6 +76,15 @@ def returnDataParallel():
     sets = [sorted(s,key=lambda x: sort_map[x]) for s in sets]
 
     return jsonify({"sets":[{"labels":i,"values":v} for i,v in zip(sets,support)],"order":order})
+
+
+@app.errorhandler(404)
+def not_found(e):
+    return jsonify(error=str(e)), 404
+
+@app.errorhandler(500)
+def not_found(e):
+    return jsonify(error=str(e)), 500
 
 
 app.run(debug=True)
