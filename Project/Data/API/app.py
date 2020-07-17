@@ -1,94 +1,90 @@
-"""
-    Simple Flask app to serve pre-generated frequent itemset data for circular layout and parallel coordinates
-"""
-
-from flask import Flask,jsonify
+from flask import Flask,jsonify,request,abort
 from flask_cors import CORS
-import pickle
-from itertools import chain
 import sys
 import os
 sys.path.append(os.getcwd())
 from Project.Data.Optimisation.AVSDF import AVSDF
+from pymongo import MongoClient,errors
+import numpy as np
 
 # Create instance of Flask app with
 app = Flask(__name__)
 # Enable CORS 
 CORS(app)
+# Pymongo connection
+client = MongoClient(os.environ['MSC_MONGO_PERSONAL_URI'])
+col = client.jamendo.itemsetData
 
-# Load frequent itemsets dataframe
-with open("Project\Data\API\chordItemsetsNoLimit5pcSupportwpc.pkl","rb") as filename:
-    itemsets = pickle.load(filename)
 
-# Drop raw frequency column
-itemsets = itemsets.drop(columns=["freq"])
-
-@app.route('/circular/<int:thresh>',methods=['GET'])
-def returnDataCirc(thresh):
-    """
-        Return data structure and order for circular layout.
-        Consists of only doubletons (frequent itemsets of k=2) and applies optimisation to node ordering.
-
-        Parameters
-        ----------
-        thresh : int
-            Percentage threshold for support values calculated based on size of data set from Spark script.
-            Filter returned data above this threshold (range = 5%-30%) 
-    """
-    # Filter only sets of length 2
-    ksets_circ = itemsets[itemsets['items'].str.len()==2]
-    # Filter based on support threshold value
-    ksets_circ = ksets_circ[ksets_circ['supportPc']>thresh/100]
-
-    if len(ksets_circ) > 0:
-        # Rename columns to match visualisation implementation
-        ksets_circ = ksets_circ.rename(columns={"items":"labels","supportPc":"values"})
-        # Convert to "record" style dictionary to be parsed by visualisation framework 
-        sets_circ = ksets_circ.to_dict("records")
-        # Pass list of edges to AVSDF to apply node reordering
-        avsdf = AVSDF([s['labels'] for s in sets_circ],local_adjusting=True)
-        order_circ = avsdf.run_AVSDF()
+@app.route('/circular',methods=['GET'])
+def returnDataCirc():
+    if 'tag_name' and 'tag_val' in request.args:
+        # Get tag request
+        try:
+            data = col.find_one({"tag_params":{"tag_name":request.args['tag_name'],"tag_val":request.args['tag_val']}})
+        except errors.PyMongoError as e:
+            abort(500,description="Could not connect to the database - " + str(e))
+        if not data:
+            abort(404,description="Error retrieving data")
     else:
-        order_circ = []
-        sets_circ = []
-    # Return JSON
-    return jsonify({"sets":sets_circ,"order":order_circ})
+        # If no tags return data for all tracks
+        try:
+            data = col.find_one({"tag_params":None})
+        except errors.PyMongoError as e:
+            abort(500,description="Could not connect to the database - " + str(e))
+        if not data:
+            abort(404,description="Error retrieving data")
 
-@app.route('/parallel/<int:thresh>',methods=['GET'])
-def returnDataParallel(thresh):
-    """
-        Return data structure and order for parallel coordinates layout.
+    itemsets = data['itemsets']
 
-        Parameters
-        ----------
-        thresh : int
-            Percentage threshold for support values calculated based on size of data set from Spark script.
-            Filter returned data above this threshold (range = 5%-30%) 
-    """
-    # Filter based on support threshold value
-    ksets_par_filt = itemsets[itemsets['supportPc']>thresh/100]
+    # Only return sets of length 2 for circular layout
+    itemsets['items'] = [d for d in itemsets['items'].values() if len(d) == 2]
 
-    if len(ksets_par_filt) > 0:
-        # Filter out singletons (frequent itemsets of k=1)
-        ksets_par = ksets_par_filt[ksets_par_filt['items'].str.len()>1]
-        # Generate list of singletons and order by support value to generate initial axes ordering
-        order = list(ksets_par_filt[ksets_par_filt['items'].str.len()==1].sort_values(by='supportPc')[::-1]['items'].apply(lambda x: x[0]))
-        # Remove labels from order that are only singletons
-        single_labels = set(chain(*ksets_par_filt[ksets_par_filt['items'].str.len()==1]['items']))
-        k_labels = set(chain(*ksets_par_filt[ksets_par_filt['items'].str.len()!=1]['items']))
-        order = [x for x in order if x not in single_labels.difference(k_labels)]
-        # Rename columns to match visualisation implementation
-        ksets_par = ksets_par.rename(columns={"items":"labels","supportPc":"values"})
-        # Reorder sets in order of support value descending
-        order_map = {k:i for i,k in enumerate(order)}
-        ksets_par['labels'] = ksets_par['labels'].apply(lambda x: sorted(x,key=lambda x: order_map[x],reverse=False))
-        # Convert to "record" style dictionary to be parsed by visualisation framework
-        sets_par = ksets_par.to_dict("records")
+    return jsonify({"sets":[{"labels":i,"values":v} for i,v in zip(itemsets['items'],list(itemsets['supportPc'].values()))],"order":data['AVSDF_order']})
+
+@app.route('/parallel',methods=['GET'])
+def returnDataParallel():
+    if 'tag_name' and 'tag_val' in request.args:
+        # Get tag request
+        try:
+            data = col.find_one({"tag_params":{"tag_name":request.args['tag_name'],"tag_val":request.args['tag_val']}})
+        except errors.PyMongoError as e:
+            abort(500,description="Could not connect to the database - " + str(e))
+        if not data:
+            abort(404,description="Error retrieving data")
     else:
-        sets_par = []
-        order = []
-    # Return JSON
-    return jsonify({"sets":sets_par,"order":order})
+        # If no tags return data for all tracks
+        try:
+            data = col.find_one({"tag_params":None})
+        except errors.PyMongoError as e:
+            abort(500,description="Could not connect to the database - " + str(e))
+        if not data:
+            abort(404,description="Error retrieving data")
+
+    itemsets = data['itemsets']
+
+    # Remove length 1 sets
+    set_support = [(s,v) for s,v in zip(itemsets['items'].values(),itemsets['supportPc'].values()) if len(s) > 1]
+    # Sort by support value
+    order = sorted([(s,v) for s,v in zip(itemsets['items'].values(),itemsets['supportPc'].values()) if len(s) == 1],key=lambda x: x[1],reverse=True)
+    order = [x[0][0] for x in order]
+    # Split back to sets and support lists
+    sets = [s[0] for s in set_support]
+    support = [s[1] for s in set_support]
+    # Sort order of items within sets based on support value
+    sort_map = {k:i for i,k in enumerate(order)}
+    sets = [sorted(s,key=lambda x: sort_map[x]) for s in sets]
+
+    return jsonify({"sets":[{"labels":i,"values":v} for i,v in zip(sets,support)],"order":order})
+
+
+@app.errorhandler(404)
+def not_found(e):
+    return jsonify(error=str(e)), 404
+
+@app.errorhandler(500)
+def not_found(e):
+    return jsonify(error=str(e)), 500
 
 
 app.run(debug=True)
