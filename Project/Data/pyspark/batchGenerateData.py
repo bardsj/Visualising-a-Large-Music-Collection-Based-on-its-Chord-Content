@@ -44,8 +44,8 @@ for i,genre in enumerate(['jazz','electronic','chillout','ambient','pop','rock',
 
     write_results.append({
         "_id":str(i).zfill(4)+"-"+str(params['minSupport'])+"-"+str(params['filterRatio']),
-        "fi_params":params,
-        "filter_params":tag_filt,
+        "filter_params":params,
+        "tag_params":tag_filt,
         "itemsets":itemsets,
         "AVSDF_order":order
     })
