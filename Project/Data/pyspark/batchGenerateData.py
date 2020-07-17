@@ -22,7 +22,7 @@ spark = pyspark.sql.SparkSession.builder \
     .config("spark.mongodb.input.uri", os.environ['MSC_CHORD_DB_URI'])\
     .getOrCreate()
 
-params = {"minSupport": 0.01, "minConfidence": 1,"filterRatio":0.02}
+params = {"minSupport": 0.01, "minConfidence": 1,"filterRatio":0.05}
 
 st = time.time()
 
@@ -44,6 +44,7 @@ for i,genre in enumerate(['jazz','electronic','chillout','ambient','pop','rock',
 
     write_results.append({
         "_id":str(i).zfill(4)+"-"+str(params['minSupport'])+"-"+str(params['filterRatio']),
+        "fi_params":params,
         "filter_params":tag_filt,
         "itemsets":itemsets,
         "AVSDF_order":order

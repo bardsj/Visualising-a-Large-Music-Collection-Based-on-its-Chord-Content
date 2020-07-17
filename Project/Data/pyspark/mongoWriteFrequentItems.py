@@ -13,6 +13,7 @@ with MongoClient(os.environ['MSC_MONGO_PERSONAL_URI']) as client:
         for d in data:
             col.update_one({"_id": d['_id']}, {"$set":
                                                {"filter_params": d['filter_params'],
+                                               "fi_params": d['fi_params'],
                                                "itemsets": d['itemsets'],
                                                "AVSDF_order": d["AVSDF_order"]
                                                 }}, upsert=True)
