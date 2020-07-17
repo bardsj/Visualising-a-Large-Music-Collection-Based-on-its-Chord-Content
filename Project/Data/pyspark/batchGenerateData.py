@@ -24,11 +24,9 @@ spark = pyspark.sql.SparkSession.builder \
 
 params = {"minSupport": 0.01, "minConfidence": 1,"filterRatio":0.02}
 
-# Empty any previous results
-with open("Project/Data/pyspark/itemsets.json","w+") as filename:
-        pass
-
 st = time.time()
+
+write_results = []
 
 for i,genre in enumerate(['jazz','electronic','chillout','ambient','pop','rock','dance','jazz','hiphop',None]):
     if genre:
@@ -44,13 +42,15 @@ for i,genre in enumerate(['jazz','electronic','chillout','ambient','pop','rock',
     itemsets = itemsets.to_dict()
     order = AVSDF(list(ksets_circ['items'])).run_AVSDF()
 
-    write_results = {
+    write_results.append({
         "_id":str(i).zfill(4)+"-"+str(params['minSupport'])+"-"+str(params['filterRatio']),
+        "filter_params":tag_filt,
         "itemsets":itemsets,
         "AVSDF_order":order
-    }
+    })
 
-    with open("Project/Data/pyspark/itemsets.json","a+") as filename:
-        json.dump(write_results,filename)
+
+with open("Project/Data/pyspark/itemsets.json","w+") as filename:
+    json.dump(write_results,filename)
 
 print("Total time: " + str(time.time()-st))
