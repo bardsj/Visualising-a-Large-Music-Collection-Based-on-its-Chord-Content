@@ -57314,7 +57314,7 @@ Object.keys(_d3Zoom).forEach(function (key) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Chart = void 0;
+exports.ChartParallel = exports.ChartCircular = void 0;
 
 var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
@@ -57340,15 +57340,15 @@ function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflec
 
 function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
 
-var Chart = /*#__PURE__*/function (_React$Component) {
-  (0, _inherits2.default)(Chart, _React$Component);
+var ChartCircular = /*#__PURE__*/function (_React$Component) {
+  (0, _inherits2.default)(ChartCircular, _React$Component);
 
-  var _super = _createSuper(Chart);
+  var _super = _createSuper(ChartCircular);
 
-  function Chart(props) {
+  function ChartCircular(props) {
     var _this;
 
-    (0, _classCallCheck2.default)(this, Chart);
+    (0, _classCallCheck2.default)(this, ChartCircular);
     _this = _super.call(this, props);
     _this.state = {
       data: null,
@@ -57357,7 +57357,7 @@ var Chart = /*#__PURE__*/function (_React$Component) {
     return _this;
   }
 
-  (0, _createClass2.default)(Chart, [{
+  (0, _createClass2.default)(ChartCircular, [{
     key: "fetchData",
     value: function fetchData(request_params) {
       var _this2 = this;
@@ -57499,10 +57499,189 @@ var Chart = /*#__PURE__*/function (_React$Component) {
       });
     }
   }]);
-  return Chart;
+  return ChartCircular;
 }(_react.default.Component);
 
-exports.Chart = Chart;
+exports.ChartCircular = ChartCircular;
+
+var ChartParallel = /*#__PURE__*/function (_React$Component2) {
+  (0, _inherits2.default)(ChartParallel, _React$Component2);
+
+  var _super2 = _createSuper(ChartParallel);
+
+  function ChartParallel(props) {
+    var _this3;
+
+    (0, _classCallCheck2.default)(this, ChartParallel);
+    _this3 = _super2.call(this, props);
+    _this3.state = {
+      data: null,
+      request_params: null
+    };
+    return _this3;
+  }
+
+  (0, _createClass2.default)(ChartParallel, [{
+    key: "fetchData",
+    value: function fetchData(request_params) {
+      var _this4 = this;
+
+      var r_url = "";
+
+      if (request_params && request_params.tag_val !== "all") {
+        r_url = "http://127.0.0.1:5000/parallel?tag_val=" + request_params.tag_val + "&tag_name=" + request_params.tag_name;
+      } else {
+        r_url = "http://127.0.0.1:5000/parallel";
+      }
+
+      fetch(r_url).then(function (r) {
+        return r.json();
+      }).then(function (r) {
+        return _this4.setState({
+          data: r,
+          request_params: request_params
+        });
+      });
+    }
+  }, {
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      this.fetchData(this.props.request_params);
+    }
+  }, {
+    key: "componentDidUpdate",
+    value: function componentDidUpdate() {
+      if (this.state.request_params !== this.props.request_params) {
+        this.fetchData(this.props.request_params);
+      }
+
+      if (this.state.data) {
+        this.createChart();
+      }
+    }
+  }, {
+    key: "createChart",
+    value: function createChart() {
+      var svg = d3.select(this.refs[this.props.id + 'chartsvg']);
+      svg.selectAll("*").remove();
+      var width = this.props.width;
+      var height = this.props.height;
+      var node_list = this.state.data.order;
+      var data = this.state.data.sets;
+      var margin = {
+        top: 20,
+        bottom: 20,
+        left: 60,
+        right: 10
+      }; // Number of parallel axes from max itemset length
+
+      var n_ax = d3.max(data.map(function (x) {
+        return x.labels.length;
+      })); // Add axis field for n axes from node list
+
+      var node_list_ax = [];
+
+      for (var i = 0; i < n_ax; i++) {
+        for (var j = 0; j < node_list.length; j++) {
+          node_list_ax.push({
+            node: node_list[j],
+            ax: i
+          });
+        }
+      }
+
+      node_list_ax = node_list_ax.flat(); // Add axes field to data by taking index of node in data node lists
+
+      var data_ax = data.map(function (d) {
+        return {
+          labels: d.labels.map(function (l, i) {
+            return {
+              node: l,
+              ax: i
+            };
+          }),
+          values: d.values
+        };
+      }); // Categorical y scale
+
+      var scY = d3.scalePoint().domain(node_list).range([margin.top, height - margin.bottom]); // Linear x scale for parallel axes
+
+      var scX = d3.scaleLinear().domain([0, n_ax - 1]).range([margin.left, width - margin.right]); // Add node groups to create parallel axes
+
+      var nodes_group = svg.selectAll("g").data(node_list_ax).enter().append("g").attr("transform", function (d) {
+        return "translate(" + scX(d.ax) + "," + scY(d.node) + ")";
+      }); // Append circle to node groups
+
+      var nodes = nodes_group.append("circle").attr("r", 2); // Append labels to node groups
+
+      var labels = nodes_group.append("text").text(function (d) {
+        return d.node;
+      }).attr("class", "label").attr("font-size", 10).attr("dx", -4).attr("dy", 2).attr("text-anchor", "end"); // Add transparent rectangle to labels for easier hover selection
+
+      var label_bg = nodes_group.append("rect").attr("width", 30).attr("height", 20).attr("fill", "transparent").attr("transform", "translate(-34,-6)"); // Path generator
+
+      var lineGen = d3.line().y(function (d) {
+        return scY(d.node);
+      }).x(function (d) {
+        return scX(d.ax);
+      }); //.curve(d3.curveCardinal)
+      // Append paths
+
+      var links = svg.selectAll("path").data(data_ax).enter().append("path").attr("class", "link").attr("d", function (d) {
+        return lineGen(d.labels);
+      }).attr("fill", "none").attr("stroke", "grey").attr("fill", "none").attr("stroke-width", 1).attr("stroke-opacity", function (d) {
+        return Math.pow(d.values / d3.max(data.map(function (x) {
+          return x.values;
+        })), 1);
+      }); // Highlight paths when hovering on node
+
+      label_bg.on("mouseenter", function (sel) {
+        d3.selectAll(".label").filter(function (l) {
+          return l == sel;
+        }).transition(0.1).attr("font-size", 15);
+        d3.selectAll(".link") //.filter(d=>d.labels.includes(sel.label))
+        .filter(function (d) {
+          return d.labels[sel.ax] ? d.labels[sel.ax].node === sel.node : null;
+        }).transition(0.1).attr("stroke", "red").attr("stroke-width", 3).attr("stroke-opacity", function (d) {
+          return Math.pow(d.values / d3.max(data.map(function (x) {
+            return x.values;
+          })), 1);
+        });
+      });
+      label_bg.on("mouseleave", function (sel) {
+        d3.selectAll(".label").filter(function (l) {
+          return l == sel;
+        }).transition(0.1).attr("font-size", 10);
+        d3.selectAll(".link").filter(function (d) {
+          return d.labels[sel.ax] ? d.labels[sel.ax].node === sel.node : null;
+        }).transition(0.1).attr("stroke", "grey").attr("stroke-width", 1).attr("stroke-opacity", function (d) {
+          return Math.pow(d.values / d3.max(data.map(function (x) {
+            return x.values;
+          })), 1);
+        });
+      }); // Raise label groups above paths
+
+      nodes_group.raise();
+      label_bg.raise();
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      return /*#__PURE__*/_react.default.createElement("svg", {
+        ref: this.props.id + 'chartsvg',
+        width: this.props.width,
+        height: this.props.height,
+        style: {
+          display: "block",
+          margin: "auto"
+        }
+      });
+    }
+  }]);
+  return ChartParallel;
+}(_react.default.Component);
+
+exports.ChartParallel = ChartParallel;
 },{"@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js","@babel/runtime/helpers/inherits":"node_modules/@babel/runtime/helpers/inherits.js","@babel/runtime/helpers/possibleConstructorReturn":"node_modules/@babel/runtime/helpers/possibleConstructorReturn.js","@babel/runtime/helpers/getPrototypeOf":"node_modules/@babel/runtime/helpers/getPrototypeOf.js","react":"node_modules/react/index.js","d3":"node_modules/d3/index.js"}],"node_modules/@babel/runtime/helpers/esm/extends.js":[function(require,module,exports) {
 "use strict";
 
@@ -73404,7 +73583,12 @@ var Options = /*#__PURE__*/function (_React$Component) {
           key: index,
           value: genres
         }, genres);
-      }))));
+      })), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Label, null, "Chart Type"), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Control, {
+        as: "select",
+        onChange: function onChange(e) {
+          return _this.props.handleChartType(e.target.value);
+        }
+      }, /*#__PURE__*/_react.default.createElement("option", null, "Circular"), /*#__PURE__*/_react.default.createElement("option", null, "Parallel"))));
     }
   }]);
   return Options;
@@ -73437,10 +73621,18 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 // <Chart width={600} height={600} request_params={{tag_val:"jazz", tag_name:"genres"}}/>
 var _default = function _default() {
-  var _useState = (0, _react.useState)(null),
+  var _useState = (0, _react.useState)({
+    tag_val: "jazz",
+    tag_name: "genres"
+  }),
       _useState2 = (0, _slicedToArray2.default)(_useState, 2),
       requestParams = _useState2[0],
       setRequestParams = _useState2[1];
+
+  var _useState3 = (0, _react.useState)("Circular"),
+      _useState4 = (0, _slicedToArray2.default)(_useState3, 2),
+      chartType = _useState4[0],
+      setChartType = _useState4[1];
 
   var handleFilter = function handleFilter(e) {
     setRequestParams({
@@ -73449,16 +73641,34 @@ var _default = function _default() {
     });
   };
 
+  var handleChartType = function handleChartType(e) {
+    setChartType(e);
+  };
+
+  var chart = "";
+
+  if (chartType == "Circular") {
+    chart = /*#__PURE__*/_react.default.createElement(_chart.ChartCircular, {
+      id: 1,
+      width: 800,
+      height: 800,
+      request_params: requestParams
+    });
+  } else {
+    chart = /*#__PURE__*/_react.default.createElement(_chart.ChartParallel, {
+      id: 1,
+      width: 800,
+      height: 800,
+      request_params: requestParams
+    });
+  }
+
   return /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Container, {
     fluid: true
   }, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Row, null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Col, null, /*#__PURE__*/_react.default.createElement(_options.Options, {
-    handleFilter: handleFilter
-  }))), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Row, null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Col, null, /*#__PURE__*/_react.default.createElement(_chart.Chart, {
-    id: 1,
-    width: 800,
-    height: 800,
-    request_params: requestParams
-  })))));
+    handleFilter: handleFilter,
+    handleChartType: handleChartType
+  }))), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Row, null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Col, null, chart))));
 };
 
 exports.default = _default;
@@ -73502,7 +73712,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63919" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50924" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

@@ -22,6 +22,11 @@ export class Options extends React.Component {
                             })
                         }
                     </Form.Control>
+                    <Form.Label>Chart Type</Form.Label>
+                    <Form.Control as="select" onChange={(e) => this.props.handleChartType(e.target.value)}>
+                        <option>Circular</option>
+                        <option>Parallel</option>
+                    </Form.Control>
                 </Form>
             </Navbar>
         )
