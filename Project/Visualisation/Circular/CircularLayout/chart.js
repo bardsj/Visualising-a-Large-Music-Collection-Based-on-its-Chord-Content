@@ -9,8 +9,6 @@ document.addEventListener("DOMContentLoaded", function (event) {
             const height = 800
             const r = 350
 
-            const focus = 200
-
             // Calculate radial coordinate from ordered list of nodes
             const sc_radial = d3.scalePoint().domain(order).range([0, Math.PI * 2])
 
@@ -92,7 +90,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
                 .attr("stroke", "black")
                 .attr("fill", "none")
                 .attr("stroke-width", 1)
-                .attr("stroke-opacity", d => (d.values / d3.max(sets.map(x => x.values))) ** (focus / 100))
+                .attr("stroke-opacity", d => (d.values / d3.max(sets.map(x => x.values))) ** 2)
 
             nodes_group.on("mouseenter", (sel) => {
                 d3.selectAll(".link")
@@ -110,7 +108,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
                     .transition(0.1)
                     .attr("stroke", "black")
                     .attr("stroke-width", 1)
-                    .attr("stroke-opacity", d => (d.values / d3.max(sets.map(x => x.values))) ** (focus / 100))
+                    .attr("stroke-opacity", d => (d.values / d3.max(sets.map(x => x.values))) ** 2)
             })
         })
     }
