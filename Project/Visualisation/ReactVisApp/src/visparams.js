@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react"
 
 export function VisParams(props) {
     return (
-        <div style={{display: "grid", gridTemplateColumns: "80px 150px 50px"}}>
+        <div style={{display: "grid", paddingLeft: 20, gridTemplateColumns: "60px 150px 50px"}}>
                 <p style={{ float: "left" , paddingRight: 10, paddingBottom: 10, gridRow:1, gridColumn:1}}>Focus</p>
                 <input style={{ float: "left", marginTop: -25, gridRow:1, gridColumn:2}} type="range" min="0.1" max="3" step="0.1" defaultValue={props.focus} id="focus" onChange={(e)=> props.handleFocus(e.target.value)}/>
                 <p style={{ float: "right" , paddingLeft: 10, gridRow:1, gridColumn:3}}>{props.focus}</p>

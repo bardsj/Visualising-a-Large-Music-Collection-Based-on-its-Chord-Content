@@ -73580,7 +73580,8 @@ var Options = /*#__PURE__*/function (_React$Component) {
 
       var genres = ['jazz', 'electronic', 'chillout', 'ambient', 'pop', 'rock', 'dance', 'hiphop', "all"];
       return /*#__PURE__*/_react.default.createElement(_reactBootstrap.Navbar, {
-        bg: "light"
+        bg: "dark",
+        variant: "dark"
       }, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Navbar.Brand, {
         style: {
           paddingRight: 10
@@ -73589,7 +73590,8 @@ var Options = /*#__PURE__*/function (_React$Component) {
         inline: true
       }, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Label, {
         style: {
-          paddingRight: 5
+          paddingRight: 5,
+          color: "white"
         }
       }, "Genre"), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Control, {
         style: {
@@ -73606,7 +73608,8 @@ var Options = /*#__PURE__*/function (_React$Component) {
         }, genres);
       })), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Label, {
         style: {
-          paddingRight: 5
+          paddingRight: 5,
+          color: "white"
         }
       }, "Chart Type"), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Control, {
         style: {
@@ -73641,7 +73644,8 @@ function VisParams(props) {
   return /*#__PURE__*/_react.default.createElement("div", {
     style: {
       display: "grid",
-      gridTemplateColumns: "80px 150px 50px"
+      paddingLeft: 20,
+      gridTemplateColumns: "60px 150px 50px"
     }
   }, /*#__PURE__*/_react.default.createElement("p", {
     style: {
@@ -73844,7 +73848,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "59429" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60078" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
