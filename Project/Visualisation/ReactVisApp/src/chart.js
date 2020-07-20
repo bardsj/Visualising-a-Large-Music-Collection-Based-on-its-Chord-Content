@@ -4,13 +4,21 @@ import * as d3 from 'd3';
 export class Chart extends React.Component {
     constructor(props) {
         super(props)
-        this.state = { data: null }
+        this.state = { data: null, request_params: null }
     }
 
     fetchData(request_params) {
-        fetch("http://127.0.0.1:5000/circular?tag_val=" + request_params.tag_val + "&tag_name=" + request_params.tag_name)
+        let r_url = ""
+        if (request_params && request_params.tag_val !== "all") {
+            r_url = "http://127.0.0.1:5000/circular?tag_val=" + request_params.tag_val + "&tag_name=" + request_params.tag_name
+        }
+        else {
+            r_url = "http://127.0.0.1:5000/circular"
+        }
+        fetch(r_url)
             .then(r => r.json())
-            .then(r => this.setState({ data: r }))
+            .then(r => this.setState({ data: r, request_params: request_params }))
+
     }
 
     componentDidMount() {
@@ -18,13 +26,18 @@ export class Chart extends React.Component {
     }
 
     componentDidUpdate() {
+        if (this.state.request_params !== this.props.request_params) {
+            this.fetchData(this.props.request_params)
+        }
         if (this.state.data) {
             this.createChart()
         }
+
     }
 
     createChart() {
-        const svg = d3.select(this.refs.chartsvg)
+        const svg = d3.select(this.refs[this.props.id + 'chartsvg'])
+        svg.selectAll("*").remove()
         const width = this.props.width
         const height = this.props.height
         const order = this.state.data.order
@@ -123,7 +136,7 @@ export class Chart extends React.Component {
 
     render() {
         return (
-            <svg ref='chartsvg' width={this.props.width} height={this.props.height} style={{ display: "block", margin: "auto" }}>
+            <svg ref={this.props.id + 'chartsvg'} width={this.props.width} height={this.props.height} style={{ display: "block", margin: "auto" }}>
 
             </svg>
         )
