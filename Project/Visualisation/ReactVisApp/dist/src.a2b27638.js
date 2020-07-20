@@ -57352,8 +57352,7 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
     _this = _super.call(this, props);
     _this.state = {
       data: null,
-      request_params: null,
-      focus: 1
+      request_params: null
     };
     return _this;
   }
@@ -57399,12 +57398,17 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "createChart",
     value: function createChart() {
+      var _this3 = this;
+
       var svg = d3.select(this.refs[this.props.id + 'chartsvg']);
       svg.selectAll("*").remove();
       var width = this.props.width;
       var height = this.props.height;
       var order = this.state.data.order;
       var sets = this.state.data.sets;
+      sets = sets.filter(function (x) {
+        return x.values > _this3.props.support / 100;
+      });
       var r = this.props.height / 2 - 50; // Calculate radial coordinate from ordered list of nodes
 
       var sc_radial = d3.scalePoint().domain(order).range([0, Math.PI * 2]); // Convert radial coordinate to cartesian
@@ -57465,7 +57469,7 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
       }).attr("stroke", "black").attr("fill", "none").attr("stroke-width", 1).attr("stroke-opacity", function (d) {
         return Math.pow(d.values / d3.max(sets.map(function (x) {
           return x.values;
-        })), 1);
+        })), _this3.props.focus);
       });
       nodes_group.on("mouseenter", function (sel) {
         d3.selectAll(".link").filter(function (d) {
@@ -57482,7 +57486,7 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
         }).transition(0.1).attr("stroke", "black").attr("stroke-width", 1).attr("stroke-opacity", function (d) {
           return Math.pow(d.values / d3.max(sets.map(function (x) {
             return x.values;
-          })), 1);
+          })), _this3.props.focus);
         });
       });
     }
@@ -57511,21 +57515,21 @@ var ChartParallel = /*#__PURE__*/function (_React$Component2) {
   var _super2 = _createSuper(ChartParallel);
 
   function ChartParallel(props) {
-    var _this3;
+    var _this4;
 
     (0, _classCallCheck2.default)(this, ChartParallel);
-    _this3 = _super2.call(this, props);
-    _this3.state = {
+    _this4 = _super2.call(this, props);
+    _this4.state = {
       data: null,
       request_params: null
     };
-    return _this3;
+    return _this4;
   }
 
   (0, _createClass2.default)(ChartParallel, [{
     key: "fetchData",
     value: function fetchData(request_params) {
-      var _this4 = this;
+      var _this5 = this;
 
       var r_url = "";
 
@@ -57538,7 +57542,7 @@ var ChartParallel = /*#__PURE__*/function (_React$Component2) {
       fetch(r_url).then(function (r) {
         return r.json();
       }).then(function (r) {
-        return _this4.setState({
+        return _this5.setState({
           data: r,
           request_params: request_params
         });
@@ -57563,12 +57567,17 @@ var ChartParallel = /*#__PURE__*/function (_React$Component2) {
   }, {
     key: "createChart",
     value: function createChart() {
+      var _this6 = this;
+
       var svg = d3.select(this.refs[this.props.id + 'chartsvg']);
       svg.selectAll("*").remove();
       var width = this.props.width;
       var height = this.props.height;
       var node_list = this.state.data.order;
       var data = this.state.data.sets;
+      data = data.filter(function (x) {
+        return x.values > _this6.props.support / 100;
+      });
       var margin = {
         top: 20,
         bottom: 20,
@@ -57633,7 +57642,7 @@ var ChartParallel = /*#__PURE__*/function (_React$Component2) {
       }).attr("fill", "none").attr("stroke", "grey").attr("fill", "none").attr("stroke-width", 1).attr("stroke-opacity", function (d) {
         return Math.pow(d.values / d3.max(data.map(function (x) {
           return x.values;
-        })), 1);
+        })), _this6.props.focus);
       }); // Highlight paths when hovering on node
 
       label_bg.on("mouseenter", function (sel) {
@@ -57658,7 +57667,7 @@ var ChartParallel = /*#__PURE__*/function (_React$Component2) {
         }).transition(0.1).attr("stroke", "grey").attr("stroke-width", 1).attr("stroke-opacity", function (d) {
           return Math.pow(d.values / d3.max(data.map(function (x) {
             return x.values;
-          })), 1);
+          })), _this6.props.focus);
         });
       }); // Raise label groups above paths
 
@@ -73622,27 +73631,13 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.VisParams = VisParams;
 
-var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
-
 var _react = _interopRequireWildcard(require("react"));
 
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 function VisParams(props) {
-  var _useState = (0, _react.useState)(1),
-      _useState2 = (0, _slicedToArray2.default)(_useState, 2),
-      focus = _useState2[0],
-      setFocus = _useState2[1];
-
-  var _useState3 = (0, _react.useState)(0),
-      _useState4 = (0, _slicedToArray2.default)(_useState3, 2),
-      support = _useState4[0],
-      setSupport = _useState4[1];
-
   return /*#__PURE__*/_react.default.createElement("div", {
     style: {
       display: "grid",
@@ -73665,12 +73660,12 @@ function VisParams(props) {
     },
     type: "range",
     min: "0.1",
-    max: "4",
-    step: "0.05",
-    defaultValue: "1",
+    max: "3",
+    step: "0.1",
+    defaultValue: props.focus,
     id: "focus",
     onChange: function onChange(e) {
-      return setFocus(e.target.value);
+      return props.handleFocus(e.target.value);
     }
   }), /*#__PURE__*/_react.default.createElement("p", {
     style: {
@@ -73679,7 +73674,7 @@ function VisParams(props) {
       gridRow: 1,
       gridColumn: 3
     }
-  }, focus), /*#__PURE__*/_react.default.createElement("p", {
+  }, props.focus), /*#__PURE__*/_react.default.createElement("p", {
     style: {
       float: "left",
       paddingRight: 10,
@@ -73697,10 +73692,10 @@ function VisParams(props) {
     type: "range",
     min: "1",
     max: "50",
-    defaultValue: "1",
-    id: "focus",
+    defaultValue: props.support,
+    id: "support",
     onChange: function onChange(e) {
-      return setSupport(e.target.value);
+      return props.handleSupport(e.target.value);
     }
   }), /*#__PURE__*/_react.default.createElement("p", {
     style: {
@@ -73709,9 +73704,9 @@ function VisParams(props) {
       gridRow: 2,
       gridColumn: 3
     }
-  }, support));
+  }, props.support));
 }
-},{"@babel/runtime/helpers/slicedToArray":"node_modules/@babel/runtime/helpers/slicedToArray.js","react":"node_modules/react/index.js"}],"src/App.js":[function(require,module,exports) {
+},{"react":"node_modules/react/index.js"}],"src/App.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -73752,6 +73747,16 @@ var _default = function _default() {
       chartType = _useState4[0],
       setChartType = _useState4[1];
 
+  var _useState5 = (0, _react.useState)(1),
+      _useState6 = (0, _slicedToArray2.default)(_useState5, 2),
+      focus = _useState6[0],
+      setFocus = _useState6[1];
+
+  var _useState7 = (0, _react.useState)(5),
+      _useState8 = (0, _slicedToArray2.default)(_useState7, 2),
+      support = _useState8[0],
+      setSupport = _useState8[1];
+
   var handleFilter = function handleFilter(e) {
     setRequestParams({
       "tag_name": "genres",
@@ -73770,14 +73775,18 @@ var _default = function _default() {
       id: 1,
       width: 800,
       height: 800,
-      request_params: requestParams
+      request_params: requestParams,
+      focus: focus,
+      support: support
     });
   } else {
     chart = /*#__PURE__*/_react.default.createElement(_chart.ChartParallel, {
       id: 1,
       width: 800,
       height: 800,
-      request_params: requestParams
+      request_params: requestParams,
+      focus: focus,
+      support: support
     });
   }
 
@@ -73786,7 +73795,12 @@ var _default = function _default() {
   }, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Row, null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Col, null, /*#__PURE__*/_react.default.createElement(_options.Options, {
     handleFilter: handleFilter,
     handleChartType: handleChartType
-  }))), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Row, null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Col, null, chart)), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Row, null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Col, null, /*#__PURE__*/_react.default.createElement(_visparams.VisParams, null)))));
+  }))), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Row, null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Col, null, chart)), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Row, null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Col, null, /*#__PURE__*/_react.default.createElement(_visparams.VisParams, {
+    support: support,
+    focus: focus,
+    handleSupport: setSupport,
+    handleFocus: setFocus
+  })))));
 };
 
 exports.default = _default;
@@ -73830,7 +73844,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53598" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "59429" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

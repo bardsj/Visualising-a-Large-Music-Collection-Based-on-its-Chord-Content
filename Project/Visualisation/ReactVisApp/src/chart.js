@@ -4,7 +4,7 @@ import * as d3 from 'd3';
 export class ChartCircular extends React.Component {
     constructor(props) {
         super(props)
-        this.state = { data: null, request_params: null, focus: 1 }
+        this.state = { data: null, request_params: null }
     }
 
     fetchData(request_params) {
@@ -41,7 +41,8 @@ export class ChartCircular extends React.Component {
         const width = this.props.width
         const height = this.props.height
         const order = this.state.data.order
-        const sets = this.state.data.sets
+        var sets = this.state.data.sets
+        sets = sets.filter(x=> x.values > this.props.support/100)
         const r = (this.props.height / 2) - 50;
 
         // Calculate radial coordinate from ordered list of nodes
@@ -111,7 +112,7 @@ export class ChartCircular extends React.Component {
             .attr("stroke", "black")
             .attr("fill", "none")
             .attr("stroke-width", 1)
-            .attr("stroke-opacity", d => (d.values / d3.max(sets.map(x => x.values))) ** 1)
+            .attr("stroke-opacity", d => (d.values / d3.max(sets.map(x => x.values))) ** this.props.focus)
 
         nodes_group.on("mouseenter", (sel) => {
             d3.selectAll(".link")
@@ -129,7 +130,7 @@ export class ChartCircular extends React.Component {
                 .transition(0.1)
                 .attr("stroke", "black")
                 .attr("stroke-width", 1)
-                .attr("stroke-opacity", d => (d.values / d3.max(sets.map(x => x.values))) ** 1)
+                .attr("stroke-opacity", d => (d.values / d3.max(sets.map(x => x.values))) ** this.props.focus)
         })
     }
 
@@ -184,7 +185,8 @@ export class ChartParallel extends React.Component {
         const width = this.props.width
         const height = this.props.height
         const node_list = this.state.data.order
-        const data = this.state.data.sets
+        var data = this.state.data.sets
+        data = data.filter(x=> x.values > this.props.support/100)
         const margin = ({ top: 20, bottom: 20, left: 60, right: 10 })
 
         // Number of parallel axes from max itemset length
@@ -247,7 +249,7 @@ export class ChartParallel extends React.Component {
             .attr("stroke", "grey")
             .attr("fill", "none")
             .attr("stroke-width", 1)
-            .attr("stroke-opacity", d => (d.values / d3.max(data.map(x => x.values))) ** 1)
+            .attr("stroke-opacity", d => (d.values / d3.max(data.map(x => x.values))) ** this.props.focus)
 
         // Highlight paths when hovering on node
         label_bg.on("mouseenter", (sel) => {
@@ -279,7 +281,7 @@ export class ChartParallel extends React.Component {
                 .transition(0.1)
                 .attr("stroke", "grey")
                 .attr("stroke-width", 1)
-                .attr("stroke-opacity", d => (d.values / d3.max(data.map(x => x.values))) ** 1)
+                .attr("stroke-opacity", d => (d.values / d3.max(data.map(x => x.values))) ** this.props.focus)
         })
 
 
