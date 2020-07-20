@@ -28,7 +28,7 @@ st = time.time()
 
 write_results = []
 
-for i,genre in enumerate(['jazz','electronic','chillout','ambient','pop','rock','dance','jazz','hiphop',None]):
+for i,genre in enumerate(['jazz','electronic','chillout','ambient','pop','rock','dance','hiphop',None]):
     if genre:
         tag_filt = {"tag_name":"genres","tag_val":genre}
     else:
