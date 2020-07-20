@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { ChartCircular, ChartParallel } from "./chart";
 import { Options } from "./options"
+import {VisParams} from "./visparams"
 import { Container, Row, Col } from 'react-bootstrap'
 
 // <Chart width={600} height={600} request_params={{tag_val:"jazz", tag_name:"genres"}}/>
@@ -37,6 +38,11 @@ export default () => {
       <Row>
         <Col>
           {chart}
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <VisParams />
         </Col>
       </Row>
     </Container>

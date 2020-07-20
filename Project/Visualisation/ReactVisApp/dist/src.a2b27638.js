@@ -57352,7 +57352,8 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
     _this = _super.call(this, props);
     _this.state = {
       data: null,
-      request_params: null
+      request_params: null,
+      focus: 1
     };
     return _this;
   }
@@ -73571,9 +73572,20 @@ var Options = /*#__PURE__*/function (_React$Component) {
       var genres = ['jazz', 'electronic', 'chillout', 'ambient', 'pop', 'rock', 'dance', 'hiphop', "all"];
       return /*#__PURE__*/_react.default.createElement(_reactBootstrap.Navbar, {
         bg: "light"
-      }, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Navbar.Brand, null, "Visualising a Large Music Collection Based on it's Chord Content"), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form, {
+      }, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Navbar.Brand, {
+        style: {
+          paddingRight: 10
+        }
+      }, "Visualising a Large Music Collection Based on it's Chord Content"), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form, {
         inline: true
-      }, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Label, null, "Genre"), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Control, {
+      }, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Label, {
+        style: {
+          paddingRight: 5
+        }
+      }, "Genre"), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Control, {
+        style: {
+          marginRight: 30
+        },
         as: "select",
         onChange: function onChange(e) {
           return _this.props.handleFilter(e.target.value);
@@ -73583,7 +73595,14 @@ var Options = /*#__PURE__*/function (_React$Component) {
           key: index,
           value: genres
         }, genres);
-      })), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Label, null, "Chart Type"), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Control, {
+      })), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Label, {
+        style: {
+          paddingRight: 5
+        }
+      }, "Chart Type"), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Control, {
+        style: {
+          marginRight: 30
+        },
         as: "select",
         onChange: function onChange(e) {
           return _this.props.handleChartType(e.target.value);
@@ -73595,7 +73614,104 @@ var Options = /*#__PURE__*/function (_React$Component) {
 }(_react.default.Component);
 
 exports.Options = Options;
-},{"@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js","@babel/runtime/helpers/inherits":"node_modules/@babel/runtime/helpers/inherits.js","@babel/runtime/helpers/possibleConstructorReturn":"node_modules/@babel/runtime/helpers/possibleConstructorReturn.js","@babel/runtime/helpers/getPrototypeOf":"node_modules/@babel/runtime/helpers/getPrototypeOf.js","react":"node_modules/react/index.js","react-bootstrap":"node_modules/react-bootstrap/esm/index.js"}],"src/App.js":[function(require,module,exports) {
+},{"@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js","@babel/runtime/helpers/inherits":"node_modules/@babel/runtime/helpers/inherits.js","@babel/runtime/helpers/possibleConstructorReturn":"node_modules/@babel/runtime/helpers/possibleConstructorReturn.js","@babel/runtime/helpers/getPrototypeOf":"node_modules/@babel/runtime/helpers/getPrototypeOf.js","react":"node_modules/react/index.js","react-bootstrap":"node_modules/react-bootstrap/esm/index.js"}],"src/visparams.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.VisParams = VisParams;
+
+var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
+
+var _react = _interopRequireWildcard(require("react"));
+
+function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function VisParams(props) {
+  var _useState = (0, _react.useState)(1),
+      _useState2 = (0, _slicedToArray2.default)(_useState, 2),
+      focus = _useState2[0],
+      setFocus = _useState2[1];
+
+  var _useState3 = (0, _react.useState)(0),
+      _useState4 = (0, _slicedToArray2.default)(_useState3, 2),
+      support = _useState4[0],
+      setSupport = _useState4[1];
+
+  return /*#__PURE__*/_react.default.createElement("div", {
+    style: {
+      display: "grid",
+      gridTemplateColumns: "80px 150px 50px"
+    }
+  }, /*#__PURE__*/_react.default.createElement("p", {
+    style: {
+      float: "left",
+      paddingRight: 10,
+      paddingBottom: 10,
+      gridRow: 1,
+      gridColumn: 1
+    }
+  }, "Focus"), /*#__PURE__*/_react.default.createElement("input", {
+    style: {
+      float: "left",
+      marginTop: -25,
+      gridRow: 1,
+      gridColumn: 2
+    },
+    type: "range",
+    min: "0.1",
+    max: "4",
+    step: "0.05",
+    defaultValue: "1",
+    id: "focus",
+    onChange: function onChange(e) {
+      return setFocus(e.target.value);
+    }
+  }), /*#__PURE__*/_react.default.createElement("p", {
+    style: {
+      float: "right",
+      paddingLeft: 10,
+      gridRow: 1,
+      gridColumn: 3
+    }
+  }, focus), /*#__PURE__*/_react.default.createElement("p", {
+    style: {
+      float: "left",
+      paddingRight: 10,
+      paddingBottom: 10,
+      gridRow: 2,
+      gridColumn: 1
+    }
+  }, "Support"), /*#__PURE__*/_react.default.createElement("input", {
+    style: {
+      float: "left",
+      marginTop: -25,
+      gridRow: 2,
+      gridColumn: 2
+    },
+    type: "range",
+    min: "1",
+    max: "50",
+    defaultValue: "1",
+    id: "focus",
+    onChange: function onChange(e) {
+      return setSupport(e.target.value);
+    }
+  }), /*#__PURE__*/_react.default.createElement("p", {
+    style: {
+      float: "right",
+      paddingLeft: 10,
+      gridRow: 2,
+      gridColumn: 3
+    }
+  }, support));
+}
+},{"@babel/runtime/helpers/slicedToArray":"node_modules/@babel/runtime/helpers/slicedToArray.js","react":"node_modules/react/index.js"}],"src/App.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -73610,6 +73726,8 @@ var _react = _interopRequireWildcard(require("react"));
 var _chart = require("./chart");
 
 var _options = require("./options");
+
+var _visparams = require("./visparams");
 
 var _reactBootstrap = require("react-bootstrap");
 
@@ -73668,11 +73786,11 @@ var _default = function _default() {
   }, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Row, null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Col, null, /*#__PURE__*/_react.default.createElement(_options.Options, {
     handleFilter: handleFilter,
     handleChartType: handleChartType
-  }))), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Row, null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Col, null, chart))));
+  }))), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Row, null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Col, null, chart)), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Row, null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Col, null, /*#__PURE__*/_react.default.createElement(_visparams.VisParams, null)))));
 };
 
 exports.default = _default;
-},{"@babel/runtime/helpers/slicedToArray":"node_modules/@babel/runtime/helpers/slicedToArray.js","react":"node_modules/react/index.js","./chart":"src/chart.js","./options":"src/options.js","react-bootstrap":"node_modules/react-bootstrap/esm/index.js"}],"src/index.js":[function(require,module,exports) {
+},{"@babel/runtime/helpers/slicedToArray":"node_modules/@babel/runtime/helpers/slicedToArray.js","react":"node_modules/react/index.js","./chart":"src/chart.js","./options":"src/options.js","./visparams":"src/visparams.js","react-bootstrap":"node_modules/react-bootstrap/esm/index.js"}],"src/index.js":[function(require,module,exports) {
 "use strict";
 
 var _react = _interopRequireDefault(require("react"));
@@ -73712,7 +73830,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50924" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53598" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

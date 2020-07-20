@@ -4,7 +4,7 @@ import * as d3 from 'd3';
 export class ChartCircular extends React.Component {
     constructor(props) {
         super(props)
-        this.state = { data: null, request_params: null }
+        this.state = { data: null, request_params: null, focus: 1 }
     }
 
     fetchData(request_params) {

@@ -12,18 +12,18 @@ export class Options extends React.Component {
 
         return (
             <Navbar bg='light'>
-                <Navbar.Brand>Visualising a Large Music Collection Based on it's Chord Content</Navbar.Brand>
+                <Navbar.Brand style={{paddingRight:10}}>Visualising a Large Music Collection Based on it's Chord Content</Navbar.Brand>
                 <Form inline >
-                    <Form.Label>Genre</Form.Label>
-                    <Form.Control as="select" onChange={(e) => this.props.handleFilter(e.target.value)}>
+                    <Form.Label style={{paddingRight:5}}>Genre</Form.Label>
+                    <Form.Control style={{marginRight:30}} as="select" onChange={(e) => this.props.handleFilter(e.target.value)}>
                         {
                             genres.map((genres, index) => {
                                 return (<option key={index} value={genres}>{genres}</option>)
                             })
                         }
                     </Form.Control>
-                    <Form.Label>Chart Type</Form.Label>
-                    <Form.Control as="select" onChange={(e) => this.props.handleChartType(e.target.value)}>
+                    <Form.Label style={{paddingRight:5}}>Chart Type</Form.Label>
+                    <Form.Control style={{marginRight:30}} as="select" onChange={(e) => this.props.handleChartType(e.target.value)}>
                         <option>Circular</option>
                         <option>Parallel</option>
                     </Form.Control>
