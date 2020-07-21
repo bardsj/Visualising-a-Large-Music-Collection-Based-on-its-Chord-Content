@@ -10,12 +10,12 @@ export class ChartParallel extends React.Component {
     fetchData(request_params) {
         let r_url = ""
         if (request_params && request_params.tag_val !== "all") {
-            r_url = "http://127.0.0.1:5000/parallel?tag_val=" + request_params.tag_val + "&tag_name=" + request_params.tag_name
+            r_url = "http://127.0.0.1:5000/parallel?tag_val=" + request_params.tag_val.join() + "&tag_name=" + request_params.tag_name
         }
         else {
             r_url = "http://127.0.0.1:5000/parallel"
         }
-        fetch(r_url)
+        fetch(r_url,{mode: 'cors'})
             .then(r => r.json())
             .then(r => this.setState({ data: r, request_params: request_params }))
 
@@ -48,6 +48,8 @@ export class ChartParallel extends React.Component {
         // Number of parallel axes from max itemset length
         const n_ax = d3.max(data.map(x => x.labels.length))
 
+        // Colour map
+        const cmap = d3.scalePoint().domain(this.state.request_params.tag_val).range([0,1])
         // Add axis field for n axes from node list
         let node_list_ax = []
 
@@ -59,7 +61,7 @@ export class ChartParallel extends React.Component {
         node_list_ax = node_list_ax.flat()
 
         // Add axes field to data by taking index of node in data node lists
-        const data_ax = data.map(d => ({ labels: d.labels.map((l, i) => ({ node: l, ax: i })), values: d.values }))
+        const data_ax = data.map(d => ({ labels: d.labels.map((l, i) => ({ node: l, ax: i })), values: d.values, tag: d.tag }))
 
         // Categorical y scale
         const scY = d3.scalePoint().domain(node_list).range([margin.top, height - margin.bottom])
@@ -102,7 +104,7 @@ export class ChartParallel extends React.Component {
             .attr("class", "link")
             .attr("d", d => lineGen(d.labels))
             .attr("fill", "none")
-            .attr("stroke", "grey")
+            .attr("stroke", d => d3.interpolateViridis(cmap(d.tag)))
             .attr("fill", "none")
             .attr("stroke-width", 1)
             .attr("stroke-opacity", d => (d.values / d3.max(data.map(x => x.values))) ** this.props.focus)
@@ -135,7 +137,7 @@ export class ChartParallel extends React.Component {
             d3.selectAll(".link")
                 .filter(d => d.labels[sel.ax] ? d.labels[sel.ax].node === sel.node : null)
                 .transition(0.1)
-                .attr("stroke", "grey")
+                .attr("stroke", d => d3.interpolateViridis(cmap(d.tag)))
                 .attr("stroke-width", 1)
                 .attr("stroke-opacity", d => (d.values / d3.max(data.map(x => x.values))) ** this.props.focus)
         })

@@ -57308,13 +57308,13 @@ Object.keys(_d3Zoom).forEach(function (key) {
     }
   });
 });
-},{"./dist/package.js":"node_modules/d3/dist/package.js","d3-array":"node_modules/d3-array/src/index.js","d3-axis":"node_modules/d3-axis/src/index.js","d3-brush":"node_modules/d3-brush/src/index.js","d3-chord":"node_modules/d3-chord/src/index.js","d3-collection":"node_modules/d3-collection/src/index.js","d3-color":"node_modules/d3-color/src/index.js","d3-contour":"node_modules/d3-contour/src/index.js","d3-dispatch":"node_modules/d3-dispatch/src/index.js","d3-drag":"node_modules/d3-drag/src/index.js","d3-dsv":"node_modules/d3-dsv/src/index.js","d3-ease":"node_modules/d3-ease/src/index.js","d3-fetch":"node_modules/d3-fetch/src/index.js","d3-force":"node_modules/d3-force/src/index.js","d3-format":"node_modules/d3-format/src/index.js","d3-geo":"node_modules/d3-geo/src/index.js","d3-hierarchy":"node_modules/d3-hierarchy/src/index.js","d3-interpolate":"node_modules/d3-interpolate/src/index.js","d3-path":"node_modules/d3-path/src/index.js","d3-polygon":"node_modules/d3-polygon/src/index.js","d3-quadtree":"node_modules/d3-quadtree/src/index.js","d3-random":"node_modules/d3-random/src/index.js","d3-scale":"node_modules/d3-scale/src/index.js","d3-scale-chromatic":"node_modules/d3-scale-chromatic/src/index.js","d3-selection":"node_modules/d3-selection/src/index.js","d3-shape":"node_modules/d3-shape/src/index.js","d3-time":"node_modules/d3-time/src/index.js","d3-time-format":"node_modules/d3-time-format/src/index.js","d3-timer":"node_modules/d3-timer/src/index.js","d3-transition":"node_modules/d3-transition/src/index.js","d3-voronoi":"node_modules/d3-voronoi/src/index.js","d3-zoom":"node_modules/d3-zoom/src/index.js"}],"src/chart.js":[function(require,module,exports) {
+},{"./dist/package.js":"node_modules/d3/dist/package.js","d3-array":"node_modules/d3-array/src/index.js","d3-axis":"node_modules/d3-axis/src/index.js","d3-brush":"node_modules/d3-brush/src/index.js","d3-chord":"node_modules/d3-chord/src/index.js","d3-collection":"node_modules/d3-collection/src/index.js","d3-color":"node_modules/d3-color/src/index.js","d3-contour":"node_modules/d3-contour/src/index.js","d3-dispatch":"node_modules/d3-dispatch/src/index.js","d3-drag":"node_modules/d3-drag/src/index.js","d3-dsv":"node_modules/d3-dsv/src/index.js","d3-ease":"node_modules/d3-ease/src/index.js","d3-fetch":"node_modules/d3-fetch/src/index.js","d3-force":"node_modules/d3-force/src/index.js","d3-format":"node_modules/d3-format/src/index.js","d3-geo":"node_modules/d3-geo/src/index.js","d3-hierarchy":"node_modules/d3-hierarchy/src/index.js","d3-interpolate":"node_modules/d3-interpolate/src/index.js","d3-path":"node_modules/d3-path/src/index.js","d3-polygon":"node_modules/d3-polygon/src/index.js","d3-quadtree":"node_modules/d3-quadtree/src/index.js","d3-random":"node_modules/d3-random/src/index.js","d3-scale":"node_modules/d3-scale/src/index.js","d3-scale-chromatic":"node_modules/d3-scale-chromatic/src/index.js","d3-selection":"node_modules/d3-selection/src/index.js","d3-shape":"node_modules/d3-shape/src/index.js","d3-time":"node_modules/d3-time/src/index.js","d3-time-format":"node_modules/d3-time-format/src/index.js","d3-timer":"node_modules/d3-timer/src/index.js","d3-transition":"node_modules/d3-transition/src/index.js","d3-voronoi":"node_modules/d3-voronoi/src/index.js","d3-zoom":"node_modules/d3-zoom/src/index.js"}],"src/chartCircular.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.ChartParallel = exports.ChartCircular = void 0;
+exports.ChartCircular = void 0;
 
 var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
@@ -57365,12 +57365,14 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
       var r_url = "";
 
       if (request_params && request_params.tag_val !== "all") {
-        r_url = "http://127.0.0.1:5000/circular?tag_val=" + request_params.tag_val + "&tag_name=" + request_params.tag_name;
+        r_url = "http://127.0.0.1:5000/circular?tag_val=" + request_params.tag_val.join() + "&tag_name=" + request_params.tag_name;
       } else {
         r_url = "http://127.0.0.1:5000/circular";
       }
 
-      fetch(r_url).then(function (r) {
+      fetch(r_url, {
+        mode: 'cors'
+      }).then(function (r) {
         return r.json();
       }).then(function (r) {
         return _this2.setState({
@@ -57411,7 +57413,9 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
       });
       var r = this.props.height / 2 - 50; // Calculate radial coordinate from ordered list of nodes
 
-      var sc_radial = d3.scalePoint().domain(order).range([0, Math.PI * 2]); // Convert radial coordinate to cartesian
+      var sc_radial = d3.scalePoint().domain(order).range([0, Math.PI * 2]); // Colour map
+
+      var cmap = d3.scalePoint().domain(this.state.request_params.tag_val).range([0, 1]); // Convert radial coordinate to cartesian
 
       var node2point = function node2point(d) {
         return {
@@ -57458,7 +57462,9 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
       }).curve(d3.curveBundle.beta(beta / 1000));
       var links = svg.selectAll("path").data(sets).enter().append("path").attr("class", "link").attr("d", function (d) {
         return lineGen([node2point(d.labels[0]), node2point(d.labels[1])]);
-      }).attr("stroke", "black").attr("fill", "none").attr("stroke-width", 1).attr("stroke-opacity", function (d) {
+      }).attr("stroke", function (d) {
+        return d3.interpolateViridis(cmap(d.tag));
+      }).attr("fill", "none").attr("stroke-width", 1).attr("stroke-opacity", function (d) {
         return Math.pow(d.values / d3.max(sets.map(function (x) {
           return x.values;
         })), _this3.props.focus);
@@ -57475,7 +57481,9 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
       nodes_group.on("mouseleave", function (sel) {
         d3.selectAll(".link").filter(function (d) {
           return d.labels.includes(sel.label);
-        }).transition(0.1).attr("stroke", "black").attr("stroke-width", 1).attr("stroke-opacity", function (d) {
+        }).transition(0.1).attr("stroke", function (d) {
+          return d3.interpolateViridis(cmap(d.tag));
+        }).attr("stroke-width", 1).attr("stroke-opacity", function (d) {
           return Math.pow(d.values / d3.max(sets.map(function (x) {
             return x.values;
           })), _this3.props.focus);
@@ -57500,41 +57508,74 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
 }(_react.default.Component);
 
 exports.ChartCircular = ChartCircular;
+},{"@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js","@babel/runtime/helpers/inherits":"node_modules/@babel/runtime/helpers/inherits.js","@babel/runtime/helpers/possibleConstructorReturn":"node_modules/@babel/runtime/helpers/possibleConstructorReturn.js","@babel/runtime/helpers/getPrototypeOf":"node_modules/@babel/runtime/helpers/getPrototypeOf.js","react":"node_modules/react/index.js","d3":"node_modules/d3/index.js"}],"src/chartParallel.js":[function(require,module,exports) {
+"use strict";
 
-var ChartParallel = /*#__PURE__*/function (_React$Component2) {
-  (0, _inherits2.default)(ChartParallel, _React$Component2);
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.ChartParallel = void 0;
 
-  var _super2 = _createSuper(ChartParallel);
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
+
+var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
+
+var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits"));
+
+var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
+
+var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
+
+var _react = _interopRequireDefault(require("react"));
+
+var d3 = _interopRequireWildcard(require("d3"));
+
+function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = (0, _getPrototypeOf2.default)(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2.default)(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2.default)(this, result); }; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+var ChartParallel = /*#__PURE__*/function (_React$Component) {
+  (0, _inherits2.default)(ChartParallel, _React$Component);
+
+  var _super = _createSuper(ChartParallel);
 
   function ChartParallel(props) {
-    var _this4;
+    var _this;
 
     (0, _classCallCheck2.default)(this, ChartParallel);
-    _this4 = _super2.call(this, props);
-    _this4.state = {
+    _this = _super.call(this, props);
+    _this.state = {
       data: null,
       request_params: null
     };
-    return _this4;
+    return _this;
   }
 
   (0, _createClass2.default)(ChartParallel, [{
     key: "fetchData",
     value: function fetchData(request_params) {
-      var _this5 = this;
+      var _this2 = this;
 
       var r_url = "";
 
       if (request_params && request_params.tag_val !== "all") {
-        r_url = "http://127.0.0.1:5000/parallel?tag_val=" + request_params.tag_val + "&tag_name=" + request_params.tag_name;
+        r_url = "http://127.0.0.1:5000/parallel?tag_val=" + request_params.tag_val.join() + "&tag_name=" + request_params.tag_name;
       } else {
         r_url = "http://127.0.0.1:5000/parallel";
       }
 
-      fetch(r_url).then(function (r) {
+      fetch(r_url, {
+        mode: 'cors'
+      }).then(function (r) {
         return r.json();
       }).then(function (r) {
-        return _this5.setState({
+        return _this2.setState({
           data: r,
           request_params: request_params
         });
@@ -57559,7 +57600,7 @@ var ChartParallel = /*#__PURE__*/function (_React$Component2) {
   }, {
     key: "createChart",
     value: function createChart() {
-      var _this6 = this;
+      var _this3 = this;
 
       var svg = d3.select(this.refs[this.props.id + 'chartsvg']);
       svg.selectAll("*").remove();
@@ -57568,7 +57609,7 @@ var ChartParallel = /*#__PURE__*/function (_React$Component2) {
       var node_list = this.state.data.order;
       var data = this.state.data.sets;
       data = data.filter(function (x) {
-        return x.values > _this6.props.support / 100;
+        return x.values > _this3.props.support / 100;
       });
       var margin = {
         top: 20,
@@ -57579,7 +57620,9 @@ var ChartParallel = /*#__PURE__*/function (_React$Component2) {
 
       var n_ax = d3.max(data.map(function (x) {
         return x.labels.length;
-      })); // Add axis field for n axes from node list
+      })); // Colour map
+
+      var cmap = d3.scalePoint().domain(this.state.request_params.tag_val).range([0, 1]); // Add axis field for n axes from node list
 
       var node_list_ax = [];
 
@@ -57602,7 +57645,8 @@ var ChartParallel = /*#__PURE__*/function (_React$Component2) {
               ax: i
             };
           }),
-          values: d.values
+          values: d.values,
+          tag: d.tag
         };
       }); // Categorical y scale
 
@@ -57631,10 +57675,12 @@ var ChartParallel = /*#__PURE__*/function (_React$Component2) {
 
       var links = svg.selectAll("path").data(data_ax).enter().append("path").attr("class", "link").attr("d", function (d) {
         return lineGen(d.labels);
-      }).attr("fill", "none").attr("stroke", "grey").attr("fill", "none").attr("stroke-width", 1).attr("stroke-opacity", function (d) {
+      }).attr("fill", "none").attr("stroke", function (d) {
+        return d3.interpolateViridis(cmap(d.tag));
+      }).attr("fill", "none").attr("stroke-width", 1).attr("stroke-opacity", function (d) {
         return Math.pow(d.values / d3.max(data.map(function (x) {
           return x.values;
-        })), _this6.props.focus);
+        })), _this3.props.focus);
       }); // Highlight paths when hovering on node
 
       label_bg.on("mouseenter", function (sel) {
@@ -57656,10 +57702,12 @@ var ChartParallel = /*#__PURE__*/function (_React$Component2) {
         }).transition(0.1).attr("font-size", 10);
         d3.selectAll(".link").filter(function (d) {
           return d.labels[sel.ax] ? d.labels[sel.ax].node === sel.node : null;
-        }).transition(0.1).attr("stroke", "grey").attr("stroke-width", 1).attr("stroke-opacity", function (d) {
+        }).transition(0.1).attr("stroke", function (d) {
+          return d3.interpolateViridis(cmap(d.tag));
+        }).attr("stroke-width", 1).attr("stroke-opacity", function (d) {
           return Math.pow(d.values / d3.max(data.map(function (x) {
             return x.values;
-          })), _this6.props.focus);
+          })), _this3.props.focus);
         });
       }); // Raise label groups above paths
 
@@ -73571,6 +73619,35 @@ var Options = /*#__PURE__*/function (_React$Component) {
       var _this = this;
 
       var genres = ['jazz', 'electronic', 'chillout', 'ambient', 'pop', 'rock', 'dance', 'hiphop', "all"];
+
+      var popover = /*#__PURE__*/_react.default.createElement(_reactBootstrap.Popover, {
+        id: "popover-basic"
+      }, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Popover.Title, {
+        as: "h3"
+      }, "Filter Options"), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Popover.Content, null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form, null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Control, {
+        defaultValue: this.props.chartType,
+        as: "select",
+        onChange: function onChange(e) {
+          return _this.props.handleChartType(e.target.value);
+        }
+      }, /*#__PURE__*/_react.default.createElement("option", null, "Circular"), /*#__PURE__*/_react.default.createElement("option", null, "Parallel")), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Label, null, "Genre"), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Group, null, genres.map(function (genre, index) {
+        return /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Check, {
+          onChange: function onChange(e) {
+            return _this.props.handleFilter(e);
+          },
+          type: "checkbox",
+          key: index,
+          value: genre,
+          label: genre,
+          defaultChecked: _this.props.requestParams.tag_val.includes(genre) ? true : false
+        });
+      })), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Label, {
+        style: {
+          paddingRight: 5,
+          color: "white"
+        }
+      }, "Chart Type"))));
+
       return /*#__PURE__*/_react.default.createElement(_reactBootstrap.Navbar, {
         bg: "dark",
         variant: "dark"
@@ -73578,40 +73655,13 @@ var Options = /*#__PURE__*/function (_React$Component) {
         style: {
           paddingRight: 10
         }
-      }, "Visualising a Large Music Collection Based on it's Chord Content"), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form, {
-        inline: true
-      }, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Label, {
-        style: {
-          paddingRight: 5,
-          color: "white"
-        }
-      }, "Genre"), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Control, {
-        style: {
-          marginRight: 30
-        },
-        as: "select",
-        onChange: function onChange(e) {
-          return _this.props.handleFilter(e.target.value);
-        }
-      }, genres.map(function (genres, index) {
-        return /*#__PURE__*/_react.default.createElement("option", {
-          key: index,
-          value: genres
-        }, genres);
-      })), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Label, {
-        style: {
-          paddingRight: 5,
-          color: "white"
-        }
-      }, "Chart Type"), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Control, {
-        style: {
-          marginRight: 30
-        },
-        as: "select",
-        onChange: function onChange(e) {
-          return _this.props.handleChartType(e.target.value);
-        }
-      }, /*#__PURE__*/_react.default.createElement("option", null, "Circular"), /*#__PURE__*/_react.default.createElement("option", null, "Parallel"))));
+      }, "Visualising a Large Music Collection Based on it's Chord Content"), /*#__PURE__*/_react.default.createElement(_reactBootstrap.OverlayTrigger, {
+        trigger: "click",
+        placement: "right",
+        overlay: popover
+      }, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Button, {
+        variant: "secondary"
+      }, "Options")));
     }
   }]);
   return Options;
@@ -73714,7 +73764,9 @@ var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/sli
 
 var _react = _interopRequireWildcard(require("react"));
 
-var _chart = require("./chart");
+var _chartCircular = require("./chartCircular");
+
+var _chartParallel = require("./chartParallel");
 
 var _options = require("./options");
 
@@ -73731,7 +73783,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 // <Chart width={600} height={600} request_params={{tag_val:"jazz", tag_name:"genres"}}/>
 var _default = function _default() {
   var _useState = (0, _react.useState)({
-    tag_val: "jazz",
+    tag_val: ["jazz"],
     tag_name: "genres"
   }),
       _useState2 = (0, _slicedToArray2.default)(_useState, 2),
@@ -73754,10 +73806,19 @@ var _default = function _default() {
       setSupport = _useState8[1];
 
   var handleFilter = function handleFilter(e) {
-    setRequestParams({
-      "tag_name": "genres",
-      "tag_val": e
-    });
+    if (e.target.checked == true) {
+      requestParams.tag_val.push(e.target.value);
+      setRequestParams({
+        "tag_name": "genres",
+        "tag_val": requestParams.tag_val
+      });
+    } else {
+      requestParams.tag_val.pop(e.target.value);
+      setRequestParams({
+        "tag_name": "genres",
+        "tag_val": requestParams.tag_val
+      });
+    }
   };
 
   var handleChartType = function handleChartType(e) {
@@ -73767,7 +73828,7 @@ var _default = function _default() {
   var chart = "";
 
   if (chartType == "Circular") {
-    chart = /*#__PURE__*/_react.default.createElement(_chart.ChartCircular, {
+    chart = /*#__PURE__*/_react.default.createElement(_chartCircular.ChartCircular, {
       id: 1,
       width: 800,
       height: 800,
@@ -73776,7 +73837,7 @@ var _default = function _default() {
       support: support
     });
   } else {
-    chart = /*#__PURE__*/_react.default.createElement(_chart.ChartParallel, {
+    chart = /*#__PURE__*/_react.default.createElement(_chartParallel.ChartParallel, {
       id: 1,
       width: 800,
       height: 800,
@@ -73789,6 +73850,8 @@ var _default = function _default() {
   return /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Container, {
     fluid: true
   }, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Row, null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Col, null, /*#__PURE__*/_react.default.createElement(_options.Options, {
+    chartType: chartType,
+    requestParams: requestParams,
     handleFilter: handleFilter,
     handleChartType: handleChartType
   }))), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Row, null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Col, null, chart)), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Row, null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Col, null, /*#__PURE__*/_react.default.createElement(_visparams.VisParams, {
@@ -73800,7 +73863,7 @@ var _default = function _default() {
 };
 
 exports.default = _default;
-},{"@babel/runtime/helpers/slicedToArray":"node_modules/@babel/runtime/helpers/slicedToArray.js","react":"node_modules/react/index.js","./chart":"src/chart.js","./options":"src/options.js","./visparams":"src/visparams.js","react-bootstrap":"node_modules/react-bootstrap/esm/index.js"}],"src/index.js":[function(require,module,exports) {
+},{"@babel/runtime/helpers/slicedToArray":"node_modules/@babel/runtime/helpers/slicedToArray.js","react":"node_modules/react/index.js","./chartCircular":"src/chartCircular.js","./chartParallel":"src/chartParallel.js","./options":"src/options.js","./visparams":"src/visparams.js","react-bootstrap":"node_modules/react-bootstrap/esm/index.js"}],"src/index.js":[function(require,module,exports) {
 "use strict";
 
 var _react = _interopRequireDefault(require("react"));
@@ -73840,7 +73903,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50725" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55807" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

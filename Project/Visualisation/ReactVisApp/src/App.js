@@ -9,13 +9,20 @@ import { Container, Row, Col } from 'react-bootstrap'
 
 export default () => {
 
-  const [requestParams, setRequestParams] = useState({tag_val:"jazz", tag_name:"genres"})
+  const [requestParams, setRequestParams] = useState({tag_val:["jazz"], tag_name:"genres"})
   const [chartType, setChartType] = useState("Circular")
   const [focus, setFocus] = useState(1)
   const [support, setSupport] = useState(5)
 
   const handleFilter = (e) => {
-    setRequestParams({"tag_name":"genres","tag_val":e})
+    if (e.target.checked == true) {
+      requestParams.tag_val.push(e.target.value)
+      setRequestParams({"tag_name":"genres","tag_val":requestParams.tag_val})
+    }
+    else {
+      requestParams.tag_val.pop(e.target.value)
+      setRequestParams({"tag_name":"genres","tag_val":requestParams.tag_val})
+    }
   }
 
   const handleChartType = (e) => {
@@ -35,7 +42,7 @@ export default () => {
     <Container fluid>
       <Row>
         <Col>
-          <Options handleFilter={handleFilter} handleChartType={handleChartType}/>
+          <Options chartType={chartType} requestParams={requestParams} handleFilter={handleFilter} handleChartType={handleChartType}/>
         </Col>
       </Row>
       <Row>

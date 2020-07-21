@@ -10,12 +10,12 @@ export class ChartCircular extends React.Component {
     fetchData(request_params) {
         let r_url = ""
         if (request_params && request_params.tag_val !== "all") {
-            r_url = "http://127.0.0.1:5000/circular?tag_val=" + request_params.tag_val + "&tag_name=" + request_params.tag_name
+            r_url = "http://127.0.0.1:5000/circular?tag_val=" + request_params.tag_val.join() + "&tag_name=" + request_params.tag_name
         }
         else {
             r_url = "http://127.0.0.1:5000/circular"
         }
-        fetch(r_url)
+        fetch(r_url,{mode: 'cors'})
             .then(r => r.json())
             .then(r => this.setState({ data: r, request_params: request_params }))
 
@@ -47,6 +47,9 @@ export class ChartCircular extends React.Component {
 
         // Calculate radial coordinate from ordered list of nodes
         const sc_radial = d3.scalePoint().domain(order).range([0, Math.PI * 2])
+
+        // Colour map
+        const cmap = d3.scalePoint().domain(this.state.request_params.tag_val).range([0,1])
 
         // Convert radial coordinate to cartesian
         const node2point = (d) => {
@@ -97,7 +100,7 @@ export class ChartCircular extends React.Component {
             .append("path")
             .attr("class", "link")
             .attr("d", (d) => lineGen([node2point(d.labels[0]),node2point(d.labels[1])]))
-            .attr("stroke", "black")
+            .attr("stroke", d => d3.interpolateViridis(cmap(d.tag)))
             .attr("fill", "none")
             .attr("stroke-width", 1)
             .attr("stroke-opacity", d => (d.values / d3.max(sets.map(x => x.values))) ** this.props.focus)
@@ -116,7 +119,7 @@ export class ChartCircular extends React.Component {
             d3.selectAll(".link")
                 .filter(d => d.labels.includes(sel.label))
                 .transition(0.1)
-                .attr("stroke", "black")
+                .attr("stroke", d => d3.interpolateViridis(cmap(d.tag)))
                 .attr("stroke-width", 1)
                 .attr("stroke-opacity", d => (d.values / d3.max(sets.map(x => x.values))) ** this.props.focus)
         })
