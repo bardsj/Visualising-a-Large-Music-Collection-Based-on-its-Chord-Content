@@ -91,24 +91,12 @@ export class ChartCircular extends React.Component {
         const beta = 0
         const lineGen = d3.line().x(d => d.x + centre.x).y(d => centre.y - d.y).curve(d3.curveBundle.beta(beta / 1000))
 
-        // inner point for edge bundling
-        const path_factor = 1.2
-
         const links = svg.selectAll("path")
             .data(sets)
             .enter()
             .append("path")
             .attr("class", "link")
-            .attr("d", (d) => lineGen([node2point(d.labels[0]),
-            {
-                x: node2point(d.labels[0]).x / path_factor,
-                y: node2point(d.labels[0]).y / path_factor
-            },
-            {
-                x: node2point(d.labels[1]).x / path_factor,
-                y: node2point(d.labels[1]).y / path_factor
-            },
-            node2point(d.labels[1])]))
+            .attr("d", (d) => lineGen([node2point(d.labels[0]),node2point(d.labels[1])]))
             .attr("stroke", "black")
             .attr("fill", "none")
             .attr("stroke-width", 1)

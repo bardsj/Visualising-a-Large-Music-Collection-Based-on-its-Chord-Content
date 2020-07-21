@@ -57455,17 +57455,9 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
         return d.x + centre.x;
       }).y(function (d) {
         return centre.y - d.y;
-      }).curve(d3.curveBundle.beta(beta / 1000)); // inner point for edge bundling
-
-      var path_factor = 1.2;
+      }).curve(d3.curveBundle.beta(beta / 1000));
       var links = svg.selectAll("path").data(sets).enter().append("path").attr("class", "link").attr("d", function (d) {
-        return lineGen([node2point(d.labels[0]), {
-          x: node2point(d.labels[0]).x / path_factor,
-          y: node2point(d.labels[0]).y / path_factor
-        }, {
-          x: node2point(d.labels[1]).x / path_factor,
-          y: node2point(d.labels[1]).y / path_factor
-        }, node2point(d.labels[1])]);
+        return lineGen([node2point(d.labels[0]), node2point(d.labels[1])]);
       }).attr("stroke", "black").attr("fill", "none").attr("stroke-width", 1).attr("stroke-opacity", function (d) {
         return Math.pow(d.values / d3.max(sets.map(function (x) {
           return x.values;
@@ -73848,7 +73840,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60078" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50725" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
