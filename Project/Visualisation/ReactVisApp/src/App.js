@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { ChartCircular, ChartParallel } from "./chart";
+import { ChartCircular } from "./chartCircular";
+import { ChartParallel } from "./chartParallel";
 import { Options } from "./options"
 import {VisParams} from "./visparams"
 import { Container, Row, Col } from 'react-bootstrap'
