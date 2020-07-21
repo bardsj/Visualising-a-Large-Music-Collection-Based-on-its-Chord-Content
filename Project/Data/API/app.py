@@ -38,9 +38,9 @@ def returnDataCirc():
     itemsets = data['itemsets']
 
     # Only return sets of length 2 for circular layout
-    itemsets['items'] = [d for d in itemsets['items'].values() if len(d) == 2]
+    k2_sets = [{"labels":l,"values":v} for l,v in zip(itemsets['items'].values(),itemsets['supportPc'].values()) if len(l) == 2]
 
-    return jsonify({"sets":[{"labels":i,"values":v} for i,v in zip(itemsets['items'],list(itemsets['supportPc'].values()))],"order":data['AVSDF_order']})
+    return jsonify({"sets":k2_sets,"order":data['AVSDF_order']})
 
 @app.route('/parallel',methods=['GET'])
 def returnDataParallel():
