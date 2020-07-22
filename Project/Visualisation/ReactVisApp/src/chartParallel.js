@@ -1,5 +1,6 @@
 import React from "react";
 import * as d3 from 'd3';
+import {genreColormap} from './colorMap'
 
 export class ChartParallel extends React.Component {
     constructor(props) {
@@ -9,7 +10,7 @@ export class ChartParallel extends React.Component {
 
     fetchData(request_params) {
         let r_url = ""
-        if (request_params && request_params.tag_val !== "all") {
+        if (request_params.tag_val.length > 0) {
             r_url = "http://127.0.0.1:5000/parallel?tag_val=" + request_params.tag_val.join() + "&tag_name=" + request_params.tag_name
         }
         else {
@@ -49,7 +50,7 @@ export class ChartParallel extends React.Component {
         const n_ax = d3.max(data.map(x => x.labels.length))
 
         // Colour map
-        const cmap = d3.scalePoint().domain(this.state.request_params.tag_val).range([0,1])
+        const cmap = genreColormap()
         // Add axis field for n axes from node list
         let node_list_ax = []
 
@@ -104,7 +105,7 @@ export class ChartParallel extends React.Component {
             .attr("class", "link")
             .attr("d", d => lineGen(d.labels))
             .attr("fill", "none")
-            .attr("stroke", d => d3.interpolateViridis(cmap(d.tag)))
+            .attr("stroke", d => cmap[d.tag])
             .attr("fill", "none")
             .attr("stroke-width", 1)
             .attr("stroke-opacity", d => (d.values / d3.max(data.map(x => x.values))) ** this.props.focus)
@@ -137,7 +138,7 @@ export class ChartParallel extends React.Component {
             d3.selectAll(".link")
                 .filter(d => d.labels[sel.ax] ? d.labels[sel.ax].node === sel.node : null)
                 .transition(0.1)
-                .attr("stroke", d => d3.interpolateViridis(cmap(d.tag)))
+                .attr("stroke", d => cmap[d.tag])
                 .attr("stroke-width", 1)
                 .attr("stroke-opacity", d => (d.values / d3.max(data.map(x => x.values))) ** this.props.focus)
         })

@@ -8,7 +8,7 @@ export class Options extends React.Component {
 
     render() {
 
-        const genres = ['jazz', 'electronic', 'chillout', 'ambient', 'pop', 'rock', 'dance', 'hiphop', "all"]
+        const genres = ['jazz', 'electronic', 'chillout', 'ambient', 'pop', 'rock', 'dance', 'hiphop']
 
         const popover = (
             <Popover id="popover-basic">
