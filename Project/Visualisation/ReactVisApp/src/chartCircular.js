@@ -50,7 +50,6 @@ export class ChartCircular extends React.Component {
         // Filter out nodes from order that all not in filtered sets
         const filtered_set = new Array(... new Set(sets.flatMap(x=>x['labels'])))
         order = order.filter(x=>filtered_set.includes(x))
-        console.log(filtered_set)
 
         // Calculate radial coordinate from ordered list of nodes
         const sc_radial = d3.scalePoint().domain(order).range([0, Math.PI * 2])

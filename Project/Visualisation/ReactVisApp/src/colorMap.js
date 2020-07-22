@@ -8,7 +8,7 @@ export function genreColormap() {
     let colorMap = { null: "rgb(0, 0, 0)" }
 
     for (let i = 0; i < genres.length - 1; i++) {
-        colorMap[genres[i]] = d3.interpolateSinebow(scale(genres[i]))
+        colorMap[genres[i]] = d3.interpolateTurbo(scale(genres[i]))
     }
     return colorMap
 }

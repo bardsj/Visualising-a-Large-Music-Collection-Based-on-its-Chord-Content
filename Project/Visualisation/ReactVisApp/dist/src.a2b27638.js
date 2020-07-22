@@ -57403,7 +57403,7 @@ function genreColormap() {
   };
 
   for (var i = 0; i < genres.length - 1; i++) {
-    colorMap[genres[i]] = d3.interpolateSinebow(scale(genres[i]));
+    colorMap[genres[i]] = d3.interpolateTurbo(scale(genres[i]));
   }
 
   return colorMap;
@@ -57525,8 +57525,7 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
       }))));
       order = order.filter(function (x) {
         return filtered_set.includes(x);
-      });
-      console.log(filtered_set); // Calculate radial coordinate from ordered list of nodes
+      }); // Calculate radial coordinate from ordered list of nodes
 
       var sc_radial = d3.scalePoint().domain(order).range([0, Math.PI * 2]); // Colour map
 
@@ -74136,7 +74135,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52257" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52809" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
