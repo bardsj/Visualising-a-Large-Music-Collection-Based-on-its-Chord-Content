@@ -41,10 +41,16 @@ export class ChartCircular extends React.Component {
         svg.selectAll("*").remove()
         const width = this.props.width
         const height = this.props.height
-        const order = this.state.data.order
-        var sets = this.state.data.sets
+        let order = this.state.data.order
+        let sets = this.state.data.sets
+        // Filter based on slider support val
         sets = sets.filter(x=> x.values > this.props.support/100)
         const r = (this.props.height / 2) - 50;
+
+        // Filter out nodes from order that all not in filtered sets
+        const filtered_set = new Array(... new Set(sets.flatMap(x=>x['labels'])))
+        order = order.filter(x=>filtered_set.includes(x))
+        console.log(filtered_set)
 
         // Calculate radial coordinate from ordered list of nodes
         const sc_radial = d3.scalePoint().domain(order).range([0, Math.PI * 2])

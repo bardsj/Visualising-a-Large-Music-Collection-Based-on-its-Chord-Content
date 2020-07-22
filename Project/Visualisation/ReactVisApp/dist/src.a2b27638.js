@@ -28365,7 +28365,90 @@ function _slicedToArray(arr, i) {
 }
 
 module.exports = _slicedToArray;
-},{"./arrayWithHoles":"node_modules/@babel/runtime/helpers/arrayWithHoles.js","./iterableToArrayLimit":"node_modules/@babel/runtime/helpers/iterableToArrayLimit.js","./unsupportedIterableToArray":"node_modules/@babel/runtime/helpers/unsupportedIterableToArray.js","./nonIterableRest":"node_modules/@babel/runtime/helpers/nonIterableRest.js"}],"node_modules/@babel/runtime/helpers/classCallCheck.js":[function(require,module,exports) {
+},{"./arrayWithHoles":"node_modules/@babel/runtime/helpers/arrayWithHoles.js","./iterableToArrayLimit":"node_modules/@babel/runtime/helpers/iterableToArrayLimit.js","./unsupportedIterableToArray":"node_modules/@babel/runtime/helpers/unsupportedIterableToArray.js","./nonIterableRest":"node_modules/@babel/runtime/helpers/nonIterableRest.js"}],"node_modules/@babel/runtime/helpers/setPrototypeOf.js":[function(require,module,exports) {
+function _setPrototypeOf(o, p) {
+  module.exports = _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
+    o.__proto__ = p;
+    return o;
+  };
+
+  return _setPrototypeOf(o, p);
+}
+
+module.exports = _setPrototypeOf;
+},{}],"node_modules/@babel/runtime/helpers/isNativeReflectConstruct.js":[function(require,module,exports) {
+function _isNativeReflectConstruct() {
+  if (typeof Reflect === "undefined" || !Reflect.construct) return false;
+  if (Reflect.construct.sham) return false;
+  if (typeof Proxy === "function") return true;
+
+  try {
+    Date.prototype.toString.call(Reflect.construct(Date, [], function () {}));
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+module.exports = _isNativeReflectConstruct;
+},{}],"node_modules/@babel/runtime/helpers/construct.js":[function(require,module,exports) {
+var setPrototypeOf = require("./setPrototypeOf");
+
+var isNativeReflectConstruct = require("./isNativeReflectConstruct");
+
+function _construct(Parent, args, Class) {
+  if (isNativeReflectConstruct()) {
+    module.exports = _construct = Reflect.construct;
+  } else {
+    module.exports = _construct = function _construct(Parent, args, Class) {
+      var a = [null];
+      a.push.apply(a, args);
+      var Constructor = Function.bind.apply(Parent, a);
+      var instance = new Constructor();
+      if (Class) setPrototypeOf(instance, Class.prototype);
+      return instance;
+    };
+  }
+
+  return _construct.apply(null, arguments);
+}
+
+module.exports = _construct;
+},{"./setPrototypeOf":"node_modules/@babel/runtime/helpers/setPrototypeOf.js","./isNativeReflectConstruct":"node_modules/@babel/runtime/helpers/isNativeReflectConstruct.js"}],"node_modules/@babel/runtime/helpers/arrayWithoutHoles.js":[function(require,module,exports) {
+var arrayLikeToArray = require("./arrayLikeToArray");
+
+function _arrayWithoutHoles(arr) {
+  if (Array.isArray(arr)) return arrayLikeToArray(arr);
+}
+
+module.exports = _arrayWithoutHoles;
+},{"./arrayLikeToArray":"node_modules/@babel/runtime/helpers/arrayLikeToArray.js"}],"node_modules/@babel/runtime/helpers/iterableToArray.js":[function(require,module,exports) {
+function _iterableToArray(iter) {
+  if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter);
+}
+
+module.exports = _iterableToArray;
+},{}],"node_modules/@babel/runtime/helpers/nonIterableSpread.js":[function(require,module,exports) {
+function _nonIterableSpread() {
+  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+
+module.exports = _nonIterableSpread;
+},{}],"node_modules/@babel/runtime/helpers/toConsumableArray.js":[function(require,module,exports) {
+var arrayWithoutHoles = require("./arrayWithoutHoles");
+
+var iterableToArray = require("./iterableToArray");
+
+var unsupportedIterableToArray = require("./unsupportedIterableToArray");
+
+var nonIterableSpread = require("./nonIterableSpread");
+
+function _toConsumableArray(arr) {
+  return arrayWithoutHoles(arr) || iterableToArray(arr) || unsupportedIterableToArray(arr) || nonIterableSpread();
+}
+
+module.exports = _toConsumableArray;
+},{"./arrayWithoutHoles":"node_modules/@babel/runtime/helpers/arrayWithoutHoles.js","./iterableToArray":"node_modules/@babel/runtime/helpers/iterableToArray.js","./unsupportedIterableToArray":"node_modules/@babel/runtime/helpers/unsupportedIterableToArray.js","./nonIterableSpread":"node_modules/@babel/runtime/helpers/nonIterableSpread.js"}],"node_modules/@babel/runtime/helpers/classCallCheck.js":[function(require,module,exports) {
 function _classCallCheck(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
@@ -28391,17 +28474,6 @@ function _createClass(Constructor, protoProps, staticProps) {
 }
 
 module.exports = _createClass;
-},{}],"node_modules/@babel/runtime/helpers/setPrototypeOf.js":[function(require,module,exports) {
-function _setPrototypeOf(o, p) {
-  module.exports = _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
-    o.__proto__ = p;
-    return o;
-  };
-
-  return _setPrototypeOf(o, p);
-}
-
-module.exports = _setPrototypeOf;
 },{}],"node_modules/@babel/runtime/helpers/inherits.js":[function(require,module,exports) {
 var setPrototypeOf = require("./setPrototypeOf");
 
@@ -57344,6 +57416,10 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.ChartCircular = void 0;
 
+var _construct2 = _interopRequireDefault(require("@babel/runtime/helpers/construct"));
+
+var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toConsumableArray"));
+
 var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
 var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
@@ -57437,11 +57513,20 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
       var width = this.props.width;
       var height = this.props.height;
       var order = this.state.data.order;
-      var sets = this.state.data.sets;
+      var sets = this.state.data.sets; // Filter based on slider support val
+
       sets = sets.filter(function (x) {
         return x.values > _this3.props.support / 100;
       });
-      var r = this.props.height / 2 - 50; // Calculate radial coordinate from ordered list of nodes
+      var r = this.props.height / 2 - 50; // Filter out nodes from order that all not in filtered sets
+
+      var filtered_set = (0, _construct2.default)(Array, (0, _toConsumableArray2.default)(new Set(sets.flatMap(function (x) {
+        return x['labels'];
+      }))));
+      order = order.filter(function (x) {
+        return filtered_set.includes(x);
+      });
+      console.log(filtered_set); // Calculate radial coordinate from ordered list of nodes
 
       var sc_radial = d3.scalePoint().domain(order).range([0, Math.PI * 2]); // Colour map
 
@@ -57538,13 +57623,17 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
 }(_react.default.Component);
 
 exports.ChartCircular = ChartCircular;
-},{"@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js","@babel/runtime/helpers/inherits":"node_modules/@babel/runtime/helpers/inherits.js","@babel/runtime/helpers/possibleConstructorReturn":"node_modules/@babel/runtime/helpers/possibleConstructorReturn.js","@babel/runtime/helpers/getPrototypeOf":"node_modules/@babel/runtime/helpers/getPrototypeOf.js","react":"node_modules/react/index.js","d3":"node_modules/d3/index.js","./colorMap":"src/colorMap.js"}],"src/chartParallel.js":[function(require,module,exports) {
+},{"@babel/runtime/helpers/construct":"node_modules/@babel/runtime/helpers/construct.js","@babel/runtime/helpers/toConsumableArray":"node_modules/@babel/runtime/helpers/toConsumableArray.js","@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js","@babel/runtime/helpers/inherits":"node_modules/@babel/runtime/helpers/inherits.js","@babel/runtime/helpers/possibleConstructorReturn":"node_modules/@babel/runtime/helpers/possibleConstructorReturn.js","@babel/runtime/helpers/getPrototypeOf":"node_modules/@babel/runtime/helpers/getPrototypeOf.js","react":"node_modules/react/index.js","d3":"node_modules/d3/index.js","./colorMap":"src/colorMap.js"}],"src/chartParallel.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.ChartParallel = void 0;
+
+var _construct2 = _interopRequireDefault(require("@babel/runtime/helpers/construct"));
+
+var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toConsumableArray"));
 
 var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
@@ -57652,7 +57741,14 @@ var ChartParallel = /*#__PURE__*/function (_React$Component) {
 
       var n_ax = d3.max(data.map(function (x) {
         return x.labels.length;
-      })); // Colour map
+      })); // Filter out nodes from order that all not in filtered sets
+
+      var filtered_set = (0, _construct2.default)(Array, (0, _toConsumableArray2.default)(new Set(data.flatMap(function (x) {
+        return x['labels'];
+      }))));
+      node_list = node_list.filter(function (x) {
+        return filtered_set.includes(x);
+      }); // Colour map
 
       var cmap = (0, _colorMap.genreColormap)(); // Add axis field for n axes from node list
 
@@ -57764,7 +57860,7 @@ var ChartParallel = /*#__PURE__*/function (_React$Component) {
 }(_react.default.Component);
 
 exports.ChartParallel = ChartParallel;
-},{"@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js","@babel/runtime/helpers/inherits":"node_modules/@babel/runtime/helpers/inherits.js","@babel/runtime/helpers/possibleConstructorReturn":"node_modules/@babel/runtime/helpers/possibleConstructorReturn.js","@babel/runtime/helpers/getPrototypeOf":"node_modules/@babel/runtime/helpers/getPrototypeOf.js","react":"node_modules/react/index.js","d3":"node_modules/d3/index.js","./colorMap":"src/colorMap.js"}],"node_modules/@babel/runtime/helpers/esm/extends.js":[function(require,module,exports) {
+},{"@babel/runtime/helpers/construct":"node_modules/@babel/runtime/helpers/construct.js","@babel/runtime/helpers/toConsumableArray":"node_modules/@babel/runtime/helpers/toConsumableArray.js","@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js","@babel/runtime/helpers/inherits":"node_modules/@babel/runtime/helpers/inherits.js","@babel/runtime/helpers/possibleConstructorReturn":"node_modules/@babel/runtime/helpers/possibleConstructorReturn.js","@babel/runtime/helpers/getPrototypeOf":"node_modules/@babel/runtime/helpers/getPrototypeOf.js","react":"node_modules/react/index.js","d3":"node_modules/d3/index.js","./colorMap":"src/colorMap.js"}],"node_modules/@babel/runtime/helpers/esm/extends.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -73738,7 +73834,7 @@ function VisParams(props) {
     },
     type: "range",
     min: "0.1",
-    max: "3",
+    max: "5",
     step: "0.1",
     defaultValue: props.focus,
     id: "focus",
@@ -73769,7 +73865,7 @@ function VisParams(props) {
     },
     type: "range",
     min: "1",
-    max: "50",
+    max: "20",
     defaultValue: props.support,
     id: "support",
     onChange: function onChange(e) {
@@ -74040,7 +74136,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63968" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52257" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

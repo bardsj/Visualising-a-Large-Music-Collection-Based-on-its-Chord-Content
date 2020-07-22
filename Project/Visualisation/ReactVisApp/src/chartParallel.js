@@ -41,13 +41,17 @@ export class ChartParallel extends React.Component {
         svg.selectAll("*").remove()
         const width = this.props.width
         const height = this.props.height
-        const node_list = this.state.data.order
-        var data = this.state.data.sets
+        let node_list = this.state.data.order
+        let data = this.state.data.sets
         data = data.filter(x=> x.values > this.props.support/100)
         const margin = ({ top: 20, bottom: 20, left: 60, right: 10 })
 
         // Number of parallel axes from max itemset length
         const n_ax = d3.max(data.map(x => x.labels.length))
+
+        // Filter out nodes from order that all not in filtered sets
+        const filtered_set = new Array(... new Set(data.flatMap(x=>x['labels'])))
+        node_list = node_list.filter(x=>filtered_set.includes(x))
 
         // Colour map
         const cmap = genreColormap()
