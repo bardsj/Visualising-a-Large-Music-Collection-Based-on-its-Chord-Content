@@ -57395,7 +57395,7 @@ function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 function genreColormap() {
-  var genres = ['jazz', 'electronic', 'chillout', 'ambient', 'pop', 'rock', 'dance', 'hiphop', 'all']; // Colour map
+  var genres = ['pop', 'rock', 'electronic', 'hiphop', 'jazz', 'indie', 'filmscore', 'classical', 'chillout', 'ambient', 'folk', 'metal', 'latin', 'rnb', 'reggae', 'punk', 'country', 'house', 'blues']; // Colour map
 
   var scale = d3.scalePoint().domain(genres.slice(0, -1)).range([0, 1]);
   var colorMap = {
@@ -73745,7 +73745,7 @@ var Options = /*#__PURE__*/function (_React$Component) {
     value: function render() {
       var _this = this;
 
-      var genres = ['jazz', 'electronic', 'chillout', 'ambient', 'pop', 'rock', 'dance', 'hiphop'];
+      var genres = ['pop', 'rock', 'electronic', 'hiphop', 'jazz', 'indie', 'filmscore', 'classical', 'chillout', 'ambient', 'folk', 'metal', 'latin', 'rnb', 'reggae', 'punk', 'country', 'house', 'blues'];
 
       var popover = /*#__PURE__*/_react.default.createElement(_reactBootstrap.Popover, {
         id: "popover-basic"
@@ -74135,7 +74135,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52809" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56190" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

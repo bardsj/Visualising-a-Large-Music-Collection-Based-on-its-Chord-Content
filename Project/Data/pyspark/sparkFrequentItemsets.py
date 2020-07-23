@@ -101,6 +101,8 @@ class ChordLoader:
             # Filter so only rows with filtered genre category is present
             df = df.na.drop()
 
+        df = df.cache()
+
         return df
 
 
