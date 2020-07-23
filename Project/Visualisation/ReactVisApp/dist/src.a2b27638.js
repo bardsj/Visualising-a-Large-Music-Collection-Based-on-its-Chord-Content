@@ -73784,6 +73784,7 @@ var Options = /*#__PURE__*/function (_React$Component) {
         }
       }, "Visualising a Large Music Collection Based on it's Chord Content"), /*#__PURE__*/_react.default.createElement(_reactBootstrap.OverlayTrigger, {
         trigger: "click",
+        rootClose: true,
         placement: "right",
         overlay: popover
       }, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Button, {
@@ -74135,7 +74136,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56322" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60506" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

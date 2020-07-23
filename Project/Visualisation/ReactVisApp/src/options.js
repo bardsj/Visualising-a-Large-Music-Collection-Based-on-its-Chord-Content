@@ -39,7 +39,7 @@ export class Options extends React.Component {
         return (
             <Navbar bg='dark' variant='dark'>
                 <Navbar.Brand style={{ paddingRight: 10 }}>Visualising a Large Music Collection Based on it's Chord Content</Navbar.Brand>
-                <OverlayTrigger trigger="click" placement="right" overlay={popover}>
+                <OverlayTrigger trigger="click" rootClose placement="right" overlay={popover}>
                     <Button variant="secondary">Options</Button>
                 </OverlayTrigger>
             </Navbar>
