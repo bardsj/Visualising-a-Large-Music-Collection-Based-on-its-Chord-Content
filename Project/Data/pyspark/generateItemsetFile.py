@@ -20,7 +20,7 @@ spark = pyspark.sql.SparkSession.builder \
     .config("spark.mongodb.input.uri", os.environ['MSC_CHORD_DB_URI'])\
     .getOrCreate()
 
-params = {"minSupport": 0.01, "minConfidence": 1,"filterRatio":0.05}
+params = {"minSupport": 0.01, "minConfidence": 1,"filterRatio":0.05,"filterConfidence":None}
 tag_filt = {"tag_name":"genres","tag_val":"jazz"}
 items = SparkFrequentItemsetsFPG(spark, None, params,tag_filter=tag_filt)
 itemsets = items.get_itemsets()

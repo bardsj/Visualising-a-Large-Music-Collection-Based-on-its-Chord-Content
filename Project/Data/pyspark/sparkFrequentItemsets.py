@@ -58,8 +58,12 @@ class ChordLoader:
         df = df.sample(withReplacement=False,fraction=1.0)
         f_ratio = self.params['filterRatio']
 
+        # Filter by confidence value
+        if self.params['filterConfidence']:
+            df = df.filter(df["confidence"] > self.params['filterConfidence'])
+
         # User defined function to get key values (chords) from nested structure in dataframe and filter below value
-        getKeysUDF = F.udf(lambda x: list({k for k,v in x.asDict().items() if (type(v) is float) and (v > f_ratio)}),ArrayType(StringType()))
+        getKeysUDF = F.udf(lambda x: list({k for k,v in x.asDict().items() if (v != None) and (v > f_ratio)}),ArrayType(StringType()))
 
         # Apply UDF and select only chord and id cols
         df = df.withColumn("chordItems",getKeysUDF(df['chordRatio'])).select("_id","chordItems")
@@ -116,7 +120,7 @@ class SparkFrequentItemsetsFPG(ChordLoader):
 
     """
 
-    def __init__(self,spark,limit=None,params={"minSupport":0.2, "minConfidence":0.5,"filterRatio":None},tag_filter=None):
+    def __init__(self,spark,limit=None,params={"minSupport":0.2, "minConfidence":0.5,"filterRatio":None,"filterConfidence":None},tag_filter=None):
         ChordLoader.__init__(self,spark,params,limit,tag_filter)
 
     def _run_FPGrowth(self,df):
@@ -156,7 +160,7 @@ class SparkFrequentItemsetsSON(ChordLoader):
 
 
     """
-    def __init__(self,spark,params={"minSupport":0.2,"filterRatio":None},limit=None,tag_filter=None):
+    def __init__(self,spark,params={"minSupport":0.2,"filterRatio":None,"filterConfidence":None},limit=None,tag_filter=None):
         ChordLoader.__init__(self,spark,params,limit,tag_filter)
 
 
