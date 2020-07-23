@@ -12,8 +12,8 @@ from itertools import chain
 app = Flask(__name__)
 # Enable CORS 
 CORS(app)
-# Pymongo connection
-client = MongoClient(os.environ['MSC_MONGO_PERSONAL_URI'])
+# Pymongo connection (public user, read only access for this collection)
+client = MongoClient("mongodb+srv://publicUser:jdACcF7TyiU2Vshj@msc.5jje5.gcp.mongodb.net/jamendo?retryWrites=false&w=majority")
 col = client.jamendo.itemsetData
 
 def getData(request):
@@ -71,7 +71,6 @@ def returnDataParallel():
     # Sort singletons by support to get order
     order = [s for s in sorted(max_vals,key=lambda s: s[1],reverse=True)]
     #order = list(chain(*order))
-    print(order)
     # Remove singletons from sets
     sets = [s for s in sets if len(s['labels']) > 1]
     # Sort set within sets based on support value (order)

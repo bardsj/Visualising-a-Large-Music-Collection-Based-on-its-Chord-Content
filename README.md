@@ -17,14 +17,8 @@ $ python3 Project/Data/API/app.py
 
 ### 3. Start the client HTTP server.
 
-Parallel coordinates:
+Most recent build of React app:
 
 ```
-$ python3 -m http.server --bind 127.0.0.1 --directory "Project/Visualisation/Parallel/ParallelCoords"
-```
-
-Circular layout:
-
-```
-$ python3 -m http.server --bind 127.0.0.1 --directory "Project/Visualisation/Circular/CircularLayout"
+$ python3 -m http.server --bind 127.0.0.1 --directory "Project/Visualisation/ReactVisApp/dist"
 ```
