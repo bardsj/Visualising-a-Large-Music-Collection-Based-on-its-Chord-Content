@@ -28,6 +28,9 @@ class ChordLoader:
         self.tag_filter = tag_filter
         self.df = self._load_data()
 
+    def getDataframeCount(self):
+        return self.df.count()
+
     def _load_data(self):
         """
         Loads data from mongodb source and extracts non zero chord values

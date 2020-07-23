@@ -22,13 +22,13 @@ spark = pyspark.sql.SparkSession.builder \
     .config("spark.mongodb.input.uri", os.environ['MSC_CHORD_DB_URI'])\
     .getOrCreate()
 
-params = {"minSupport": 0.01, "minConfidence": 1,"filterRatio":0.05,"filterConfidence":None}
+params = {"minSupport": 0.01, "minConfidence": 1,"filterRatio":0.05,"filterConfidence":0.6}
 
 st = time.time()
 
 write_results = []
 
-for i,genre in enumerate(['jazz','electronic','chillout','ambient','pop','rock','dance','hiphop',None]):
+for i,genre in enumerate(['pop','rock','electronic','hiphop','jazz','indie','filmscore','classical','chillout','ambient','folk','metal','latin','rnb','reggae','punk','country','house','blues',None]):
     if genre:
         tag_filt = {"tag_name":"genres","tag_val":genre}
     else:
@@ -36,6 +36,7 @@ for i,genre in enumerate(['jazz','electronic','chillout','ambient','pop','rock',
 
     items = SparkFrequentItemsetsFPG(spark, None, params,tag_filter=tag_filt)
     itemsets = items.get_itemsets()
+    count = items.getDataframeCount()
     # Get k = 2 length itemsets to calculate circular order
     ksets_circ = itemsets[itemsets['items'].str.len()==2]
     # Convert to dict for storage
@@ -43,11 +44,12 @@ for i,genre in enumerate(['jazz','electronic','chillout','ambient','pop','rock',
     order = AVSDF(list(ksets_circ['items'])).run_AVSDF()
 
     write_results.append({
-        "_id":str(i).zfill(4)+"-"+str(params['minSupport'])+"-"+str(params['filterRatio']),
+        "_id":str(i).zfill(4)+"-"+str(params['minSupport'])+"-"+str(params['filterRatio'])+"-"+str(params['filterConfidence']),
         "filter_params":params,
         "tag_params":tag_filt,
         "itemsets":itemsets,
-        "AVSDF_order":order
+        "AVSDF_order":order,
+        "dfCount":count
     })
 
 
