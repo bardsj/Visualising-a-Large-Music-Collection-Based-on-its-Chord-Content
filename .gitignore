@@ -9,3 +9,4 @@ sparkConnection
 
 # local data, too large for github
 jamendo_api_scrape.pkl
+.cache
