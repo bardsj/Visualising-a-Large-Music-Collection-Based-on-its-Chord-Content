@@ -58007,10 +58007,18 @@ var ChartHier = /*#__PURE__*/function (_React$Component) {
       var i_nodes = {}; // For each root note get angle of sub nodes
 
       for (var i = 0; i < order.length; i++) {
-        if (order[i][0] in i_nodes) {
-          i_nodes[order[i][0]].push(sc_radial(order[i]));
+        if (order[i][1] != "b") {
+          if (order[i][0] in i_nodes) {
+            i_nodes[order[i][0]].push(sc_radial(order[i]));
+          } else {
+            i_nodes[order[i][0]] = [sc_radial(order[i])];
+          }
         } else {
-          i_nodes[order[i][0]] = [sc_radial(order[i])];
+          if (order.slice(0, 2) in i_nodes) {
+            i_nodes[order[i].slice(0, 2)].push(sc_radial(order[i]));
+          } else {
+            i_nodes[order[i].slice(0, 2)] = [sc_radial(order[i])];
+          }
         }
       } // Calculate mean angle for each root note
 
@@ -58056,11 +58064,11 @@ var ChartHier = /*#__PURE__*/function (_React$Component) {
       var path_factor = 1.4;
       var links = svg.selectAll("path").data(sets).enter().append("path").attr("class", "link").attr("d", function (d) {
         return lineGen([node2point(d.labels[0]), {
-          x: root_nodes[d.labels[0][0]].x / path_factor,
-          y: root_nodes[d.labels[0][0]].y / path_factor
+          x: root_nodes[d.labels[0][1] === "b" ? d.labels[0].slice(0, 2) : d.labels[0][0]].x / path_factor,
+          y: root_nodes[d.labels[0][1] === "b" ? d.labels[0].slice(0, 2) : d.labels[0][0]].y / path_factor
         }, {
-          x: root_nodes[d.labels[1][0]].x / path_factor,
-          y: root_nodes[d.labels[1][0]].y / path_factor
+          x: root_nodes[d.labels[1][1] === "b" ? d.labels[1].slice(0, 2) : d.labels[1][0]].x / path_factor,
+          y: root_nodes[d.labels[1][1] === "b" ? d.labels[1].slice(0, 2) : d.labels[1][0]].y / path_factor
         }, node2point(d.labels[1])]);
       }).attr("stroke", function (d) {
         return cmap[d.tag];

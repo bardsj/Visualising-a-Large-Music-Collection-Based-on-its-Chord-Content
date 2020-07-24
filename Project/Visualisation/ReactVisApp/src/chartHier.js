@@ -1,6 +1,6 @@
 import React from "react";
 import * as d3 from 'd3';
-import {genreColormap} from './colorMap'
+import { genreColormap } from './colorMap'
 
 export class ChartHier extends React.Component {
     constructor(props) {
@@ -16,7 +16,7 @@ export class ChartHier extends React.Component {
         else {
             r_url = "http://127.0.0.1:5000/circHier"
         }
-        fetch(r_url,{mode: 'cors'})
+        fetch(r_url, { mode: 'cors' })
             .then(r => r.json())
             .then(r => this.setState({ data: r, request_params: request_params }))
 
@@ -44,12 +44,12 @@ export class ChartHier extends React.Component {
         let order = this.state.data.order
         let sets = this.state.data.sets
         // Filter based on slider support val
-        sets = sets.filter(x=> x.values > this.props.support/100)
+        sets = sets.filter(x => x.values > this.props.support / 100)
         const r = (this.props.height / 2) - 50;
 
         // Filter out nodes from order that all not in filtered sets
-        const filtered_set = new Array(... new Set(sets.flatMap(x=>x['labels'])))
-        order = order.filter(x=>filtered_set.includes(x))
+        const filtered_set = new Array(... new Set(sets.flatMap(x => x['labels'])))
+        order = order.filter(x => filtered_set.includes(x))
 
         // Calculate radial coordinate from ordered list of nodes
         const sc_radial = d3.scalePoint().domain(order).range([0, Math.PI * 2])
@@ -71,17 +71,28 @@ export class ChartHier extends React.Component {
         // Calculate inner heirarchy bundling nodes
         let i_nodes = {}
         // For each root note get angle of sub nodes
-        for (let i=0;i<order.length;i++) {
-            if (order[i][0] in i_nodes){
-                i_nodes[order[i][0]].push(sc_radial(order[i]))
+        for (let i = 0; i < order.length; i++) {
+            if (order[i][1] != "b") {
+                if (order[i][0] in i_nodes) {
+                    i_nodes[order[i][0]].push(sc_radial(order[i]))
+                }
+                else {
+                    i_nodes[order[i][0]] = [sc_radial(order[i])]
+                }
             }
             else {
-                i_nodes[order[i][0]] = [sc_radial(order[i])]
+                if (order.slice(0,2) in i_nodes) {
+                    i_nodes[order[i].slice(0, 2)].push(sc_radial(order[i]))
+                }
+                else {
+                    i_nodes[order[i].slice(0, 2)] = [sc_radial(order[i])]
+                }
             }
         }
+
         // Calculate mean angle for each root note
         let root_nodes = {}
-        for (const [key,value] of Object.entries(i_nodes)) {
+        for (const [key, value] of Object.entries(i_nodes)) {
             const mean_angle = d3.mean(value)
             root_nodes[key] = { x: r * Math.sin(mean_angle), y: r * Math.cos(mean_angle) }
         }
@@ -126,11 +137,15 @@ export class ChartHier extends React.Component {
             .append("path")
             .attr("class", "link")
             .attr("d", (d) => lineGen([node2point(d.labels[0]),
-                            {x:root_nodes[d.labels[0][0]].x/path_factor,
-                                y:root_nodes[d.labels[0][0]].y/path_factor},
-                            {x:root_nodes[d.labels[1][0]].x/path_factor,
-                                y:root_nodes[d.labels[1][0]].y/path_factor},
-                            node2point(d.labels[1])]))
+            {
+                x: root_nodes[d.labels[0][1] === "b" ? d.labels[0].slice(0,2) : d.labels[0][0] ].x / path_factor,
+                y: root_nodes[d.labels[0][1] === "b" ? d.labels[0].slice(0,2) : d.labels[0][0] ].y / path_factor
+            },
+            {
+                x: root_nodes[d.labels[1][1] === "b" ? d.labels[1].slice(0,2) : d.labels[1][0]].x / path_factor,
+                y: root_nodes[d.labels[1][1] === "b" ? d.labels[1].slice(0,2) : d.labels[1][0]].y / path_factor
+            },
+            node2point(d.labels[1])]))
             .attr("stroke", d => cmap[d.tag])
             .attr("fill", "none")
             .attr("stroke-width", 1)
