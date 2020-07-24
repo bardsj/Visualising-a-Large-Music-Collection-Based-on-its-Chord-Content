@@ -52,7 +52,7 @@ export class ChartHier extends React.Component {
         order = order.filter(x => filtered_set.includes(x))
 
         // Calculate radial coordinate from ordered list of nodes
-        const sc_radial = d3.scalePoint().domain(order).range([0, Math.PI * 2])
+        const sc_radial = d3.scalePoint().domain(order).range([0, Math.PI * 2 - (Math.PI*2/order.length)])
 
         // Colour map
         const cmap = genreColormap()
@@ -81,7 +81,7 @@ export class ChartHier extends React.Component {
                 }
             }
             else {
-                if (order.slice(0,2) in i_nodes) {
+                if (order.slice(0, 2) in i_nodes) {
                     i_nodes[order[i].slice(0, 2)].push(sc_radial(order[i]))
                 }
                 else {
@@ -93,13 +93,13 @@ export class ChartHier extends React.Component {
         // Calculate mean angle for each root note
         let root_nodes = {}
         for (const [key, value] of Object.entries(i_nodes)) {
-            const mean_angle = d3.mean(value)
+            const mean_angle = Math.atan2( d3.sum(value.map(Math.sin))/value.length , d3.sum(value.map(Math.cos))/value.length)
             root_nodes[key] = { x: r * Math.sin(mean_angle), y: r * Math.cos(mean_angle) }
         }
 
         // Append node groups
         const nodes_group = svg.selectAll("g")
-            .data(node_points.slice(0, -1))
+            .data(node_points)
             .enter()
             .append("g")
             .attr("transform", (d) => {
@@ -138,12 +138,12 @@ export class ChartHier extends React.Component {
             .attr("class", "link")
             .attr("d", (d) => lineGen([node2point(d.labels[0]),
             {
-                x: root_nodes[d.labels[0][1] === "b" ? d.labels[0].slice(0,2) : d.labels[0][0] ].x / path_factor,
-                y: root_nodes[d.labels[0][1] === "b" ? d.labels[0].slice(0,2) : d.labels[0][0] ].y / path_factor
+                x: root_nodes[d.labels[0][1] === "b" ? d.labels[0].slice(0, 2) : d.labels[0][0]].x / path_factor,
+                y: root_nodes[d.labels[0][1] === "b" ? d.labels[0].slice(0, 2) : d.labels[0][0]].y / path_factor
             },
             {
-                x: root_nodes[d.labels[1][1] === "b" ? d.labels[1].slice(0,2) : d.labels[1][0]].x / path_factor,
-                y: root_nodes[d.labels[1][1] === "b" ? d.labels[1].slice(0,2) : d.labels[1][0]].y / path_factor
+                x: root_nodes[d.labels[1][1] === "b" ? d.labels[1].slice(0, 2) : d.labels[1][0]].x / path_factor,
+                y: root_nodes[d.labels[1][1] === "b" ? d.labels[1].slice(0, 2) : d.labels[1][0]].y / path_factor
             },
             node2point(d.labels[1])]))
             .attr("stroke", d => cmap[d.tag])
@@ -152,10 +152,12 @@ export class ChartHier extends React.Component {
             .attr("stroke-opacity", d => (d.values / d3.max(sets.map(x => x.values))) ** this.props.focus)
 
         nodes_group.on("mouseenter", (sel) => {
+            console.log(sel)
             d3.selectAll(".link")
                 .filter(d => d.labels.includes(sel.label))
                 .raise()
                 .transition(0.1)
+                .attr("c",d=>console.log(d))
                 .attr("stroke", "red")
                 .attr("stroke-width", 3)
                 .attr("stroke-opacity", d => (d.values / d3.max(sets.map(x => x.values))) ** 1)

@@ -52,7 +52,7 @@ export class ChartCircular extends React.Component {
         order = order.filter(x=>filtered_set.includes(x))
 
         // Calculate radial coordinate from ordered list of nodes
-        const sc_radial = d3.scalePoint().domain(order).range([0, Math.PI * 2])
+        const sc_radial = d3.scalePoint().domain(order).range([0, Math.PI * 2 - (Math.PI*2/order.length)])
 
         // Colour map
         const cmap = genreColormap()
@@ -70,7 +70,7 @@ export class ChartCircular extends React.Component {
 
         // Append node groups
         const nodes_group = svg.selectAll("g")
-            .data(node_points.slice(0, -1))
+            .data(node_points)
             .enter()
             .append("g")
             .attr("transform", (d) => {

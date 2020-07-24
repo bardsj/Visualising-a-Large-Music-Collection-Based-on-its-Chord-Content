@@ -59,15 +59,17 @@ export default () => {
       </Row>
       <Row>
         <Col sm={2}>
-          <div className="fixed-bottom">
-        <VisParams chartType={chartType} support={support} focus={focus} handleSupport={setSupport} beta={beta} handleBeta={setBeta} handleFocus={setFocus}/>
-        </div>
         </Col>
         <Col>
           {chart}
         </Col>
         <Col sm={2}>
           {legend}
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <VisParams chartType={chartType} support={support} focus={focus} handleSupport={setSupport} beta={beta} handleBeta={setBeta} handleFocus={setFocus}/>
         </Col>
       </Row>
     </Container>

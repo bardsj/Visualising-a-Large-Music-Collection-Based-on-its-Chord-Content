@@ -57527,7 +57527,7 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
         return filtered_set.includes(x);
       }); // Calculate radial coordinate from ordered list of nodes
 
-      var sc_radial = d3.scalePoint().domain(order).range([0, Math.PI * 2]); // Colour map
+      var sc_radial = d3.scalePoint().domain(order).range([0, Math.PI * 2 - Math.PI * 2 / order.length]); // Colour map
 
       var cmap = (0, _colorMap.genreColormap)(); // Convert radial coordinate to cartesian
 
@@ -57551,7 +57551,7 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
         };
       }); // Append node groups
 
-      var nodes_group = svg.selectAll("g").data(node_points.slice(0, -1)).enter().append("g").attr("transform", function (d) {
+      var nodes_group = svg.selectAll("g").data(node_points).enter().append("g").attr("transform", function (d) {
         var x = centre.x + d.coords.x;
         var y = centre.y - d.coords.y;
         return "translate(" + x + "," + y + ")";
@@ -57980,7 +57980,7 @@ var ChartHier = /*#__PURE__*/function (_React$Component) {
         return filtered_set.includes(x);
       }); // Calculate radial coordinate from ordered list of nodes
 
-      var sc_radial = d3.scalePoint().domain(order).range([0, Math.PI * 2]); // Colour map
+      var sc_radial = d3.scalePoint().domain(order).range([0, Math.PI * 2 - Math.PI * 2 / order.length]); // Colour map
 
       var cmap = (0, _colorMap.genreColormap)(); // Convert radial coordinate to cartesian
 
@@ -58030,7 +58030,7 @@ var ChartHier = /*#__PURE__*/function (_React$Component) {
             key = _Object$entries$_i[0],
             value = _Object$entries$_i[1];
 
-        var mean_angle = d3.mean(value);
+        var mean_angle = Math.atan2(d3.sum(value.map(Math.sin)) / value.length, d3.sum(value.map(Math.cos)) / value.length);
         root_nodes[key] = {
           x: r * Math.sin(mean_angle),
           y: r * Math.cos(mean_angle)
@@ -58038,7 +58038,7 @@ var ChartHier = /*#__PURE__*/function (_React$Component) {
       } // Append node groups
 
 
-      var nodes_group = svg.selectAll("g").data(node_points.slice(0, -1)).enter().append("g").attr("transform", function (d) {
+      var nodes_group = svg.selectAll("g").data(node_points).enter().append("g").attr("transform", function (d) {
         var x = centre.x + d.coords.x;
         var y = centre.y - d.coords.y;
         return "translate(" + x + "," + y + ")";
@@ -58078,9 +58078,12 @@ var ChartHier = /*#__PURE__*/function (_React$Component) {
         })), _this3.props.focus);
       });
       nodes_group.on("mouseenter", function (sel) {
+        console.log(sel);
         d3.selectAll(".link").filter(function (d) {
           return d.labels.includes(sel.label);
-        }).raise().transition(0.1).attr("stroke", "red").attr("stroke-width", 3).attr("stroke-opacity", function (d) {
+        }).raise().transition(0.1).attr("c", function (d) {
+          return console.log(d);
+        }).attr("stroke", "red").attr("stroke-width", 3).attr("stroke-opacity", function (d) {
           return Math.pow(d.values / d3.max(sets.map(function (x) {
             return x.values;
           })), 1);
@@ -74465,9 +74468,9 @@ var _default = function _default() {
     handleChartType: handleChartType
   }))), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Row, null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Col, {
     sm: 2
-  }, /*#__PURE__*/_react.default.createElement("div", {
-    className: "fixed-bottom"
-  }, /*#__PURE__*/_react.default.createElement(_visparams.VisParams, {
+  }), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Col, null, chart), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Col, {
+    sm: 2
+  }, legend)), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Row, null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Col, null, /*#__PURE__*/_react.default.createElement(_visparams.VisParams, {
     chartType: chartType,
     support: support,
     focus: focus,
@@ -74475,9 +74478,7 @@ var _default = function _default() {
     beta: beta,
     handleBeta: setBeta,
     handleFocus: setFocus
-  }))), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Col, null, chart), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Col, {
-    sm: 2
-  }, legend))));
+  })))));
 };
 
 exports.default = _default;
