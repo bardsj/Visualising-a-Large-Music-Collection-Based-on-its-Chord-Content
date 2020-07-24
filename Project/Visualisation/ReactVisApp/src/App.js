@@ -15,6 +15,7 @@ export default () => {
   const [chartType, setChartType] = useState("Circular Hierarchical")
   const [focus, setFocus] = useState(1)
   const [support, setSupport] = useState(5)
+  const [beta,setBeta] = useState(1)
 
   const handleFilter = (e) => {
     if (e.target.checked == true) {
@@ -40,7 +41,7 @@ export default () => {
       chart = <ChartParallel id={1} width={800} height={800} request_params={requestParams} focus={focus} support={support}/>
   }
   else if (chartType == "Circular Hierarchical") {
-    chart = <ChartHier id={1} width={800} height={800} request_params={requestParams} focus={focus} support={support}/>
+    chart = <ChartHier beta={beta} id={1} width={800} height={800} request_params={requestParams} focus={focus} support={support}/>
   }
 
   let legend = ""
@@ -58,17 +59,15 @@ export default () => {
       </Row>
       <Row>
         <Col sm={2}>
+          <div className="fixed-bottom">
+        <VisParams chartType={chartType} support={support} focus={focus} handleSupport={setSupport} beta={beta} handleBeta={setBeta} handleFocus={setFocus}/>
+        </div>
         </Col>
         <Col>
           {chart}
         </Col>
         <Col sm={2}>
           {legend}
-        </Col>
-      </Row>
-      <Row>
-        <Col>
-          <VisParams support={support} focus={focus} handleSupport={setSupport} handleFocus={setFocus}/>
         </Col>
       </Row>
     </Container>

@@ -58047,12 +58047,12 @@ var ChartHier = /*#__PURE__*/function (_React$Component) {
       }).attr("dy", function (d) {
         return -d.coords.y * labelOffset;
       }).attr("text-anchor", "middle").attr("font-size", 10);
-      var beta = 1000;
+      var beta = this.props.beta;
       var lineGen = d3.line().x(function (d) {
         return d.x + centre.x;
       }).y(function (d) {
         return centre.y - d.y;
-      }).curve(d3.curveBundle.beta(beta / 1000));
+      }).curve(d3.curveBundle.beta(beta));
       var path_factor = 1.4;
       var links = svg.selectAll("path").data(sets).enter().append("path").attr("class", "link").attr("d", function (d) {
         return lineGen([node2point(d.labels[0]), {
@@ -74060,74 +74060,180 @@ function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 function VisParams(props) {
-  return /*#__PURE__*/_react.default.createElement("div", {
-    style: {
-      display: "grid",
-      paddingLeft: 20,
-      gridTemplateColumns: "60px 150px 50px"
-    }
-  }, /*#__PURE__*/_react.default.createElement("p", {
-    style: {
-      float: "left",
-      paddingRight: 10,
-      paddingBottom: 10,
-      gridRow: 1,
-      gridColumn: 1
-    }
-  }, "Focus"), /*#__PURE__*/_react.default.createElement("input", {
-    style: {
-      float: "left",
-      marginTop: -25,
-      gridRow: 1,
-      gridColumn: 2
-    },
-    type: "range",
-    min: "0.1",
-    max: "5",
-    step: "0.1",
-    defaultValue: props.focus,
-    id: "focus",
-    onChange: function onChange(e) {
-      return props.handleFocus(e.target.value);
-    }
-  }), /*#__PURE__*/_react.default.createElement("p", {
-    style: {
-      float: "right",
-      paddingLeft: 10,
-      gridRow: 1,
-      gridColumn: 3
-    }
-  }, props.focus), /*#__PURE__*/_react.default.createElement("p", {
-    style: {
-      float: "left",
-      paddingRight: 10,
-      paddingBottom: 10,
-      gridRow: 2,
-      gridColumn: 1
-    }
-  }, "Support"), /*#__PURE__*/_react.default.createElement("input", {
-    style: {
-      float: "left",
-      marginTop: -25,
-      gridRow: 2,
-      gridColumn: 2
-    },
-    type: "range",
-    min: "1",
-    max: "20",
-    defaultValue: props.support,
-    id: "support",
-    onChange: function onChange(e) {
-      return props.handleSupport(e.target.value);
-    }
-  }), /*#__PURE__*/_react.default.createElement("p", {
-    style: {
-      float: "right",
-      paddingLeft: 10,
-      gridRow: 2,
-      gridColumn: 3
-    }
-  }, props.support));
+  var controls = "";
+
+  if (props.chartType == "Circular Hierarchical") {
+    controls = /*#__PURE__*/_react.default.createElement("div", {
+      style: {
+        display: "grid",
+        paddingLeft: 20,
+        gridTemplateColumns: "60px 150px 50px"
+      }
+    }, /*#__PURE__*/_react.default.createElement("p", {
+      style: {
+        float: "left",
+        paddingRight: 10,
+        paddingBottom: 10,
+        gridRow: 1,
+        gridColumn: 1
+      }
+    }, "Focus"), /*#__PURE__*/_react.default.createElement("input", {
+      style: {
+        float: "left",
+        marginTop: -25,
+        gridRow: 1,
+        gridColumn: 2
+      },
+      type: "range",
+      min: "0.1",
+      max: "5",
+      step: "0.1",
+      defaultValue: props.focus,
+      id: "focus",
+      onChange: function onChange(e) {
+        return props.handleFocus(e.target.value);
+      }
+    }), /*#__PURE__*/_react.default.createElement("p", {
+      style: {
+        float: "right",
+        paddingLeft: 10,
+        gridRow: 1,
+        gridColumn: 3
+      }
+    }, props.focus), /*#__PURE__*/_react.default.createElement("p", {
+      style: {
+        float: "left",
+        paddingRight: 10,
+        paddingBottom: 10,
+        gridRow: 2,
+        gridColumn: 1
+      }
+    }, "Support"), /*#__PURE__*/_react.default.createElement("input", {
+      style: {
+        float: "left",
+        marginTop: -25,
+        gridRow: 2,
+        gridColumn: 2
+      },
+      type: "range",
+      min: "1",
+      max: "20",
+      defaultValue: props.support,
+      id: "support",
+      onChange: function onChange(e) {
+        return props.handleSupport(e.target.value);
+      }
+    }), /*#__PURE__*/_react.default.createElement("p", {
+      style: {
+        float: "right",
+        paddingLeft: 10,
+        gridRow: 2,
+        gridColumn: 3
+      }
+    }, props.support), /*#__PURE__*/_react.default.createElement("p", {
+      style: {
+        float: "left",
+        paddingRight: 10,
+        paddingBottom: 10,
+        gridRow: 3,
+        gridColumn: 1
+      }
+    }, "Beta"), /*#__PURE__*/_react.default.createElement("input", {
+      style: {
+        float: "left",
+        marginTop: -25,
+        gridRow: 3,
+        gridColumn: 2
+      },
+      type: "range",
+      min: "0",
+      max: "1",
+      step: "0.1",
+      defaultValue: props.beta,
+      id: "support",
+      onChange: function onChange(e) {
+        return props.handleBeta(e.target.value);
+      }
+    }), /*#__PURE__*/_react.default.createElement("p", {
+      style: {
+        float: "right",
+        paddingLeft: 10,
+        gridRow: 3,
+        gridColumn: 3
+      }
+    }, props.beta));
+  } else {
+    controls = /*#__PURE__*/_react.default.createElement("div", {
+      style: {
+        display: "grid",
+        paddingLeft: 20,
+        gridTemplateColumns: "60px 150px 50px"
+      }
+    }, /*#__PURE__*/_react.default.createElement("p", {
+      style: {
+        float: "left",
+        paddingRight: 10,
+        paddingBottom: 10,
+        gridRow: 1,
+        gridColumn: 1
+      }
+    }, "Focus"), /*#__PURE__*/_react.default.createElement("input", {
+      style: {
+        float: "left",
+        marginTop: -25,
+        gridRow: 1,
+        gridColumn: 2
+      },
+      type: "range",
+      min: "0.1",
+      max: "5",
+      step: "0.1",
+      defaultValue: props.focus,
+      id: "focus",
+      onChange: function onChange(e) {
+        return props.handleFocus(e.target.value);
+      }
+    }), /*#__PURE__*/_react.default.createElement("p", {
+      style: {
+        float: "right",
+        paddingLeft: 10,
+        gridRow: 1,
+        gridColumn: 3
+      }
+    }, props.focus), /*#__PURE__*/_react.default.createElement("p", {
+      style: {
+        float: "left",
+        paddingRight: 10,
+        paddingBottom: 10,
+        gridRow: 2,
+        gridColumn: 1
+      }
+    }, "Support"), /*#__PURE__*/_react.default.createElement("input", {
+      style: {
+        float: "left",
+        marginTop: -25,
+        gridRow: 2,
+        gridColumn: 2
+      },
+      type: "range",
+      min: "1",
+      max: "20",
+      defaultValue: props.support,
+      id: "support",
+      onChange: function onChange(e) {
+        return props.handleSupport(e.target.value);
+      }
+    }), /*#__PURE__*/_react.default.createElement("p", {
+      style: {
+        float: "right",
+        paddingLeft: 10,
+        gridRow: 2,
+        gridColumn: 3
+      }
+    }, props.support));
+  }
+
+  return /*#__PURE__*/_react.default.createElement("div", null, controls);
 }
 },{"react":"node_modules/react/index.js"}],"src/legend.js":[function(require,module,exports) {
 "use strict";
@@ -74275,6 +74381,11 @@ var _default = function _default() {
       support = _useState8[0],
       setSupport = _useState8[1];
 
+  var _useState9 = (0, _react.useState)(1),
+      _useState10 = (0, _slicedToArray2.default)(_useState9, 2),
+      beta = _useState10[0],
+      setBeta = _useState10[1];
+
   var handleFilter = function handleFilter(e) {
     if (e.target.checked == true) {
       requestParams.tag_val.push(e.target.value);
@@ -74319,6 +74430,7 @@ var _default = function _default() {
     });
   } else if (chartType == "Circular Hierarchical") {
     chart = /*#__PURE__*/_react.default.createElement(_chartHier.ChartHier, {
+      beta: beta,
       id: 1,
       width: 800,
       height: 800,
@@ -74345,14 +74457,19 @@ var _default = function _default() {
     handleChartType: handleChartType
   }))), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Row, null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Col, {
     sm: 2
-  }), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Col, null, chart), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Col, {
-    sm: 2
-  }, legend)), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Row, null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Col, null, /*#__PURE__*/_react.default.createElement(_visparams.VisParams, {
+  }, /*#__PURE__*/_react.default.createElement("div", {
+    className: "fixed-bottom"
+  }, /*#__PURE__*/_react.default.createElement(_visparams.VisParams, {
+    chartType: chartType,
     support: support,
     focus: focus,
     handleSupport: setSupport,
+    beta: beta,
+    handleBeta: setBeta,
     handleFocus: setFocus
-  })))));
+  }))), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Col, null, chart), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Col, {
+    sm: 2
+  }, legend))));
 };
 
 exports.default = _default;

@@ -115,8 +115,8 @@ export class ChartHier extends React.Component {
             .attr("font-size", 10)
 
 
-        const beta = 1000
-        const lineGen = d3.line().x(d => d.x + centre.x).y(d => centre.y - d.y).curve(d3.curveBundle.beta(beta / 1000))
+        const beta = this.props.beta
+        const lineGen = d3.line().x(d => d.x + centre.x).y(d => centre.y - d.y).curve(d3.curveBundle.beta(beta))
 
         let path_factor = 1.4
 
