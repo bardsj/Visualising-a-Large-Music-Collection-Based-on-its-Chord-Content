@@ -18,6 +18,7 @@ export class Options extends React.Component {
                             <Form.Control defaultValue={this.props.chartType} as="select" onChange={(e) => this.props.handleChartType(e.target.value)}>
                                 <option>Circular</option>
                                 <option>Parallel</option>
+                                <option>Circular Hierarchical</option>
                             </Form.Control>
                             <Form.Label>Genre</Form.Label>
                             <Form.Group>

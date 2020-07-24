@@ -81,6 +81,17 @@ def returnDataParallel():
 
     return jsonify({"sets":sets,"order":order})
 
+@app.route('/circHier',methods=['GET'])
+def returnDataCHier():
+    sets = getData(request)
+    sets = [s for s in sets if len(s['labels']) == 2]
+
+    order = ['C7','Cmaj','Cmaj7','Cmin','Cmin7','D7','Db7','Dbmaj','Dbmaj7','Dbmin','Dbmin7','Dmaj','Dmaj7','Dmin','Dmin7','E7','Eb7','Ebmaj','Ebmaj7','Ebmin', \
+    'Ebmin7','Emaj','Emaj7','Emin','Emin7','F7','Fmaj','Fmaj7','Fmin','Fmin7','G7','Gb7','Gbmaj','Gbmaj7','Gbmin','Gbmin7','Gmaj','Gmaj7','Gmin', 'Gmin7','A7','Ab7', \
+     'Abmaj','Abmaj7','Abmin','Abmin7','Amaj','Amaj7','Amin','Amin7','B7','Bb7','Bbmaj','Bbmaj7','Bbmin','Bbmin7','Bmaj','Bmaj7','Bmin','Bmin7']
+
+    return jsonify({"sets":sets,"order":order})
+
 
 @app.errorhandler(404)
 def not_found(e):

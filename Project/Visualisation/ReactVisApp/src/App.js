@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { ChartCircular } from "./chartCircular";
 import { ChartParallel } from "./chartParallel";
+import { ChartHier } from "./chartHier";
 import { Options } from "./options"
 import {VisParams} from "./visparams"
 import {Legend} from "./legend"
@@ -11,7 +12,7 @@ import { Container, Row, Col } from 'react-bootstrap'
 export default () => {
 
   const [requestParams, setRequestParams] = useState({tag_val:["jazz"], tag_name:"genres"})
-  const [chartType, setChartType] = useState("Circular")
+  const [chartType, setChartType] = useState("Circular Hierarchical")
   const [focus, setFocus] = useState(1)
   const [support, setSupport] = useState(5)
 
@@ -35,8 +36,11 @@ export default () => {
   if (chartType == "Circular") {
     chart =  <ChartCircular id={1} width={800} height={800} request_params={requestParams} focus={focus} support={support}/>
   }
-  else  {
+  else if (chartType == "Parallel")  {
       chart = <ChartParallel id={1} width={800} height={800} request_params={requestParams} focus={focus} support={support}/>
+  }
+  else if (chartType == "Circular Hierarchical") {
+    chart = <ChartHier id={1} width={800} height={800} request_params={requestParams} focus={focus} support={support}/>
   }
 
   let legend = ""

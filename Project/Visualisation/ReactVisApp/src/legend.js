@@ -44,6 +44,6 @@ export class Legend extends React.Component {
     }
 
     render() {
-        return (<svg ref={"legend"} height={500}></svg>)
+        return (<svg ref={"legend"} height="100%"></svg>)
     }
 }

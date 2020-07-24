@@ -57859,7 +57859,256 @@ var ChartParallel = /*#__PURE__*/function (_React$Component) {
 }(_react.default.Component);
 
 exports.ChartParallel = ChartParallel;
-},{"@babel/runtime/helpers/construct":"node_modules/@babel/runtime/helpers/construct.js","@babel/runtime/helpers/toConsumableArray":"node_modules/@babel/runtime/helpers/toConsumableArray.js","@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js","@babel/runtime/helpers/inherits":"node_modules/@babel/runtime/helpers/inherits.js","@babel/runtime/helpers/possibleConstructorReturn":"node_modules/@babel/runtime/helpers/possibleConstructorReturn.js","@babel/runtime/helpers/getPrototypeOf":"node_modules/@babel/runtime/helpers/getPrototypeOf.js","react":"node_modules/react/index.js","d3":"node_modules/d3/index.js","./colorMap":"src/colorMap.js"}],"node_modules/@babel/runtime/helpers/esm/extends.js":[function(require,module,exports) {
+},{"@babel/runtime/helpers/construct":"node_modules/@babel/runtime/helpers/construct.js","@babel/runtime/helpers/toConsumableArray":"node_modules/@babel/runtime/helpers/toConsumableArray.js","@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js","@babel/runtime/helpers/inherits":"node_modules/@babel/runtime/helpers/inherits.js","@babel/runtime/helpers/possibleConstructorReturn":"node_modules/@babel/runtime/helpers/possibleConstructorReturn.js","@babel/runtime/helpers/getPrototypeOf":"node_modules/@babel/runtime/helpers/getPrototypeOf.js","react":"node_modules/react/index.js","d3":"node_modules/d3/index.js","./colorMap":"src/colorMap.js"}],"src/chartHier.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.ChartHier = void 0;
+
+var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
+
+var _construct2 = _interopRequireDefault(require("@babel/runtime/helpers/construct"));
+
+var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toConsumableArray"));
+
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
+
+var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
+
+var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits"));
+
+var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
+
+var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
+
+var _react = _interopRequireDefault(require("react"));
+
+var d3 = _interopRequireWildcard(require("d3"));
+
+var _colorMap = require("./colorMap");
+
+function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = (0, _getPrototypeOf2.default)(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2.default)(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2.default)(this, result); }; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+var ChartHier = /*#__PURE__*/function (_React$Component) {
+  (0, _inherits2.default)(ChartHier, _React$Component);
+
+  var _super = _createSuper(ChartHier);
+
+  function ChartHier(props) {
+    var _this;
+
+    (0, _classCallCheck2.default)(this, ChartHier);
+    _this = _super.call(this, props);
+    _this.state = {
+      data: null,
+      request_params: null
+    };
+    return _this;
+  }
+
+  (0, _createClass2.default)(ChartHier, [{
+    key: "fetchData",
+    value: function fetchData(request_params) {
+      var _this2 = this;
+
+      var r_url = "";
+
+      if (request_params.tag_val.length > 0) {
+        r_url = "http://127.0.0.1:5000/circHier?tag_val=" + request_params.tag_val.join() + "&tag_name=" + request_params.tag_name;
+      } else {
+        r_url = "http://127.0.0.1:5000/circHier";
+      }
+
+      fetch(r_url, {
+        mode: 'cors'
+      }).then(function (r) {
+        return r.json();
+      }).then(function (r) {
+        return _this2.setState({
+          data: r,
+          request_params: request_params
+        });
+      });
+    }
+  }, {
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      this.fetchData(this.props.request_params);
+    }
+  }, {
+    key: "componentDidUpdate",
+    value: function componentDidUpdate() {
+      if (this.state.request_params !== this.props.request_params) {
+        this.fetchData(this.props.request_params);
+      }
+
+      if (this.state.data) {
+        this.createChart();
+      }
+    }
+  }, {
+    key: "createChart",
+    value: function createChart() {
+      var _this3 = this;
+
+      var svg = d3.select(this.refs[this.props.id + 'chartsvg']);
+      svg.selectAll("*").remove();
+      var width = this.props.width;
+      var height = this.props.height;
+      var order = this.state.data.order;
+      var sets = this.state.data.sets; // Filter based on slider support val
+
+      sets = sets.filter(function (x) {
+        return x.values > _this3.props.support / 100;
+      });
+      var r = this.props.height / 2 - 50; // Filter out nodes from order that all not in filtered sets
+
+      var filtered_set = (0, _construct2.default)(Array, (0, _toConsumableArray2.default)(new Set(sets.flatMap(function (x) {
+        return x['labels'];
+      }))));
+      order = order.filter(function (x) {
+        return filtered_set.includes(x);
+      }); // Calculate radial coordinate from ordered list of nodes
+
+      var sc_radial = d3.scalePoint().domain(order).range([0, Math.PI * 2]); // Colour map
+
+      var cmap = (0, _colorMap.genreColormap)(); // Convert radial coordinate to cartesian
+
+      var node2point = function node2point(d) {
+        return {
+          x: r * Math.sin(sc_radial(d)),
+          y: r * Math.cos(sc_radial(d))
+        };
+      }; // Centre of the circle
+
+
+      var centre = {
+        x: width / 2,
+        y: width / 2
+      }; // Create objects containing node labels and coordinates from list of edges (sets)
+
+      var node_points = order.map(function (x) {
+        return {
+          "label": x,
+          "coords": node2point(x)
+        };
+      }); // Calculate inner heirarchy bundling nodes
+
+      var i_nodes = {}; // For each root note get angle of sub nodes
+
+      for (var i = 0; i < order.length; i++) {
+        if (order[i][0] in i_nodes) {
+          i_nodes[order[i][0]].push(sc_radial(order[i]));
+        } else {
+          i_nodes[order[i][0]] = [sc_radial(order[i])];
+        }
+      } // Calculate mean angle for each root note
+
+
+      var root_nodes = {};
+
+      for (var _i = 0, _Object$entries = Object.entries(i_nodes); _i < _Object$entries.length; _i++) {
+        var _Object$entries$_i = (0, _slicedToArray2.default)(_Object$entries[_i], 2),
+            key = _Object$entries$_i[0],
+            value = _Object$entries$_i[1];
+
+        var mean_angle = d3.mean(value);
+        root_nodes[key] = {
+          x: r * Math.sin(mean_angle),
+          y: r * Math.cos(mean_angle)
+        };
+      } // Append node groups
+
+
+      var nodes_group = svg.selectAll("g").data(node_points.slice(0, -1)).enter().append("g").attr("transform", function (d) {
+        var x = centre.x + d.coords.x;
+        var y = centre.y - d.coords.y;
+        return "translate(" + x + "," + y + ")";
+      }); // Append node circles to node groups
+
+      var nodes = nodes_group.append("circle").attr("class", "node").attr("r", 5); // Text offset
+
+      var labelOffset = 0.06; // Append text to labels
+
+      var labels = nodes_group.append("text").text(function (d) {
+        return d.label;
+      }).attr("fill", "black").attr("dx", function (d) {
+        return d.coords.x * labelOffset;
+      }).attr("dy", function (d) {
+        return -d.coords.y * labelOffset;
+      }).attr("text-anchor", "middle").attr("font-size", 10);
+      var beta = 1000;
+      var lineGen = d3.line().x(function (d) {
+        return d.x + centre.x;
+      }).y(function (d) {
+        return centre.y - d.y;
+      }).curve(d3.curveBundle.beta(beta / 1000));
+      var path_factor = 1.4;
+      var links = svg.selectAll("path").data(sets).enter().append("path").attr("class", "link").attr("d", function (d) {
+        return lineGen([node2point(d.labels[0]), {
+          x: root_nodes[d.labels[0][0]].x / path_factor,
+          y: root_nodes[d.labels[0][0]].y / path_factor
+        }, {
+          x: root_nodes[d.labels[1][0]].x / path_factor,
+          y: root_nodes[d.labels[1][0]].y / path_factor
+        }, node2point(d.labels[1])]);
+      }).attr("stroke", function (d) {
+        return cmap[d.tag];
+      }).attr("fill", "none").attr("stroke-width", 1).attr("stroke-opacity", function (d) {
+        return Math.pow(d.values / d3.max(sets.map(function (x) {
+          return x.values;
+        })), _this3.props.focus);
+      });
+      nodes_group.on("mouseenter", function (sel) {
+        d3.selectAll(".link").filter(function (d) {
+          return d.labels.includes(sel.label);
+        }).raise().transition(0.1).attr("stroke", "red").attr("stroke-width", 3).attr("stroke-opacity", function (d) {
+          return Math.pow(d.values / d3.max(sets.map(function (x) {
+            return x.values;
+          })), 1);
+        });
+      });
+      nodes_group.on("mouseleave", function (sel) {
+        d3.selectAll(".link").filter(function (d) {
+          return d.labels.includes(sel.label);
+        }).transition(0.1).attr("stroke", function (d) {
+          return cmap[d.tag];
+        }).attr("stroke-width", 1).attr("stroke-opacity", function (d) {
+          return Math.pow(d.values / d3.max(sets.map(function (x) {
+            return x.values;
+          })), _this3.props.focus);
+        });
+      });
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      return /*#__PURE__*/_react.default.createElement("svg", {
+        ref: this.props.id + 'chartsvg',
+        width: this.props.width,
+        height: this.props.height,
+        style: {
+          display: "block",
+          margin: "auto"
+        }
+      });
+    }
+  }]);
+  return ChartHier;
+}(_react.default.Component);
+
+exports.ChartHier = ChartHier;
+},{"@babel/runtime/helpers/slicedToArray":"node_modules/@babel/runtime/helpers/slicedToArray.js","@babel/runtime/helpers/construct":"node_modules/@babel/runtime/helpers/construct.js","@babel/runtime/helpers/toConsumableArray":"node_modules/@babel/runtime/helpers/toConsumableArray.js","@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js","@babel/runtime/helpers/inherits":"node_modules/@babel/runtime/helpers/inherits.js","@babel/runtime/helpers/possibleConstructorReturn":"node_modules/@babel/runtime/helpers/possibleConstructorReturn.js","@babel/runtime/helpers/getPrototypeOf":"node_modules/@babel/runtime/helpers/getPrototypeOf.js","react":"node_modules/react/index.js","d3":"node_modules/d3/index.js","./colorMap":"src/colorMap.js"}],"node_modules/@babel/runtime/helpers/esm/extends.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -73757,7 +74006,7 @@ var Options = /*#__PURE__*/function (_React$Component) {
         onChange: function onChange(e) {
           return _this.props.handleChartType(e.target.value);
         }
-      }, /*#__PURE__*/_react.default.createElement("option", null, "Circular"), /*#__PURE__*/_react.default.createElement("option", null, "Parallel")), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Label, null, "Genre"), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Group, null, genres.map(function (genre, index) {
+      }, /*#__PURE__*/_react.default.createElement("option", null, "Circular"), /*#__PURE__*/_react.default.createElement("option", null, "Parallel"), /*#__PURE__*/_react.default.createElement("option", null, "Circular Hierarchical")), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Label, null, "Genre"), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Group, null, genres.map(function (genre, index) {
         return /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Check, {
           onChange: function onChange(e) {
             return _this.props.handleFilter(e);
@@ -73961,7 +74210,7 @@ var Legend = /*#__PURE__*/function (_React$Component) {
     value: function render() {
       return /*#__PURE__*/_react.default.createElement("svg", {
         ref: "legend",
-        height: 500
+        height: "100%"
       });
     }
   }]);
@@ -73984,6 +74233,8 @@ var _react = _interopRequireWildcard(require("react"));
 var _chartCircular = require("./chartCircular");
 
 var _chartParallel = require("./chartParallel");
+
+var _chartHier = require("./chartHier");
 
 var _options = require("./options");
 
@@ -74009,7 +74260,7 @@ var _default = function _default() {
       requestParams = _useState2[0],
       setRequestParams = _useState2[1];
 
-  var _useState3 = (0, _react.useState)("Circular"),
+  var _useState3 = (0, _react.useState)("Circular Hierarchical"),
       _useState4 = (0, _slicedToArray2.default)(_useState3, 2),
       chartType = _useState4[0],
       setChartType = _useState4[1];
@@ -74057,8 +74308,17 @@ var _default = function _default() {
       focus: focus,
       support: support
     });
-  } else {
+  } else if (chartType == "Parallel") {
     chart = /*#__PURE__*/_react.default.createElement(_chartParallel.ChartParallel, {
+      id: 1,
+      width: 800,
+      height: 800,
+      request_params: requestParams,
+      focus: focus,
+      support: support
+    });
+  } else if (chartType == "Circular Hierarchical") {
+    chart = /*#__PURE__*/_react.default.createElement(_chartHier.ChartHier, {
       id: 1,
       width: 800,
       height: 800,
@@ -74096,7 +74356,7 @@ var _default = function _default() {
 };
 
 exports.default = _default;
-},{"@babel/runtime/helpers/slicedToArray":"node_modules/@babel/runtime/helpers/slicedToArray.js","react":"node_modules/react/index.js","./chartCircular":"src/chartCircular.js","./chartParallel":"src/chartParallel.js","./options":"src/options.js","./visparams":"src/visparams.js","./legend":"src/legend.js","react-bootstrap":"node_modules/react-bootstrap/esm/index.js"}],"src/index.js":[function(require,module,exports) {
+},{"@babel/runtime/helpers/slicedToArray":"node_modules/@babel/runtime/helpers/slicedToArray.js","react":"node_modules/react/index.js","./chartCircular":"src/chartCircular.js","./chartParallel":"src/chartParallel.js","./chartHier":"src/chartHier.js","./options":"src/options.js","./visparams":"src/visparams.js","./legend":"src/legend.js","react-bootstrap":"node_modules/react-bootstrap/esm/index.js"}],"src/index.js":[function(require,module,exports) {
 "use strict";
 
 var _react = _interopRequireDefault(require("react"));
@@ -74136,7 +74396,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60506" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52472" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
