@@ -50,7 +50,7 @@ def getData(request):
 def returnDataCirc():
     sets = getData(request)
     sets = [s for s in sets if len(s['labels']) == 2]
-    order = AVSDF([s['labels'] for s in sets],local_adjusting=False).run_AVSDF()
+    order = AVSDF([s['labels'] for s in sets],local_adjusting=True).run_AVSDF()
 
     return jsonify({"sets":sets,"order":order})
 
