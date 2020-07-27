@@ -22,7 +22,7 @@ class AVSDF:
             Return number of edges containing each vertex (i.e. the degree)
         """
         # Get degree of vertex/node
-        return len(self._adjacent_vertices(node))
+        return len(self._adjacent_edges(node))
 
     def _adjacent_vertices(self,v):
         av = list(set(chain(*self._adjacent_edges(v))))
@@ -122,7 +122,6 @@ class AVSDF:
                     opt_order = temp_order.copy()
             
             self.order = opt_order.copy()
-            crossNo.append(self._count_all_crossings(self.order,self.edge_list))
                 
 
 
