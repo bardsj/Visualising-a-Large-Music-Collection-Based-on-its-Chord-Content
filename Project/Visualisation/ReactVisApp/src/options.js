@@ -19,6 +19,7 @@ export class Options extends React.Component {
                                 <option>Circular</option>
                                 <option>Parallel</option>
                                 <option>Circular Hierarchical</option>
+                                <option>Circular Hierarchical - Single Hue</option>
                             </Form.Control>
                             <Form.Label>Genre</Form.Label>
                             <Form.Group>

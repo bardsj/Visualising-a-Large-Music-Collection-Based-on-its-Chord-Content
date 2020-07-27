@@ -6,6 +6,7 @@ import { Options } from "./options"
 import {VisParams} from "./visparams"
 import {Legend} from "./legend"
 import { Container, Row, Col } from 'react-bootstrap'
+import { ChartHierSingleHue } from "./chartHierSingleHue";
 
 // <Chart width={600} height={600} request_params={{tag_val:"jazz", tag_name:"genres"}}/>
 
@@ -43,10 +44,13 @@ export default () => {
   else if (chartType == "Circular Hierarchical") {
     chart = <ChartHier beta={beta} id={1} width={800} height={800} request_params={requestParams} focus={focus} support={support}/>
   }
+  else if (chartType == "Circular Hierarchical - Single Hue") {
+    chart = <ChartHierSingleHue beta={beta} id={1} width={800} height={800} request_params={requestParams} focus={focus} support={support}/>
+  }
 
   let legend = ""
   if (requestParams.tag_val.length > 0) {
-    legend = <Legend requestParams={requestParams}/>
+    legend = <Legend chartType={chartType} requestParams={requestParams}/>
   }
 
 
