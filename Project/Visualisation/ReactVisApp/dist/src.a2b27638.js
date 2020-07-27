@@ -58078,12 +58078,9 @@ var ChartHier = /*#__PURE__*/function (_React$Component) {
         })), _this3.props.focus);
       });
       nodes_group.on("mouseenter", function (sel) {
-        console.log(sel);
         d3.selectAll(".link").filter(function (d) {
           return d.labels.includes(sel.label);
-        }).raise().transition(0.1).attr("c", function (d) {
-          return console.log(d);
-        }).attr("stroke", "red").attr("stroke-width", 3).attr("stroke-opacity", function (d) {
+        }).raise().transition(0.1).attr("stroke", "red").attr("stroke-width", 3).attr("stroke-opacity", function (d) {
           return Math.pow(d.values / d3.max(sets.map(function (x) {
             return x.values;
           })), 1);
@@ -74522,7 +74519,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63623" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64854" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

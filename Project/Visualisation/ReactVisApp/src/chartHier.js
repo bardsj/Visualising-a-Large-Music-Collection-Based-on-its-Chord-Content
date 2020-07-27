@@ -152,12 +152,10 @@ export class ChartHier extends React.Component {
             .attr("stroke-opacity", d => (d.values / d3.max(sets.map(x => x.values))) ** this.props.focus)
 
         nodes_group.on("mouseenter", (sel) => {
-            console.log(sel)
             d3.selectAll(".link")
                 .filter(d => d.labels.includes(sel.label))
                 .raise()
                 .transition(0.1)
-                .attr("c",d=>console.log(d))
                 .attr("stroke", "red")
                 .attr("stroke-width", 3)
                 .attr("stroke-opacity", d => (d.values / d3.max(sets.map(x => x.values))) ** 1)
