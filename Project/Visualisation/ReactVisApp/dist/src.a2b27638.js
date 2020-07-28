@@ -74393,6 +74393,21 @@ var Legend = /*#__PURE__*/function (_React$Component) {
         labels.append("text").text(function (d) {
           return d;
         }).attr("dx", 25).attr("dy", 15).attr("font-size", 15);
+      } else {
+        var xoffset = 20;
+        var yoffset = 20;
+        var height = 200;
+        var scColor = d3.scaleSequential().domain([0, 100]).interpolator(d3.interpolateYlOrRd);
+        var yScale = d3.scaleLinear().domain([0, 100]).range([0, height]);
+        svg.selectAll("rect").data(d3.range(99)).enter().append("rect").attr("width", 20).attr("height", 5).attr("x", 20).attr("y", function (d) {
+          return yScale(d) + 20;
+        }).attr("fill", function (d) {
+          return scColor(d);
+        });
+        svg.append("text").text("0").attr("x", xoffset + 30).attr("y", yoffset + 5);
+        svg.append("text").text("0.2").attr("x", xoffset + 30).attr("y", yoffset + height + 5);
+        svg.append("line").attr("x1", xoffset).attr("x2", xoffset + 25).attr("y1", yoffset).attr("y2", yoffset).attr("stroke", "black");
+        svg.append("line").attr("x1", xoffset).attr("x2", xoffset + 25).attr("y1", yoffset + height).attr("y2", yoffset + height).attr("stroke", "black");
       }
     }
   }, {
@@ -74528,10 +74543,9 @@ var ChartHierSingleHue = /*#__PURE__*/function (_React$Component) {
       }); // Calculate radial coordinate from ordered list of nodes
 
       var sc_radial = d3.scalePoint().domain(order).range([0, Math.PI * 2 - Math.PI * 2 / order.length]); // Colour map
+      //const scColor = d3.scaleSequential().domain([0,d3.max(sets.flatMap(x=>x.values))]).interpolator(d3.interpolateYlOrRd)
 
-      var scColor = d3.scaleSequential().domain([0, d3.max(sets.flatMap(function (x) {
-        return x.values;
-      }))]).interpolator(d3.interpolateYlOrRd); // Convert radial coordinate to cartesian
+      var scColor = d3.scaleSequential().domain([0, 0.2]).interpolator(d3.interpolateYlOrRd); // Convert radial coordinate to cartesian
 
       var node2point = function node2point(d) {
         return {
@@ -74709,7 +74723,7 @@ var _default = function _default() {
       requestParams = _useState2[0],
       setRequestParams = _useState2[1];
 
-  var _useState3 = (0, _react.useState)("Circular Hierarchical"),
+  var _useState3 = (0, _react.useState)("Circular Hierarchical - Single Hue"),
       _useState4 = (0, _slicedToArray2.default)(_useState3, 2),
       chartType = _useState4[0],
       setChartType = _useState4[1];

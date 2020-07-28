@@ -13,7 +13,7 @@ import { ChartHierSingleHue } from "./chartHierSingleHue";
 export default () => {
 
   const [requestParams, setRequestParams] = useState({tag_val:["jazz"], tag_name:"genres"})
-  const [chartType, setChartType] = useState("Circular Hierarchical")
+  const [chartType, setChartType] = useState("Circular Hierarchical - Single Hue")
   const [focus, setFocus] = useState(1)
   const [support, setSupport] = useState(5)
   const [beta,setBeta] = useState(1)

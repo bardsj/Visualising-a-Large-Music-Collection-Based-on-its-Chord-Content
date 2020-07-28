@@ -54,7 +54,8 @@ export class ChartHierSingleHue extends React.Component {
         const sc_radial = d3.scalePoint().domain(order).range([0, Math.PI * 2 - (Math.PI*2/order.length)])
 
         // Colour map
-        const scColor = d3.scaleSequential().domain([0,d3.max(sets.flatMap(x=>x.values))]).interpolator(d3.interpolateYlOrRd)
+        //const scColor = d3.scaleSequential().domain([0,d3.max(sets.flatMap(x=>x.values))]).interpolator(d3.interpolateYlOrRd)
+        const scColor = d3.scaleSequential().domain([0,0.2]).interpolator(d3.interpolateYlOrRd)
 
         // Convert radial coordinate to cartesian
         const node2point = (d) => {
