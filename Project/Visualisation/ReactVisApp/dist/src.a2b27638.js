@@ -74070,7 +74070,78 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 function VisParams(props) {
   var controls = "";
 
-  if (props.chartType == "Circular Hierarchical") {
+  if (props.chartType === "Circular Hierarchical - Single Hue") {
+    controls = /*#__PURE__*/_react.default.createElement("div", {
+      style: {
+        display: "grid",
+        paddingLeft: 20,
+        gridTemplateColumns: "60px 150px 50px"
+      }
+    }, /*#__PURE__*/_react.default.createElement("p", {
+      style: {
+        float: "left",
+        paddingRight: 10,
+        paddingBottom: 10,
+        gridRow: 2,
+        gridColumn: 1
+      }
+    }, "Support"), /*#__PURE__*/_react.default.createElement("input", {
+      style: {
+        float: "left",
+        marginTop: -25,
+        gridRow: 2,
+        gridColumn: 2
+      },
+      type: "range",
+      min: "1",
+      max: "20",
+      defaultValue: props.support,
+      id: "support",
+      onChange: function onChange(e) {
+        return props.handleSupport(e.target.value);
+      }
+    }), /*#__PURE__*/_react.default.createElement("p", {
+      style: {
+        float: "right",
+        paddingLeft: 10,
+        gridRow: 2,
+        gridColumn: 3
+      }
+    }, props.support), /*#__PURE__*/_react.default.createElement("p", {
+      style: {
+        float: "left",
+        paddingRight: 10,
+        paddingBottom: 10,
+        gridRow: 3,
+        gridColumn: 1
+      }
+    }, "Beta"), /*#__PURE__*/_react.default.createElement("input", {
+      style: {
+        float: "left",
+        marginTop: -25,
+        gridRow: 3,
+        gridColumn: 2
+      },
+      type: "range",
+      min: "0",
+      max: "1",
+      step: "0.1",
+      defaultValue: props.beta,
+      id: "support",
+      onChange: function onChange(e) {
+        return props.handleBeta(e.target.value);
+      }
+    }), /*#__PURE__*/_react.default.createElement("p", {
+      style: {
+        float: "right",
+        paddingLeft: 10,
+        gridRow: 3,
+        gridColumn: 3
+      }
+    }, props.beta));
+  }
+
+  if (props.chartType === "Circular Hierarchical") {
     controls = /*#__PURE__*/_react.default.createElement("div", {
       style: {
         display: "grid",
@@ -74170,77 +74241,7 @@ function VisParams(props) {
         gridColumn: 3
       }
     }, props.beta));
-  }
-
-  if (props.chartType == "Circular Hierarchical - Single Hue") {
-    controls = /*#__PURE__*/_react.default.createElement("div", {
-      style: {
-        display: "grid",
-        paddingLeft: 20,
-        gridTemplateColumns: "60px 150px 50px"
-      }
-    }, /*#__PURE__*/_react.default.createElement("p", {
-      style: {
-        float: "left",
-        paddingRight: 10,
-        paddingBottom: 10,
-        gridRow: 2,
-        gridColumn: 1
-      }
-    }, "Support"), /*#__PURE__*/_react.default.createElement("input", {
-      style: {
-        float: "left",
-        marginTop: -25,
-        gridRow: 2,
-        gridColumn: 2
-      },
-      type: "range",
-      min: "1",
-      max: "20",
-      defaultValue: props.support,
-      id: "support",
-      onChange: function onChange(e) {
-        return props.handleSupport(e.target.value);
-      }
-    }), /*#__PURE__*/_react.default.createElement("p", {
-      style: {
-        float: "right",
-        paddingLeft: 10,
-        gridRow: 2,
-        gridColumn: 3
-      }
-    }, props.support), /*#__PURE__*/_react.default.createElement("p", {
-      style: {
-        float: "left",
-        paddingRight: 10,
-        paddingBottom: 10,
-        gridRow: 3,
-        gridColumn: 1
-      }
-    }, "Beta"), /*#__PURE__*/_react.default.createElement("input", {
-      style: {
-        float: "left",
-        marginTop: -25,
-        gridRow: 3,
-        gridColumn: 2
-      },
-      type: "range",
-      min: "0",
-      max: "1",
-      step: "0.1",
-      defaultValue: props.beta,
-      id: "support",
-      onChange: function onChange(e) {
-        return props.handleBeta(e.target.value);
-      }
-    }), /*#__PURE__*/_react.default.createElement("p", {
-      style: {
-        float: "right",
-        paddingLeft: 10,
-        gridRow: 3,
-        gridColumn: 3
-      }
-    }, props.beta));
+    console.log(controls);
   } else {
     controls = /*#__PURE__*/_react.default.createElement("div", {
       style: {
@@ -74864,7 +74865,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62640" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64402" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

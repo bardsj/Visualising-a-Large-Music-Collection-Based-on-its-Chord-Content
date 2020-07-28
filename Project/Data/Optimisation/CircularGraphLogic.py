@@ -115,12 +115,12 @@ class BaurBrandes(OptimiserBase):
                 temp_order1 = self.order.copy()
                 temp_order1.insert(0,place_p)
                 temp_order1 += unplaced
-                c1 = sum([self._count_crossings_edge(temp_order1,self.edge_list,e) for e in list(filter(lambda x: place_p in x,self.edge_list))])
+                c1 = sum([self._count_crossings_edge(temp_order1,self.edge_list,e) for e in list(filter(lambda x: place_p in x,open_edges))])
 
                 temp_order2 = self.order.copy()
                 temp_order2.append(place_p)
                 temp_order2 += unplaced
-                c2 = sum([self._count_crossings_edge(temp_order2,self.edge_list,e) for e in list(filter(lambda x: place_p in x,self.edge_list))])
+                c2 = sum([self._count_crossings_edge(temp_order2,self.edge_list,e) for e in list(filter(lambda x: place_p in x,open_edges))])
 
                 if c1 > c2:
                     self.order.append(place_p)
