@@ -1,21 +1,16 @@
 import numpy as np
 from itertools import chain
 
-class AVSDF:
+class OptimiserBase:
     """
-    Implementation of the AVSDF (Adjacent Vertex with Smallest Degree First) algorithm with local adjusting as proposed in:
-    
-        "He, H. & Sykora, O., 2009. New circular drawing algorithms. [Online] Available at: https://repository.lboro.ac.uk/articles/New_circular_drawing_algorithms/9403790"
+    Base class to contain graph definition and common circular logic (i.e calculating degree, crossing no. etc.)
     """
-
-    def __init__(self,edge_list,local_adjusting=False):
+    def __init__(self,edge_list):
         self.edge_list = edge_list
         self.nodes = np.unique(np.array(edge_list))
         self.nodes_degree = np.array([self._degree(n) for n in self.nodes])
         self.nodes = self.nodes[self.nodes_degree.argsort()]
         self.order = []
-        self.local_adjusting = local_adjusting
-
 
     def _degree(self,node):
         """
@@ -25,7 +20,7 @@ class AVSDF:
         return len(self._adjacent_edges(node))
 
     def _adjacent_vertices(self,v):
-        av = list(set(chain(*self._adjacent_edges(v))))
+        av = np.unique(chain(*self._adjacent_edges(v)))
         return av
 
     def _adjacent_edges(self,v):
@@ -64,7 +59,6 @@ class AVSDF:
         # Return upper triangle of matrix (no duplicate crossing counts)
         return (edge_mat).sum()
         
-
     def _count_crossings_edge(self,order,edge_list,edge):
         """
             Count number of crossings for a particular edge
@@ -87,7 +81,65 @@ class AVSDF:
                 edge_mat[j] = 1
         # Return sum of crossings
         return edge_mat.sum()
+        
 
+class BaurBrandes(OptimiserBase):
+
+    def __init__(self,edge_list):
+        super().__init__(edge_list)
+
+    """
+    self.edge_list = edge_list
+        self.nodes = np.unique(np.array(edge_list))
+        self.nodes_degree = np.array([self._degree(n) for n in self.nodes])
+        self.nodes = self.nodes[self.nodes_degree.argsort()]
+        self.order = []
+    """
+
+    def run_bb(self):
+        while len(self.order) < len(self.nodes):
+            unplaced = list(filter(lambda x: x not in self.order,self.nodes))
+            # If there are no previous nodes then place a node in the order to get started
+            if len(self.order) == 0:
+                self.order.append(self.nodes[-1])
+                unplaced.remove(self.nodes[-1])
+            else:
+                # At each step, a vertex with the least number of unplaced neighbors is selected, 
+                # where ties are broken in favor of vertices with fewer unplaced neighbors
+                n_unplaced_neigh = []
+                for n in unplaced:
+                    neigh = set(*self._adjacent_vertices(n))
+                    n_unplaced_neigh.append((n,len(neigh.difference(set(self.order)))))
+
+                place_p = [x[0] for x in sorted(n_unplaced_neigh,key=lambda x: x[1])][0]
+
+                # Append each vertex to the end that yields fewer crossing of edges being closed with open edges
+                o1 = self.order.copy()
+                o1.insert(0,place_p)
+                c1 = self._count_all_crossings(o1,list(filter(lambda x: x[0] in self.order and x[1] in self.order,self.edge_list)))
+
+                o2 = self.order.copy()
+                o2.append(place_p)
+                c2 = self._count_all_crossings(o2,list(filter(lambda x: x[0] in self.order and x[1] in self.order,self.edge_list)))
+
+                if c1 > c2:
+                    self.order.append(place_p)
+                else:
+                    self.order.insert(0,place_p)
+
+
+        return(self.order)
+
+class AVSDF(OptimiserBase):
+    """
+    Implementation of the AVSDF (Adjacent Vertex with Smallest Degree First) algorithm with local adjusting as proposed in:
+    
+        "He, H. & Sykora, O., 2009. New circular drawing algorithms. [Online] Available at: https://repository.lboro.ac.uk/articles/New_circular_drawing_algorithms/9403790"
+    """
+
+    def __init__(self,edge_list,local_adjusting=False):
+        super().__init__(edge_list)
+        self.local_adjusting = local_adjusting
 
     def _local_adjusting(self):
         """

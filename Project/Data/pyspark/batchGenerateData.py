@@ -11,7 +11,7 @@ import pickle
 import time
 import sys
 sys.path.append(os.getcwd())
-from Project.Data.Optimisation.AVSDF import AVSDF
+from Project.Data.Optimisation.CircularGraphLogic import AVSDF
 import json
 
 os.environ['PYSPARK_SUBMIT_ARGS'] = '"--packages" "org.mongodb.spark:mongo-spark-connector_2.11:2.4.1" "--driver-memory" "4g" "pyspark-shell"'

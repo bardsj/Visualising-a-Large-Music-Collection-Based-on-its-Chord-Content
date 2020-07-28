@@ -3,7 +3,7 @@ from flask_cors import CORS
 import sys
 import os
 sys.path.append(os.getcwd())
-from Project.Data.Optimisation.AVSDF import AVSDF
+from Project.Data.Optimisation.CircularGraphLogic import BaurBrandes,AVSDF
 from pymongo import MongoClient,errors
 import numpy as np
 from itertools import chain
@@ -50,7 +50,8 @@ def getData(request):
 def returnDataCirc():
     sets = getData(request)
     sets = [s for s in sets if len(s['labels']) == 2]
-    order = AVSDF([s['labels'] for s in sets],local_adjusting=True).run_AVSDF()
+    #order = AVSDF([s['labels'] for s in sets],local_adjusting=True).run_AVSDF()
+    order = BaurBrandes([s['labels'] for s in sets]).run_bb()
 
     return jsonify({"sets":sets,"order":order})
 
