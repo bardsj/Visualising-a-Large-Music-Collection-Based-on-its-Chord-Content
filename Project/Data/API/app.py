@@ -16,6 +16,20 @@ CORS(app)
 client = MongoClient("mongodb+srv://publicUser:jdACcF7TyiU2Vshj@msc.5jje5.gcp.mongodb.net/jamendo?retryWrites=false&w=majority")
 col = client.jamendo.itemsetData
 
+default_order = ["Cmaj","Cmaj7","Cmin","Cmin7","C7", \
+        "Dbmaj","Dbmaj7","Dbmin","Dbmin7","Db7",
+        "Dmaj","Dmaj7","Dmin","Dmin7","D7",
+        "Ebmaj","Ebmaj7","Ebmin","Ebmin7","Eb7",
+        "Emaj","Emaj7","Emin","Emin7","E7",
+        "Fmaj","Fmaj7","Fmin","Fmin7","F7",
+        "Gbmaj","Gbmaj7","Gbmin","Gbmin7","Gb7",
+        "Gmaj","Gmaj7","Gmin","Gmin7","G7",
+        "Abmaj","Abmaj7","Abmin","Abmin7","Ab7",
+        "Amaj","Amaj7","Amin","Amin7","A7",
+        "Bbmaj","Bbmaj7","Bbmin","Bbmin7","Bb7",
+        "Bmaj","Bmaj7","Bmin","Bmin7","B7"
+        ]
+
 def getData(request):
     if 'tag_name' and 'tag_val' in request.args:
         # Get tag request
@@ -80,25 +94,13 @@ def returnDataParallel():
              'tag':s['tag'], \
               'values':s['values']} for s in sets]
 
-    return jsonify({"sets":sets,"order":order})
+    return jsonify({"sets":sets,"order":default_order})
 
 @app.route('/circHier',methods=['GET'])
 def returnDataHier():
     sets = getData(request)
     sets = [s for s in sets if len(s['labels']) == 2]
-    order = ["Cmaj","Cmaj7","Cmin","Cmin7","C7", \
-        "Dbmaj","Dbmaj7","Dbmin","Dbmin7","Db7",
-        "Dmaj","Dmaj7","Dmin","Dmin7","D7",
-        "Ebmaj","Ebmaj7","Ebmin","Ebmin7","Eb7",
-        "Emaj","Emaj7","Emin","Emin7","E7",
-        "Fmaj","Fmaj7","Fmin","Fmin7","F7",
-        "Gbmaj","Gbmaj7","Gbmin","Gbmin7","Gb7",
-        "Gmaj","Gmaj7","Gmin","Gmin7","G7",
-        "Abmaj","Abmaj7","Abmin","Abmin7","Ab7",
-        "Amaj","Amaj7","Amin","Amin7","A7",
-        "Bbmaj","Bbmaj7","Bbmin","Bbmin7","Bb7",
-        "Bmaj","Bmaj7","Bmin","Bmin7","B7"
-        ]
+    order = default_order
 
     return jsonify({"sets":sets,"order":order})
 

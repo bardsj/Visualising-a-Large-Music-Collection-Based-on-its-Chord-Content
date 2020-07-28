@@ -57797,8 +57797,7 @@ var ChartParallel = /*#__PURE__*/function (_React$Component) {
         return scY(d.node);
       }).x(function (d) {
         return scX(d.ax);
-      }); //.curve(d3.curveCardinal)
-      // Append paths
+      }).curve(d3.curveCardinal); // Append paths
 
       var links = svg.selectAll("path").data(data_ax).enter().append("path").attr("class", "link").attr("d", function (d) {
         return lineGen(d.labels);
