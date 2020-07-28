@@ -81,20 +81,12 @@ class OptimiserBase:
                 edge_mat[j] = 1
         # Return sum of crossings
         return edge_mat.sum()
-        
+
 
 class BaurBrandes(OptimiserBase):
 
     def __init__(self,edge_list):
         super().__init__(edge_list)
-
-    """
-    self.edge_list = edge_list
-        self.nodes = np.unique(np.array(edge_list))
-        self.nodes_degree = np.array([self._degree(n) for n in self.nodes])
-        self.nodes = self.nodes[self.nodes_degree.argsort()]
-        self.order = []
-    """
 
     def run_bb(self):
         while len(self.order) < len(self.nodes):
@@ -114,13 +106,21 @@ class BaurBrandes(OptimiserBase):
                 place_p = [x[0] for x in sorted(n_unplaced_neigh,key=lambda x: x[1])][0]
 
                 # Append each vertex to the end that yields fewer crossing of edges being closed with open edges
-                o1 = self.order.copy()
-                o1.insert(0,place_p)
-                c1 = self._count_all_crossings(o1,list(filter(lambda x: x[0] in self.order and x[1] in self.order,self.edge_list)))
+                # For each node currently in the order
+                for v in self.order:
+                    # Get currently open edges
+                    open_edges = list(filter(lambda x: x[0] in self.order and x[1] not in self.order or \
+                                                            x[0] in self.order and x[1] not in self.order, self._adjacent_edges(v)))
+                # Close these edges temporarily to count the crossing number for open edges
+                temp_order1 = self.order.copy()
+                temp_order1.insert(0,place_p)
+                temp_order1 += unplaced
+                c1 = sum([self._count_crossings_edge(temp_order1,self.edge_list,e) for e in list(filter(lambda x: place_p in x,self.edge_list))])
 
-                o2 = self.order.copy()
-                o2.append(place_p)
-                c2 = self._count_all_crossings(o2,list(filter(lambda x: x[0] in self.order and x[1] in self.order,self.edge_list)))
+                temp_order2 = self.order.copy()
+                temp_order2.append(place_p)
+                temp_order2 += unplaced
+                c2 = sum([self._count_crossings_edge(temp_order2,self.edge_list,e) for e in list(filter(lambda x: place_p in x,self.edge_list))])
 
                 if c1 > c2:
                     self.order.append(place_p)
@@ -129,6 +129,7 @@ class BaurBrandes(OptimiserBase):
 
 
         return(self.order)
+
 
 class AVSDF(OptimiserBase):
     """
