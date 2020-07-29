@@ -20,7 +20,7 @@ class OptimiserBase:
         return len(self._adjacent_edges(node))
 
     def _adjacent_vertices(self,v):
-        av = np.unique(chain(*self._adjacent_edges(v)))
+        av = np.unique(list(chain(*self._adjacent_edges(v))))
         return av
 
     def _adjacent_edges(self,v):
@@ -198,7 +198,7 @@ class AVSDF(OptimiserBase):
                 # Get all adjacent vertices of v; and push those vertices, which are not in order
                 # into S with descending degree towards the top of the stack (the vertex with
                 # smallest degree is at top of S).
-                adjacent_v = list(np.unique(self._adjacent_vertices(v)))
+                adjacent_v = list(self._adjacent_vertices(v))
                 adjacent_v.remove(v)
                 adjacent_degree = np.array([self._degree(n) for n in adjacent_v],dtype=int)
                 adjacent_v = np.array(adjacent_v)[adjacent_degree.argsort()]

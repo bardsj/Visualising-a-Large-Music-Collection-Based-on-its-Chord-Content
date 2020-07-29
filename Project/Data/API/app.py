@@ -7,6 +7,8 @@ from Project.Data.Optimisation.CircularGraphLogic import BaurBrandes,AVSDF
 from pymongo import MongoClient,errors
 import numpy as np
 from itertools import chain
+import pandas as pd
+from sklearn.cluster import DBSCAN, KMeans, SpectralClustering
 
 # Create instance of Flask app with
 app = Flask(__name__)
@@ -104,6 +106,39 @@ def returnDataHier():
 
     return jsonify({"sets":sets,"order":order})
 
+@app.route('/circKMeans',methods=['GET'])
+def returnKMeans():
+    sets = getData(request)
+    sets = [s for s in sets if len(s['labels']) == 2]
+    #order = AVSDF([s['labels'] for s in sets],local_adjusting=False).run_AVSDF()
+    #order = BaurBrandes([s['labels'] for s in sets]).run_bb()
+    order = default_order
+
+    order_map = {k:i for i,k in enumerate(order)}
+
+    df = pd.DataFrame(sets)
+    df = df[df['labels'].map(len) == 2]
+
+    # Sort by order
+    df['labels'] = df['labels'].apply(lambda x: sorted(x,key=lambda x: order_map[x]))
+    # Sort set labels in order
+    s_labels_ordered = list(df['labels'])
+
+    df['sin1'] = df['labels'].apply(lambda x: np.sin((order_map[x[0]]/len(order_map))*2*np.pi))
+    df['cos1'] = df['labels'].apply(lambda x: np.cos((order_map[x[0]]/len(order_map))*2*np.pi))
+    df['sin2'] = df['labels'].apply(lambda x: np.sin((order_map[x[1]]/len(order_map))*2*np.pi))
+    df['cos2'] = df['labels'].apply(lambda x: np.cos((order_map[x[1]]/len(order_map))*2*np.pi))
+    labs = KMeans(n_clusters=20).fit(df[['sin1','cos1','sin2','cos2']]).labels_
+
+    sets_w_lab = []
+
+    for set_lab,s,lab in zip(s_labels_ordered,sets,labs):
+        sets_w_lab.append({"labels":set_lab, \
+                    "values":s['values'],\
+                    "tag":s['tag'], \
+                    "km_label": int(lab)})
+
+    return jsonify({"sets":sets_w_lab,"order":order})
 
 @app.errorhandler(404)
 def not_found(e):
