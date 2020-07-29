@@ -71,9 +71,13 @@ export class ChartKMeans extends React.Component {
         const node_points = order.map(x => ({ "label": x, "coords": node2point(x) }))
 
         // Calculate inner heirarchy bundling nodes
+        // Get cluster number values
         const n_clusters = new Array(... new Set(sets.map(x => x['km_label'])))
+        // Inner node map
         let i_nodes = {}
+        // Get labels and cluster value for each edge (set)
         const angle_map = sets.map(x => [x.labels, x.km_label])
+        // Iterate through edges adding the angle value to the cluster key
         for (let i = 0; i < angle_map.length; i++) {
             if (angle_map[i][1] in i_nodes) {
                 i_nodes[angle_map[i][1]][0].push(sc_radial(angle_map[i][0][0]))
@@ -83,8 +87,6 @@ export class ChartKMeans extends React.Component {
                 i_nodes[angle_map[i][1]] = [[sc_radial(angle_map[i][0][0])],[sc_radial(angle_map[i][0][1])]]
             }
         }
-        // For each root note get angle of sub nodes
-        console.log(i_nodes)
         // Calculate mean angle for each inner cluster node
         let root_nodes = {}
         for (const [key, value] of Object.entries(i_nodes)) {
@@ -127,6 +129,7 @@ export class ChartKMeans extends React.Component {
 
         let path_factor = 1.4
 
+        // Generate coordinates for line based on cluster value mapping to inner node values
         const create_points = (d) => {
             let line = [node2point(d.labels[0]),
             {"x":root_nodes[d.km_label].ln.x / path_factor,"y": root_nodes[d.km_label].ln.y / path_factor},

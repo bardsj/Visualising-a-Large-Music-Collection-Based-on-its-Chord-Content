@@ -110,9 +110,9 @@ def returnDataHier():
 def returnKMeans():
     sets = getData(request)
     sets = [s for s in sets if len(s['labels']) == 2]
-    #order = AVSDF([s['labels'] for s in sets],local_adjusting=False).run_AVSDF()
+    order = AVSDF([s['labels'] for s in sets],local_adjusting=False).run_AVSDF()
     #order = BaurBrandes([s['labels'] for s in sets]).run_bb()
-    order = default_order
+    #order = default_order
 
     order_map = {k:i for i,k in enumerate(order)}
 

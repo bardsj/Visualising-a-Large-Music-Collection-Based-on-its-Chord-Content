@@ -74824,14 +74824,17 @@ var ChartKMeans = /*#__PURE__*/function (_React$Component) {
           "coords": node2point(x)
         };
       }); // Calculate inner heirarchy bundling nodes
+      // Get cluster number values
 
       var n_clusters = (0, _construct2.default)(Array, (0, _toConsumableArray2.default)(new Set(sets.map(function (x) {
         return x['km_label'];
-      }))));
-      var i_nodes = {};
+      })))); // Inner node map
+
+      var i_nodes = {}; // Get labels and cluster value for each edge (set)
+
       var angle_map = sets.map(function (x) {
         return [x.labels, x.km_label];
-      });
+      }); // Iterate through edges adding the angle value to the cluster key
 
       for (var i = 0; i < angle_map.length; i++) {
         if (angle_map[i][1] in i_nodes) {
@@ -74840,10 +74843,8 @@ var ChartKMeans = /*#__PURE__*/function (_React$Component) {
         } else {
           i_nodes[angle_map[i][1]] = [[sc_radial(angle_map[i][0][0])], [sc_radial(angle_map[i][0][1])]];
         }
-      } // For each root note get angle of sub nodes
+      } // Calculate mean angle for each inner cluster node
 
-
-      console.log(i_nodes); // Calculate mean angle for each inner cluster node
 
       var root_nodes = {};
 
@@ -74890,7 +74891,7 @@ var ChartKMeans = /*#__PURE__*/function (_React$Component) {
       }).y(function (d) {
         return centre.y - d.y;
       }).curve(d3.curveBundle.beta(1));
-      var path_factor = 1.4;
+      var path_factor = 1.4; // Generate coordinates for line based on cluster value mapping to inner node values
 
       var create_points = function create_points(d) {
         var line = [node2point(d.labels[0]), {
@@ -75163,7 +75164,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53990" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62631" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
