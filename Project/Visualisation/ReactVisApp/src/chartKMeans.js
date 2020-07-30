@@ -80,47 +80,112 @@ export class ChartKMeans extends React.Component {
 
         /////////////////////////// Calculate control points //////////////////////////
 
-        // Iterate through edges adding the angle value to the cluster key
-        /*
         for (let i = 0; i < angle_map.length; i++) {
             if (angle_map[i][1] in i_nodes) {
-                i_nodes[angle_map[i][1]][0].push(sc_radial(angle_map[i][0][0]))
-                i_nodes[angle_map[i][1]][1].push(sc_radial(angle_map[i][0][1]))
-            }
-            else {
-                i_nodes[angle_map[i][1]] = [[sc_radial(angle_map[i][0][0])], [sc_radial(angle_map[i][0][1])]]
-            }
-        }
-        // Calculate mean angle for each inner cluster node
-        let root_nodes = {}
-        for (const [key, value] of Object.entries(i_nodes)) {
-            const mean_angle_l = Math.atan2(d3.sum(value[0].map(Math.sin)) / value[0].length, d3.sum(value[0].map(Math.cos)) / value[0].length)
-            const mean_angle_r = Math.atan2(d3.sum(value[1].map(Math.sin)) / value[1].length, d3.sum(value[1].map(Math.cos)) / value[1].length)
-            root_nodes[key] = { "ln": { x: r * Math.sin(mean_angle_l), y: r * Math.cos(mean_angle_l) }, "rn": { x: r * Math.sin(mean_angle_r), y: r * Math.cos(mean_angle_r) } }
-        } */
-        
-        for (let i = 0; i < angle_map.length; i++) {
-            if (angle_map[i][1] in i_nodes) {
+                // Push lhs and rhs node positions
                 i_nodes[angle_map[i][1]][0].push(node2point(angle_map[i][0][0]))
                 i_nodes[angle_map[i][1]][1].push(node2point(angle_map[i][0][1]))
             }
             else {
-                i_nodes[angle_map[i][1]] = [[node2point(angle_map[i][0][0])],[node2point(angle_map[i][0][1])]]
+                i_nodes[angle_map[i][1]] = [[node2point(angle_map[i][0][0])], [node2point(angle_map[i][0][1])]]
             }
         }
 
         let root_nodes = {}
         for (const [key, value] of Object.entries(i_nodes)) {
-                if (value[0].length > 1) {
-                    const points_ln = value[0]
-                    const mean_ln = {"x":d3.mean(points_ln.map(x=>x.x)),"y":d3.mean(points_ln.map(x=>x.y))}
-                    const points_rn = value[1]
-                    const mean_rn = {"x":d3.mean(points_rn.map(x=>x.x)),"y":d3.mean(points_rn.map(x=>x.y))}
-                    root_nodes[key] = {"ln":mean_ln,"rn":mean_rn}
+            // If there is more than one node in array
+            if (value[0].length > 1) {
+                // Get lhs nodes
+                const points_ln = value[0]
+                // Calculate mean position of lhs nodes
+                const mean_ln = { "x": d3.mean(points_ln.map(x => x.x)), "y": d3.mean(points_ln.map(x => x.y)) }
+                // Do the same for rhs nodes
+                const points_rn = value[1]
+                const mean_rn = { "x": d3.mean(points_rn.map(x => x.x)), "y": d3.mean(points_rn.map(x => x.y)) }
+                root_nodes[key] = { "ln": mean_ln, "rn": mean_rn }
+            } else {
+                root_nodes[key] = { "ln": value[0][0], "rn": value[1][0] }
+            }
+        }
+
+        /////////////////////// Optimise control point positions ///////////////////////////
+
+        // Calculate the total line length for a particular cluster group
+        function calc_line_length(key, i_nodes, root_nodes) {
+            const centroid = root_nodes[key]
+            let total_line_length = 0
+            if (i_nodes[key][0].length > 1) {
+                // Calculate total length between lhs nodes and centroid
+                const lengths_ln = d3.sum(i_nodes[key].map(x => Math.sqrt((x[0].x - centroid.ln.x) ** 2 + (x[0].y - centroid.ln.y) ** 2)))
+                // Calculate total length between rhs nodes and cetroid
+                const lengths_rn = d3.sum(i_nodes[key].map(x => Math.sqrt((x[1].x - centroid.rn.x) ** 2 + (x[1].y - centroid.rn.y) ** 2)))
+                // Calculate length between lhs and rhs centroids
+                const mid_length = Math.sqrt((centroid.ln.x - centroid.rn.x) ** 2 + (centroid.ln.y - centroid.rn.y) ** 2)
+                // Sum total line lengths
+                total_line_length = lengths_ln + lengths_rn + mid_length
+
+            } else {
+                // Only one line, length is equal to centroid distance (centroids = node points)
+                total_line_length = Math.sqrt((centroid.ln.x - centroid.rn.x) ** 2 + (centroid.ln.y - centroid.rn.y) ** 2)
+            }
+
+            return total_line_length
+        }
+
+        // Golden section search
+        function gss(f, a, b, key, i_nodes, root_nodes, side, tol = 0.000000000000001) {
+            const gr = (Math.sqrt(5) + 1) / 2
+            let c = b - (b - a) / gr
+            let d = a + (b - a) / gr
+            while (Math.abs(c - d) > tol) {
+                if (f(c, key, i_nodes, root_nodes, side) < f(d, key, i_nodes, root_nodes, side)) {
+                    b = d
                 } else {
-                    root_nodes[key] = {"ln":value[0][0],"rn":value[1][0]}
+                    a = c
+                }
+                c = b - (b - a) / gr
+                d = a + (b - a) / gr
+            }
+
+            return (b + a) / 2
+        }
+
+        // Function for gss to optimise (takes ratio of line between centroids to change position by)
+        function gss_func(r, key, i_nodes, root_nodes, side) {
+            let new_root_nodes = {}
+            Object.assign(new_root_nodes,root_nodes)
+            if (side == "ln") {
+                new_root_nodes[key].ln = {
+                    "x": new_root_nodes[key].ln.x - r * (new_root_nodes[key].ln.x - new_root_nodes[key].rn.x),
+                    "y": new_root_nodes[key].ln.y - r * (new_root_nodes[key].ln.y - new_root_nodes[key].rn.y)
                 }
             }
+            if (side == "rn") {
+                new_root_nodes[key].ln = {
+                    "x": new_root_nodes[key].rn.x - r * (new_root_nodes[key].rn.x - new_root_nodes[key].ln.x),
+                    "y": new_root_nodes[key].rn.y - r * (new_root_nodes[key].rn.y - new_root_nodes[key].ln.y)
+                }
+            }
+            return calc_line_length(key, i_nodes, new_root_nodes)
+        }
+
+        
+        // Carry out optimisation
+        for (const [key, value] of Object.entries(root_nodes)) {
+            // Do for lhs nodes
+            const r_l = gss(gss_func, 0, 1, key, i_nodes, root_nodes, "ln")
+            root_nodes[key].ln = {
+                "x": root_nodes[key].ln.x - r_l * (root_nodes[key].ln.x - root_nodes[key].rn.x),
+                "y": root_nodes[key].ln.y - r_l * (root_nodes[key].ln.y - root_nodes[key].rn.y)
+            }
+
+            // Do for rhs nodes
+            const r_r = gss(gss_func, 0, 1, key, i_nodes, root_nodes, "rn")
+            root_nodes[key].rn = {
+                "x": root_nodes[key].rn.x - r_r * (root_nodes[key].rn.x - root_nodes[key].ln.x),
+                "y": root_nodes[key].rn.y - r_r * (root_nodes[key].rn.y - root_nodes[key].ln.y)
+            }
+        }
 
         ////////////////////////////////////////////////////////////////////////////
 
@@ -155,8 +220,6 @@ export class ChartKMeans extends React.Component {
 
         const beta = this.props.beta
         const lineGen = d3.line().x(d => d.x + centre.x).y(d => centre.y - d.y).curve(d3.curveBundle.beta(1))
-
-        let path_factor = 1.4
 
         // Generate coordinates for line based on cluster value mapping to inner node values
         const create_points = (d) => {

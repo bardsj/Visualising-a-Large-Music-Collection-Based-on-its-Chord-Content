@@ -74835,28 +74835,10 @@ var ChartKMeans = /*#__PURE__*/function (_React$Component) {
       var angle_map = sets.map(function (x) {
         return [x.labels, x.km_label];
       }); /////////////////////////// Calculate control points //////////////////////////
-      // Iterate through edges adding the angle value to the cluster key
-
-      /*
-      for (let i = 0; i < angle_map.length; i++) {
-          if (angle_map[i][1] in i_nodes) {
-              i_nodes[angle_map[i][1]][0].push(sc_radial(angle_map[i][0][0]))
-              i_nodes[angle_map[i][1]][1].push(sc_radial(angle_map[i][0][1]))
-          }
-          else {
-              i_nodes[angle_map[i][1]] = [[sc_radial(angle_map[i][0][0])], [sc_radial(angle_map[i][0][1])]]
-          }
-      }
-      // Calculate mean angle for each inner cluster node
-      let root_nodes = {}
-      for (const [key, value] of Object.entries(i_nodes)) {
-          const mean_angle_l = Math.atan2(d3.sum(value[0].map(Math.sin)) / value[0].length, d3.sum(value[0].map(Math.cos)) / value[0].length)
-          const mean_angle_r = Math.atan2(d3.sum(value[1].map(Math.sin)) / value[1].length, d3.sum(value[1].map(Math.cos)) / value[1].length)
-          root_nodes[key] = { "ln": { x: r * Math.sin(mean_angle_l), y: r * Math.cos(mean_angle_l) }, "rn": { x: r * Math.sin(mean_angle_r), y: r * Math.cos(mean_angle_r) } }
-      } */
 
       for (var i = 0; i < angle_map.length; i++) {
         if (angle_map[i][1] in i_nodes) {
+          // Push lhs and rhs node positions
           i_nodes[angle_map[i][1]][0].push(node2point(angle_map[i][0][0]));
           i_nodes[angle_map[i][1]][1].push(node2point(angle_map[i][0][1]));
         } else {
@@ -74871,8 +74853,11 @@ var ChartKMeans = /*#__PURE__*/function (_React$Component) {
             key = _Object$entries$_i[0],
             value = _Object$entries$_i[1];
 
+        // If there is more than one node in array
         if (value[0].length > 1) {
-          var points_ln = value[0];
+          // Get lhs nodes
+          var points_ln = value[0]; // Calculate mean position of lhs nodes
+
           var mean_ln = {
             "x": d3.mean(points_ln.map(function (x) {
               return x.x;
@@ -74880,7 +74865,8 @@ var ChartKMeans = /*#__PURE__*/function (_React$Component) {
             "y": d3.mean(points_ln.map(function (x) {
               return x.y;
             }))
-          };
+          }; // Do the same for rhs nodes
+
           var points_rn = value[1];
           var mean_rn = {
             "x": d3.mean(points_rn.map(function (x) {
@@ -74900,6 +74886,96 @@ var ChartKMeans = /*#__PURE__*/function (_React$Component) {
             "rn": value[1][0]
           };
         }
+      } /////////////////////// Optimise control point positions ///////////////////////////
+      // Calculate the total line length for a particular cluster group
+
+
+      function calc_line_length(key, i_nodes, root_nodes) {
+        var centroid = root_nodes[key];
+        var total_line_length = 0;
+
+        if (i_nodes[key][0].length > 1) {
+          // Calculate total length between lhs nodes and centroid
+          var lengths_ln = d3.sum(i_nodes[key].map(function (x) {
+            return Math.sqrt(Math.pow(x[0].x - centroid.ln.x, 2) + Math.pow(x[0].y - centroid.ln.y, 2));
+          })); // Calculate total length between rhs nodes and cetroid
+
+          var lengths_rn = d3.sum(i_nodes[key].map(function (x) {
+            return Math.sqrt(Math.pow(x[1].x - centroid.rn.x, 2) + Math.pow(x[1].y - centroid.rn.y, 2));
+          })); // Calculate length between lhs and rhs centroids
+
+          var mid_length = Math.sqrt(Math.pow(centroid.ln.x - centroid.rn.x, 2) + Math.pow(centroid.ln.y - centroid.rn.y, 2)); // Sum total line lengths
+
+          total_line_length = lengths_ln + lengths_rn + mid_length;
+        } else {
+          // Only one line, length is equal to centroid distance (centroids = node points)
+          total_line_length = Math.sqrt(Math.pow(centroid.ln.x - centroid.rn.x, 2) + Math.pow(centroid.ln.y - centroid.rn.y, 2));
+        }
+
+        return total_line_length;
+      } // Golden section search
+
+
+      function gss(f, a, b, key, i_nodes, root_nodes, side) {
+        var tol = arguments.length > 7 && arguments[7] !== undefined ? arguments[7] : 0.000000000000001;
+        var gr = (Math.sqrt(5) + 1) / 2;
+        var c = b - (b - a) / gr;
+        var d = a + (b - a) / gr;
+
+        while (Math.abs(c - d) > tol) {
+          if (f(c, key, i_nodes, root_nodes, side) < f(d, key, i_nodes, root_nodes, side)) {
+            b = d;
+          } else {
+            a = c;
+          }
+
+          c = b - (b - a) / gr;
+          d = a + (b - a) / gr;
+        }
+
+        return (b + a) / 2;
+      } // Function for gss to optimise (takes ratio of line between centroids to change position by)
+
+
+      function gss_func(r, key, i_nodes, root_nodes, side) {
+        var new_root_nodes = {};
+        Object.assign(new_root_nodes, root_nodes);
+
+        if (side == "ln") {
+          new_root_nodes[key].ln = {
+            "x": new_root_nodes[key].ln.x - r * (new_root_nodes[key].ln.x - new_root_nodes[key].rn.x),
+            "y": new_root_nodes[key].ln.y - r * (new_root_nodes[key].ln.y - new_root_nodes[key].rn.y)
+          };
+        }
+
+        if (side == "rn") {
+          new_root_nodes[key].ln = {
+            "x": new_root_nodes[key].rn.x - r * (new_root_nodes[key].rn.x - new_root_nodes[key].ln.x),
+            "y": new_root_nodes[key].rn.y - r * (new_root_nodes[key].rn.y - new_root_nodes[key].ln.y)
+          };
+        }
+
+        return calc_line_length(key, i_nodes, new_root_nodes);
+      } // Carry out optimisation
+
+
+      for (var _i2 = 0, _Object$entries2 = Object.entries(root_nodes); _i2 < _Object$entries2.length; _i2++) {
+        var _Object$entries2$_i = (0, _slicedToArray2.default)(_Object$entries2[_i2], 2),
+            _key = _Object$entries2$_i[0],
+            _value = _Object$entries2$_i[1];
+
+        // Do for lhs nodes
+        var r_l = gss(gss_func, 0, 1, _key, i_nodes, root_nodes, "ln");
+        root_nodes[_key].ln = {
+          "x": root_nodes[_key].ln.x - r_l * (root_nodes[_key].ln.x - root_nodes[_key].rn.x),
+          "y": root_nodes[_key].ln.y - r_l * (root_nodes[_key].ln.y - root_nodes[_key].rn.y)
+        }; // Do for rhs nodes
+
+        var r_r = gss(gss_func, 0, 1, _key, i_nodes, root_nodes, "rn");
+        root_nodes[_key].rn = {
+          "x": root_nodes[_key].rn.x - r_r * (root_nodes[_key].rn.x - root_nodes[_key].ln.x),
+          "y": root_nodes[_key].rn.y - r_r * (root_nodes[_key].rn.y - root_nodes[_key].ln.y)
+        };
       } ////////////////////////////////////////////////////////////////////////////
       // Append node groups
 
@@ -74926,8 +75002,7 @@ var ChartKMeans = /*#__PURE__*/function (_React$Component) {
         return d.x + centre.x;
       }).y(function (d) {
         return centre.y - d.y;
-      }).curve(d3.curveBundle.beta(1));
-      var path_factor = 1.4; // Generate coordinates for line based on cluster value mapping to inner node values
+      }).curve(d3.curveBundle.beta(1)); // Generate coordinates for line based on cluster value mapping to inner node values
 
       var create_points = function create_points(d) {
         var line = [node2point(d.labels[0]), {
