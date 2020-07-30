@@ -1,7 +1,7 @@
 import React from "react";
 import * as d3 from 'd3';
 import { genreColormap } from './colorMap'
-import { set, path } from "d3";
+import { set, path, mean } from "d3";
 import { Popover } from "react-bootstrap";
 
 export class ChartKMeans extends React.Component {
@@ -77,14 +77,18 @@ export class ChartKMeans extends React.Component {
         let i_nodes = {}
         // Get labels and cluster value for each edge (set)
         const angle_map = sets.map(x => [x.labels, x.km_label])
+
+        /////////////////////////// Calculate control points //////////////////////////
+
         // Iterate through edges adding the angle value to the cluster key
+        /*
         for (let i = 0; i < angle_map.length; i++) {
             if (angle_map[i][1] in i_nodes) {
                 i_nodes[angle_map[i][1]][0].push(sc_radial(angle_map[i][0][0]))
                 i_nodes[angle_map[i][1]][1].push(sc_radial(angle_map[i][0][1]))
             }
             else {
-                i_nodes[angle_map[i][1]] = [[sc_radial(angle_map[i][0][0])],[sc_radial(angle_map[i][0][1])]]
+                i_nodes[angle_map[i][1]] = [[sc_radial(angle_map[i][0][0])], [sc_radial(angle_map[i][0][1])]]
             }
         }
         // Calculate mean angle for each inner cluster node
@@ -92,8 +96,33 @@ export class ChartKMeans extends React.Component {
         for (const [key, value] of Object.entries(i_nodes)) {
             const mean_angle_l = Math.atan2(d3.sum(value[0].map(Math.sin)) / value[0].length, d3.sum(value[0].map(Math.cos)) / value[0].length)
             const mean_angle_r = Math.atan2(d3.sum(value[1].map(Math.sin)) / value[1].length, d3.sum(value[1].map(Math.cos)) / value[1].length)
-            root_nodes[key] = {"ln":{ x: r * Math.sin(mean_angle_l), y: r * Math.cos(mean_angle_l)}, "rn": {x: r * Math.sin(mean_angle_r), y: r * Math.cos(mean_angle_r) }}
+            root_nodes[key] = { "ln": { x: r * Math.sin(mean_angle_l), y: r * Math.cos(mean_angle_l) }, "rn": { x: r * Math.sin(mean_angle_r), y: r * Math.cos(mean_angle_r) } }
+        } */
+        
+        for (let i = 0; i < angle_map.length; i++) {
+            if (angle_map[i][1] in i_nodes) {
+                i_nodes[angle_map[i][1]][0].push(node2point(angle_map[i][0][0]))
+                i_nodes[angle_map[i][1]][1].push(node2point(angle_map[i][0][1]))
+            }
+            else {
+                i_nodes[angle_map[i][1]] = [[node2point(angle_map[i][0][0])],[node2point(angle_map[i][0][1])]]
+            }
         }
+
+        let root_nodes = {}
+        for (const [key, value] of Object.entries(i_nodes)) {
+                if (value[0].length > 1) {
+                    const points_ln = value[0]
+                    const mean_ln = {"x":d3.mean(points_ln.map(x=>x.x)),"y":d3.mean(points_ln.map(x=>x.y))}
+                    const points_rn = value[1]
+                    const mean_rn = {"x":d3.mean(points_rn.map(x=>x.x)),"y":d3.mean(points_rn.map(x=>x.y))}
+                    root_nodes[key] = {"ln":mean_ln,"rn":mean_rn}
+                } else {
+                    root_nodes[key] = {"ln":value[0][0],"rn":value[1][0]}
+                }
+            }
+
+        ////////////////////////////////////////////////////////////////////////////
 
         // Append node groups
         const nodes_group = svg.selectAll("g")
@@ -132,8 +161,8 @@ export class ChartKMeans extends React.Component {
         // Generate coordinates for line based on cluster value mapping to inner node values
         const create_points = (d) => {
             let line = [node2point(d.labels[0]),
-            {"x":root_nodes[d.km_label].ln.x / path_factor,"y": root_nodes[d.km_label].ln.y / path_factor},
-            {"x":root_nodes[d.km_label].rn.x / path_factor,"y": root_nodes[d.km_label].rn.y / path_factor},
+            { "x": root_nodes[d.km_label].ln.x, "y": root_nodes[d.km_label].ln.y },
+            { "x": root_nodes[d.km_label].rn.x, "y": root_nodes[d.km_label].rn.y },
             node2point(d.labels[1])]
             return line
         }

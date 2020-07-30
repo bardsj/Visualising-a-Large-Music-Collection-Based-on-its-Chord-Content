@@ -8,7 +8,7 @@ from pymongo import MongoClient,errors
 import numpy as np
 from itertools import chain
 import pandas as pd
-from sklearn.cluster import DBSCAN, KMeans, SpectralClustering
+from sklearn.cluster import KMeans, AgglomerativeClustering
 
 # Create instance of Flask app with
 app = Flask(__name__)
@@ -119,7 +119,7 @@ def returnKMeans():
     df = pd.DataFrame(sets)
     df = df[df['labels'].map(len) == 2]
 
-    # Sort by order
+    # Sort by order as clustering will be affected by the order of the vertices in edge definitions
     df['labels'] = df['labels'].apply(lambda x: sorted(x,key=lambda x: order_map[x]))
     # Sort set labels in order
     s_labels_ordered = list(df['labels'])
@@ -128,7 +128,8 @@ def returnKMeans():
     df['cos1'] = df['labels'].apply(lambda x: np.cos((order_map[x[0]]/len(order_map))*2*np.pi))
     df['sin2'] = df['labels'].apply(lambda x: np.sin((order_map[x[1]]/len(order_map))*2*np.pi))
     df['cos2'] = df['labels'].apply(lambda x: np.cos((order_map[x[1]]/len(order_map))*2*np.pi))
-    labs = KMeans(n_clusters=20).fit(df[['sin1','cos1','sin2','cos2']]).labels_
+    #labs = KMeans(n_clusters=20,random_state=44).fit(df[['sin1','cos1','sin2','cos2']]).labels_
+    labs = AgglomerativeClustering(n_clusters=None,distance_threshold=1).fit(df[['sin1','cos1','sin2','cos2']]).labels_   
 
     sets_w_lab = []
 

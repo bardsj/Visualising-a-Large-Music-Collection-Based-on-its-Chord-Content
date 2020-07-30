@@ -1,4 +1,4 @@
-from Project.Data.Optimisation.AVSDF import AVSDF
+from Project.Data.Optimisation.CircularGraphLogic import AVSDF
 import unittest
 
 class CircularLogicTest(unittest.TestCase):

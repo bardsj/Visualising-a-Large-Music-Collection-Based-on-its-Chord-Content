@@ -74834,17 +74834,35 @@ var ChartKMeans = /*#__PURE__*/function (_React$Component) {
 
       var angle_map = sets.map(function (x) {
         return [x.labels, x.km_label];
-      }); // Iterate through edges adding the angle value to the cluster key
+      }); /////////////////////////// Calculate control points //////////////////////////
+      // Iterate through edges adding the angle value to the cluster key
+
+      /*
+      for (let i = 0; i < angle_map.length; i++) {
+          if (angle_map[i][1] in i_nodes) {
+              i_nodes[angle_map[i][1]][0].push(sc_radial(angle_map[i][0][0]))
+              i_nodes[angle_map[i][1]][1].push(sc_radial(angle_map[i][0][1]))
+          }
+          else {
+              i_nodes[angle_map[i][1]] = [[sc_radial(angle_map[i][0][0])], [sc_radial(angle_map[i][0][1])]]
+          }
+      }
+      // Calculate mean angle for each inner cluster node
+      let root_nodes = {}
+      for (const [key, value] of Object.entries(i_nodes)) {
+          const mean_angle_l = Math.atan2(d3.sum(value[0].map(Math.sin)) / value[0].length, d3.sum(value[0].map(Math.cos)) / value[0].length)
+          const mean_angle_r = Math.atan2(d3.sum(value[1].map(Math.sin)) / value[1].length, d3.sum(value[1].map(Math.cos)) / value[1].length)
+          root_nodes[key] = { "ln": { x: r * Math.sin(mean_angle_l), y: r * Math.cos(mean_angle_l) }, "rn": { x: r * Math.sin(mean_angle_r), y: r * Math.cos(mean_angle_r) } }
+      } */
 
       for (var i = 0; i < angle_map.length; i++) {
         if (angle_map[i][1] in i_nodes) {
-          i_nodes[angle_map[i][1]][0].push(sc_radial(angle_map[i][0][0]));
-          i_nodes[angle_map[i][1]][1].push(sc_radial(angle_map[i][0][1]));
+          i_nodes[angle_map[i][1]][0].push(node2point(angle_map[i][0][0]));
+          i_nodes[angle_map[i][1]][1].push(node2point(angle_map[i][0][1]));
         } else {
-          i_nodes[angle_map[i][1]] = [[sc_radial(angle_map[i][0][0])], [sc_radial(angle_map[i][0][1])]];
+          i_nodes[angle_map[i][1]] = [[node2point(angle_map[i][0][0])], [node2point(angle_map[i][0][1])]];
         }
-      } // Calculate mean angle for each inner cluster node
-
+      }
 
       var root_nodes = {};
 
@@ -74853,19 +74871,37 @@ var ChartKMeans = /*#__PURE__*/function (_React$Component) {
             key = _Object$entries$_i[0],
             value = _Object$entries$_i[1];
 
-        var mean_angle_l = Math.atan2(d3.sum(value[0].map(Math.sin)) / value[0].length, d3.sum(value[0].map(Math.cos)) / value[0].length);
-        var mean_angle_r = Math.atan2(d3.sum(value[1].map(Math.sin)) / value[1].length, d3.sum(value[1].map(Math.cos)) / value[1].length);
-        root_nodes[key] = {
-          "ln": {
-            x: r * Math.sin(mean_angle_l),
-            y: r * Math.cos(mean_angle_l)
-          },
-          "rn": {
-            x: r * Math.sin(mean_angle_r),
-            y: r * Math.cos(mean_angle_r)
-          }
-        };
-      } // Append node groups
+        if (value[0].length > 1) {
+          var points_ln = value[0];
+          var mean_ln = {
+            "x": d3.mean(points_ln.map(function (x) {
+              return x.x;
+            })),
+            "y": d3.mean(points_ln.map(function (x) {
+              return x.y;
+            }))
+          };
+          var points_rn = value[1];
+          var mean_rn = {
+            "x": d3.mean(points_rn.map(function (x) {
+              return x.x;
+            })),
+            "y": d3.mean(points_rn.map(function (x) {
+              return x.y;
+            }))
+          };
+          root_nodes[key] = {
+            "ln": mean_ln,
+            "rn": mean_rn
+          };
+        } else {
+          root_nodes[key] = {
+            "ln": value[0][0],
+            "rn": value[1][0]
+          };
+        }
+      } ////////////////////////////////////////////////////////////////////////////
+      // Append node groups
 
 
       var nodes_group = svg.selectAll("g").data(node_points).enter().append("g").attr("transform", function (d) {
@@ -74895,11 +74931,11 @@ var ChartKMeans = /*#__PURE__*/function (_React$Component) {
 
       var create_points = function create_points(d) {
         var line = [node2point(d.labels[0]), {
-          "x": root_nodes[d.km_label].ln.x / path_factor,
-          "y": root_nodes[d.km_label].ln.y / path_factor
+          "x": root_nodes[d.km_label].ln.x,
+          "y": root_nodes[d.km_label].ln.y
         }, {
-          "x": root_nodes[d.km_label].rn.x / path_factor,
-          "y": root_nodes[d.km_label].rn.y / path_factor
+          "x": root_nodes[d.km_label].rn.x,
+          "y": root_nodes[d.km_label].rn.y
         }, node2point(d.labels[1])];
         return line;
       };
@@ -75164,7 +75200,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62631" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52475" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
