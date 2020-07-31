@@ -16,7 +16,7 @@ export default () => {
   const [requestParams, setRequestParams] = useState({tag_val:["jazz"], tag_name:"genres"})
   const [chartType, setChartType] = useState("Circular KMeans")
   const [focus, setFocus] = useState(1)
-  const [support, setSupport] = useState(5)
+  const [support, setSupport] = useState(1)
   const [beta,setBeta] = useState(1)
 
   const handleFilter = (e) => {

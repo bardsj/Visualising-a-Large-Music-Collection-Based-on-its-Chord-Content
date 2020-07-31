@@ -74890,26 +74890,33 @@ var ChartKMeans = /*#__PURE__*/function (_React$Component) {
       // Calculate the total line length for a particular cluster group
 
 
-      function calc_line_length(key, i_nodes, root_nodes) {
+      function calc_line_length(key, i_nodes, root_nodes, side) {
         var centroid = root_nodes[key];
         var total_line_length = 0;
 
         if (i_nodes[key][0].length > 1) {
-          // Calculate total length between lhs nodes and centroid
-          var lengths_ln = d3.sum(i_nodes[key].map(function (x) {
-            return Math.sqrt(Math.pow(x[0].x - centroid.ln.x, 2) + Math.pow(x[0].y - centroid.ln.y, 2));
-          })); // Calculate total length between rhs nodes and cetroid
+          // Calculate length between lhs and rhs centroids
+          var _mid_length = Math.sqrt(Math.pow(centroid.ln.x - centroid.rn.x, 2) + Math.pow(centroid.ln.y - centroid.rn.y, 2)); // Sum total line lengths
+          //total_line_length = lengths_ln + lengths_rn + mid_length
 
-          var lengths_rn = d3.sum(i_nodes[key].map(function (x) {
-            return Math.sqrt(Math.pow(x[1].x - centroid.rn.x, 2) + Math.pow(x[1].y - centroid.rn.y, 2));
-          })); // Calculate length between lhs and rhs centroids
 
-          var mid_length = Math.sqrt(Math.pow(centroid.ln.x - centroid.rn.x, 2) + Math.pow(centroid.ln.y - centroid.rn.y, 2)); // Sum total line lengths
-
-          total_line_length = lengths_ln + lengths_rn + mid_length;
+          if (side == "ln") {
+            // Calculate total length between lhs nodes and centroid
+            var lengths_ln = d3.sum(i_nodes[key][0].map(function (x) {
+              return Math.sqrt(Math.pow(x.x - centroid.ln.x, 2) + Math.pow(x.y - centroid.ln.y, 2));
+            }));
+            total_line_length = lengths_ln + _mid_length;
+          } else {
+            // Calculate total length between lhs nodes and centroid
+            var lengths_rn = d3.sum(i_nodes[key][1].map(function (x) {
+              return Math.sqrt(Math.pow(x.x - centroid.rn.x, 2) + Math.pow(x.y - centroid.rn.y, 2));
+            }));
+            total_line_length = lengths_rn + _mid_length;
+          }
         } else {
           // Only one line, length is equal to centroid distance (centroids = node points)
-          total_line_length = Math.sqrt(Math.pow(centroid.ln.x - centroid.rn.x, 2) + Math.pow(centroid.ln.y - centroid.rn.y, 2));
+          //total_line_length = Math.sqrt((centroid.ln.x - centroid.rn.x) ** 2 + (centroid.ln.y - centroid.rn.y) ** 2)
+          total_line_length = mid_length;
         }
 
         return total_line_length;
@@ -74917,7 +74924,7 @@ var ChartKMeans = /*#__PURE__*/function (_React$Component) {
 
 
       function gss(f, a, b, key, i_nodes, root_nodes, side) {
-        var tol = arguments.length > 7 && arguments[7] !== undefined ? arguments[7] : 0.000000000000001;
+        var tol = arguments.length > 7 && arguments[7] !== undefined ? arguments[7] : 0.0000000000001;
         var gr = (Math.sqrt(5) + 1) / 2;
         var c = b - (b - a) / gr;
         var d = a + (b - a) / gr;
@@ -74938,25 +74945,25 @@ var ChartKMeans = /*#__PURE__*/function (_React$Component) {
 
 
       function gss_func(r, key, i_nodes, root_nodes, side) {
-        var new_root_nodes = {};
-        Object.assign(new_root_nodes, root_nodes);
+        //let new_root_nodes = Object.assign({},root_nodes)
+        var new_root_nodes = JSON.parse(JSON.stringify(root_nodes));
 
         if (side == "ln") {
           new_root_nodes[key].ln = {
-            "x": new_root_nodes[key].ln.x - r * (new_root_nodes[key].ln.x - new_root_nodes[key].rn.x),
-            "y": new_root_nodes[key].ln.y - r * (new_root_nodes[key].ln.y - new_root_nodes[key].rn.y)
+            "x": new_root_nodes[key].ln.x + r * (new_root_nodes[key].rn.x - new_root_nodes[key].ln.x),
+            "y": new_root_nodes[key].ln.y + r * (new_root_nodes[key].rn.y - new_root_nodes[key].ln.y)
           };
         }
 
         if (side == "rn") {
-          new_root_nodes[key].ln = {
-            "x": new_root_nodes[key].rn.x - r * (new_root_nodes[key].rn.x - new_root_nodes[key].ln.x),
-            "y": new_root_nodes[key].rn.y - r * (new_root_nodes[key].rn.y - new_root_nodes[key].ln.y)
+          new_root_nodes[key].rn = {
+            "x": new_root_nodes[key].rn.x + r * (new_root_nodes[key].ln.x - new_root_nodes[key].rn.x),
+            "y": new_root_nodes[key].rn.y + r * (new_root_nodes[key].ln.y - new_root_nodes[key].rn.y)
           };
         }
 
-        return calc_line_length(key, i_nodes, new_root_nodes);
-      } // Carry out optimisation
+        return calc_line_length(key, i_nodes, new_root_nodes, side);
+      } // Carry out optimisation - set r_l and r_r to constant value if desired
 
 
       for (var _i2 = 0, _Object$entries2 = Object.entries(root_nodes); _i2 < _Object$entries2.length; _i2++) {
@@ -74965,16 +74972,18 @@ var ChartKMeans = /*#__PURE__*/function (_React$Component) {
             _value = _Object$entries2$_i[1];
 
         // Do for lhs nodes
-        var r_l = gss(gss_func, 0, 1, _key, i_nodes, root_nodes, "ln");
+        var r_l = gss(gss_func, 0, 1, _key, i_nodes, root_nodes, "ln"); //const r_l = 0.1
+
         root_nodes[_key].ln = {
-          "x": root_nodes[_key].ln.x - r_l * (root_nodes[_key].ln.x - root_nodes[_key].rn.x),
-          "y": root_nodes[_key].ln.y - r_l * (root_nodes[_key].ln.y - root_nodes[_key].rn.y)
+          "x": root_nodes[_key].ln.x + r_l * (root_nodes[_key].rn.x - root_nodes[_key].ln.x),
+          "y": root_nodes[_key].ln.y + r_l * (root_nodes[_key].rn.y - root_nodes[_key].ln.y)
         }; // Do for rhs nodes
 
-        var r_r = gss(gss_func, 0, 1, _key, i_nodes, root_nodes, "rn");
+        var r_r = gss(gss_func, 0, 1, _key, i_nodes, root_nodes, "rn"); //const r_r = 0.1
+
         root_nodes[_key].rn = {
-          "x": root_nodes[_key].rn.x - r_r * (root_nodes[_key].rn.x - root_nodes[_key].ln.x),
-          "y": root_nodes[_key].rn.y - r_r * (root_nodes[_key].rn.y - root_nodes[_key].ln.y)
+          "x": root_nodes[_key].rn.x + r_r * (root_nodes[_key].ln.x - root_nodes[_key].rn.x),
+          "y": root_nodes[_key].rn.y + r_r * (root_nodes[_key].ln.y - root_nodes[_key].rn.y)
         };
       } ////////////////////////////////////////////////////////////////////////////
       // Append node groups
@@ -75019,7 +75028,8 @@ var ChartKMeans = /*#__PURE__*/function (_React$Component) {
         return lineGen(create_points(d));
       }).attr("stroke", function (d) {
         return cmap[d.tag];
-      }).attr("fill", "none").attr("stroke-width", 1).attr("stroke-opacity", function (d) {
+      }) //.attr("stroke", d => d.km_label == 2 ? "red" : cmap[d.tag])
+      .attr("fill", "none").attr("stroke-width", 1).attr("stroke-opacity", function (d) {
         return Math.pow(d.values / d3.max(sets.map(function (x) {
           return x.values;
         })), _this3.props.focus);
@@ -75044,6 +75054,19 @@ var ChartKMeans = /*#__PURE__*/function (_React$Component) {
           })), _this3.props.focus);
         });
       });
+      /*
+      // See control points for reference
+      svg.append("circle")
+          .attr("cx", centre.x + root_nodes[2].ln.x)
+          .attr("cy", centre.y - root_nodes[2].ln.y)
+          .attr("r", 10)
+          .attr("fill", "red")
+        svg.append("circle")
+          .attr("cx", centre.x + root_nodes[2].rn.x)
+          .attr("cy", centre.y - root_nodes[2].rn.y)
+          .attr("r", 10)
+          .attr("fill", "red")
+      */
     }
   }, {
     key: "render",
@@ -75119,7 +75142,7 @@ var _default = function _default() {
       focus = _useState6[0],
       setFocus = _useState6[1];
 
-  var _useState7 = (0, _react.useState)(5),
+  var _useState7 = (0, _react.useState)(1),
       _useState8 = (0, _slicedToArray2.default)(_useState7, 2),
       support = _useState8[0],
       setSupport = _useState8[1];
@@ -75275,7 +75298,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52475" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53188" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

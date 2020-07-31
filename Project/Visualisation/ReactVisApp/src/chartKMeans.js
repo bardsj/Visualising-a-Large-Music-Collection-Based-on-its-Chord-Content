@@ -111,29 +111,35 @@ export class ChartKMeans extends React.Component {
         /////////////////////// Optimise control point positions ///////////////////////////
 
         // Calculate the total line length for a particular cluster group
-        function calc_line_length(key, i_nodes, root_nodes) {
+        function calc_line_length(key, i_nodes, root_nodes, side) {
             const centroid = root_nodes[key]
             let total_line_length = 0
             if (i_nodes[key][0].length > 1) {
-                // Calculate total length between lhs nodes and centroid
-                const lengths_ln = d3.sum(i_nodes[key].map(x => Math.sqrt((x[0].x - centroid.ln.x) ** 2 + (x[0].y - centroid.ln.y) ** 2)))
-                // Calculate total length between rhs nodes and cetroid
-                const lengths_rn = d3.sum(i_nodes[key].map(x => Math.sqrt((x[1].x - centroid.rn.x) ** 2 + (x[1].y - centroid.rn.y) ** 2)))
                 // Calculate length between lhs and rhs centroids
                 const mid_length = Math.sqrt((centroid.ln.x - centroid.rn.x) ** 2 + (centroid.ln.y - centroid.rn.y) ** 2)
                 // Sum total line lengths
-                total_line_length = lengths_ln + lengths_rn + mid_length
+                //total_line_length = lengths_ln + lengths_rn + mid_length
+                if (side == "ln") {
+                    // Calculate total length between lhs nodes and centroid
+                    const lengths_ln = d3.sum(i_nodes[key][0].map(x => Math.sqrt((x.x - centroid.ln.x) ** 2 + (x.y - centroid.ln.y) ** 2)))
+                    total_line_length = lengths_ln + mid_length
+                } else {
+                    // Calculate total length between lhs nodes and centroid
+                    const lengths_rn = d3.sum(i_nodes[key][1].map(x => Math.sqrt((x.x - centroid.rn.x) ** 2 + (x.y - centroid.rn.y) ** 2)))
+                    total_line_length = lengths_rn + mid_length
+                }
 
             } else {
                 // Only one line, length is equal to centroid distance (centroids = node points)
-                total_line_length = Math.sqrt((centroid.ln.x - centroid.rn.x) ** 2 + (centroid.ln.y - centroid.rn.y) ** 2)
+                //total_line_length = Math.sqrt((centroid.ln.x - centroid.rn.x) ** 2 + (centroid.ln.y - centroid.rn.y) ** 2)
+                total_line_length = mid_length
             }
 
             return total_line_length
         }
 
         // Golden section search
-        function gss(f, a, b, key, i_nodes, root_nodes, side, tol = 0.000000000000001) {
+        function gss(f, a, b, key, i_nodes, root_nodes, side, tol = 0.0000000000001) {
             const gr = (Math.sqrt(5) + 1) / 2
             let c = b - (b - a) / gr
             let d = a + (b - a) / gr
@@ -146,44 +152,44 @@ export class ChartKMeans extends React.Component {
                 c = b - (b - a) / gr
                 d = a + (b - a) / gr
             }
-
             return (b + a) / 2
         }
 
         // Function for gss to optimise (takes ratio of line between centroids to change position by)
         function gss_func(r, key, i_nodes, root_nodes, side) {
-            let new_root_nodes = {}
-            Object.assign(new_root_nodes,root_nodes)
+            //let new_root_nodes = Object.assign({},root_nodes)
+            let new_root_nodes = JSON.parse(JSON.stringify(root_nodes))
             if (side == "ln") {
                 new_root_nodes[key].ln = {
-                    "x": new_root_nodes[key].ln.x - r * (new_root_nodes[key].ln.x - new_root_nodes[key].rn.x),
-                    "y": new_root_nodes[key].ln.y - r * (new_root_nodes[key].ln.y - new_root_nodes[key].rn.y)
+                    "x": new_root_nodes[key].ln.x + r * (new_root_nodes[key].rn.x - new_root_nodes[key].ln.x),
+                    "y": new_root_nodes[key].ln.y + r * (new_root_nodes[key].rn.y - new_root_nodes[key].ln.y)
                 }
             }
             if (side == "rn") {
-                new_root_nodes[key].ln = {
-                    "x": new_root_nodes[key].rn.x - r * (new_root_nodes[key].rn.x - new_root_nodes[key].ln.x),
-                    "y": new_root_nodes[key].rn.y - r * (new_root_nodes[key].rn.y - new_root_nodes[key].ln.y)
+                new_root_nodes[key].rn = {
+                    "x": new_root_nodes[key].rn.x + r * (new_root_nodes[key].ln.x - new_root_nodes[key].rn.x),
+                    "y": new_root_nodes[key].rn.y + r * (new_root_nodes[key].ln.y - new_root_nodes[key].rn.y)
                 }
             }
-            return calc_line_length(key, i_nodes, new_root_nodes)
+            return calc_line_length(key, i_nodes, new_root_nodes, side)
         }
 
-        
-        // Carry out optimisation
+        // Carry out optimisation - set r_l and r_r to constant value if desired
         for (const [key, value] of Object.entries(root_nodes)) {
             // Do for lhs nodes
             const r_l = gss(gss_func, 0, 1, key, i_nodes, root_nodes, "ln")
+            //const r_l = 0.1
             root_nodes[key].ln = {
-                "x": root_nodes[key].ln.x - r_l * (root_nodes[key].ln.x - root_nodes[key].rn.x),
-                "y": root_nodes[key].ln.y - r_l * (root_nodes[key].ln.y - root_nodes[key].rn.y)
+                "x": root_nodes[key].ln.x + r_l * (root_nodes[key].rn.x - root_nodes[key].ln.x),
+                "y": root_nodes[key].ln.y + r_l * (root_nodes[key].rn.y - root_nodes[key].ln.y)
             }
 
             // Do for rhs nodes
             const r_r = gss(gss_func, 0, 1, key, i_nodes, root_nodes, "rn")
+            //const r_r = 0.1
             root_nodes[key].rn = {
-                "x": root_nodes[key].rn.x - r_r * (root_nodes[key].rn.x - root_nodes[key].ln.x),
-                "y": root_nodes[key].rn.y - r_r * (root_nodes[key].rn.y - root_nodes[key].ln.y)
+                "x": root_nodes[key].rn.x + r_r * (root_nodes[key].ln.x - root_nodes[key].rn.x),
+                "y": root_nodes[key].rn.y + r_r * (root_nodes[key].ln.y - root_nodes[key].rn.y)
             }
         }
 
@@ -237,6 +243,7 @@ export class ChartKMeans extends React.Component {
             .attr("class", "link")
             .attr("d", (d) => lineGen(create_points(d)))
             .attr("stroke", d => cmap[d.tag])
+            //.attr("stroke", d => d.km_label == 2 ? "red" : cmap[d.tag])
             .attr("fill", "none")
             .attr("stroke-width", 1)
             .attr("stroke-opacity", d => (d.values / d3.max(sets.map(x => x.values))) ** this.props.focus)
@@ -259,6 +266,21 @@ export class ChartKMeans extends React.Component {
                 .attr("stroke-width", 1)
                 .attr("stroke-opacity", d => (d.values / d3.max(sets.map(x => x.values))) ** this.props.focus)
         })
+
+        /*
+        // See control points for reference
+        svg.append("circle")
+            .attr("cx", centre.x + root_nodes[2].ln.x)
+            .attr("cy", centre.y - root_nodes[2].ln.y)
+            .attr("r", 10)
+            .attr("fill", "red")
+
+        svg.append("circle")
+            .attr("cx", centre.x + root_nodes[2].rn.x)
+            .attr("cy", centre.y - root_nodes[2].rn.y)
+            .attr("r", 10)
+            .attr("fill", "red")
+        */
 
     }
 
