@@ -96,7 +96,7 @@ def returnDataParallel():
              'tag':s['tag'], \
               'values':s['values']} for s in sets]
 
-    return jsonify({"sets":sets,"order":default_order})
+    return jsonify({"sets":sets,"order":order})
 
 @app.route('/circHier',methods=['GET'])
 def returnDataHier():
@@ -110,9 +110,13 @@ def returnDataHier():
 def returnKMeans():
     sets = getData(request)
     sets = [s for s in sets if len(s['labels']) == 2]
-    order = AVSDF([s['labels'] for s in sets],local_adjusting=False).run_AVSDF()
+    #order = AVSDF([s['labels'] for s in sets],local_adjusting=False).run_AVSDF()
     #order = BaurBrandes([s['labels'] for s in sets]).run_bb()
-    #order = default_order
+    order = default_order
+
+    # Leave only maj/min chords to see what it looks like clutter wise
+    #sets = [s for s in sets if "7" not in "".join(s['labels'])]
+    #order = [o for o in order if "7" not in o]
 
     order_map = {k:i for i,k in enumerate(order)}
 
@@ -128,7 +132,7 @@ def returnKMeans():
     df['cos1'] = df['labels'].apply(lambda x: np.cos((order_map[x[0]]/len(order_map))*2*np.pi))
     df['sin2'] = df['labels'].apply(lambda x: np.sin((order_map[x[1]]/len(order_map))*2*np.pi))
     df['cos2'] = df['labels'].apply(lambda x: np.cos((order_map[x[1]]/len(order_map))*2*np.pi))
-    #labs = KMeans(n_clusters=20,random_state=44).fit(df[['sin1','cos1','sin2','cos2']]).labels_
+    #labs = KMeans(n_clusters=40,random_state=44).fit(df[['sin1','cos1','sin2','cos2']]).labels_
     labs = AgglomerativeClustering(n_clusters=None,distance_threshold=1).fit(df[['sin1','cos1','sin2','cos2']]).labels_   
 
     sets_w_lab = []

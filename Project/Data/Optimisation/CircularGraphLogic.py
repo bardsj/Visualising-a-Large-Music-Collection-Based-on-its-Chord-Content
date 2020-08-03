@@ -20,6 +20,9 @@ class OptimiserBase:
         return len(self._adjacent_edges(node))
 
     def _adjacent_vertices(self,v):
+        """
+            Get adjacent vertices for a partiular vertex v
+        """
         av = np.unique(list(chain(*self._adjacent_edges(v))))
         return av
 
@@ -100,7 +103,7 @@ class BaurBrandes(OptimiserBase):
                 # where ties are broken in favor of vertices with fewer unplaced neighbors
                 n_unplaced_neigh = []
                 for n in unplaced:
-                    neigh = set(*self._adjacent_vertices(n))
+                    neigh = set([*self._adjacent_vertices(n)])
                     n_unplaced_neigh.append((n,len(neigh.difference(set(self.order)))))
 
                 place_p = [x[0] for x in sorted(n_unplaced_neigh,key=lambda x: x[1])][0]

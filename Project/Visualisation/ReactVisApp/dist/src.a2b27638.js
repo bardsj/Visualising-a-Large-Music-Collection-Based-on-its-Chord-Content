@@ -75010,7 +75010,8 @@ var ChartKMeans = /*#__PURE__*/function (_React$Component) {
         return d.x + centre.x;
       }).y(function (d) {
         return centre.y - d.y;
-      }).curve(d3.curveBundle.beta(1)); // Generate coordinates for line based on cluster value mapping to inner node values
+      }); //.curve(d3.curveBundle.beta(1))
+      // Generate coordinates for line based on cluster value mapping to inner node values
 
       var create_points = function create_points(d) {
         var line = [node2point(d.labels[0]), {

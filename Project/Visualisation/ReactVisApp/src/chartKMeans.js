@@ -226,14 +226,14 @@ export class ChartKMeans extends React.Component {
 
 
         const beta = this.props.beta
-        const lineGen = d3.line().x(d => d.x + centre.x).y(d => centre.y - d.y).curve(d3.curveBundle.beta(1))
+        const lineGen = d3.line().x(d => d.x + centre.x).y(d => centre.y - d.y)//.curve(d3.curveBundle.beta(1))
 
         // Generate coordinates for line based on cluster value mapping to inner node values
         const create_points = (d) => {
             let line = [node2point(d.labels[0]),
-            { "x": root_nodes[d.km_label].ln.x, "y": root_nodes[d.km_label].ln.y },
-            { "x": root_nodes[d.km_label].rn.x, "y": root_nodes[d.km_label].rn.y },
-            node2point(d.labels[1])]
+                { "x": root_nodes[d.km_label].ln.x, "y": root_nodes[d.km_label].ln.y },
+                { "x": root_nodes[d.km_label].rn.x, "y": root_nodes[d.km_label].rn.y },
+                node2point(d.labels[1])]
             return line
         }
 
