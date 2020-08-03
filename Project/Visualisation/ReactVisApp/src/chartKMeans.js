@@ -114,9 +114,10 @@ export class ChartKMeans extends React.Component {
         function calc_line_length(key, i_nodes, root_nodes, side) {
             const centroid = root_nodes[key]
             let total_line_length = 0
+            // Calculate length between lhs and rhs centroids
+            const mid_length = Math.sqrt((centroid.ln.x - centroid.rn.x) ** 2 + (centroid.ln.y - centroid.rn.y) ** 2)
+
             if (i_nodes[key][0].length > 1) {
-                // Calculate length between lhs and rhs centroids
-                const mid_length = Math.sqrt((centroid.ln.x - centroid.rn.x) ** 2 + (centroid.ln.y - centroid.rn.y) ** 2)
                 // Sum total line lengths
                 //total_line_length = lengths_ln + lengths_rn + mid_length
                 if (side == "ln") {

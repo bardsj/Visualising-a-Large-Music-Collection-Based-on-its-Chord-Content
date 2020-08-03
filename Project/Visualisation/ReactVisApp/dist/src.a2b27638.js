@@ -74892,26 +74892,25 @@ var ChartKMeans = /*#__PURE__*/function (_React$Component) {
 
       function calc_line_length(key, i_nodes, root_nodes, side) {
         var centroid = root_nodes[key];
-        var total_line_length = 0;
+        var total_line_length = 0; // Calculate length between lhs and rhs centroids
+
+        var mid_length = Math.sqrt(Math.pow(centroid.ln.x - centroid.rn.x, 2) + Math.pow(centroid.ln.y - centroid.rn.y, 2));
 
         if (i_nodes[key][0].length > 1) {
-          // Calculate length between lhs and rhs centroids
-          var _mid_length = Math.sqrt(Math.pow(centroid.ln.x - centroid.rn.x, 2) + Math.pow(centroid.ln.y - centroid.rn.y, 2)); // Sum total line lengths
+          // Sum total line lengths
           //total_line_length = lengths_ln + lengths_rn + mid_length
-
-
           if (side == "ln") {
             // Calculate total length between lhs nodes and centroid
             var lengths_ln = d3.sum(i_nodes[key][0].map(function (x) {
               return Math.sqrt(Math.pow(x.x - centroid.ln.x, 2) + Math.pow(x.y - centroid.ln.y, 2));
             }));
-            total_line_length = lengths_ln + _mid_length;
+            total_line_length = lengths_ln + mid_length;
           } else {
             // Calculate total length between lhs nodes and centroid
             var lengths_rn = d3.sum(i_nodes[key][1].map(function (x) {
               return Math.sqrt(Math.pow(x.x - centroid.rn.x, 2) + Math.pow(x.y - centroid.rn.y, 2));
             }));
-            total_line_length = lengths_rn + _mid_length;
+            total_line_length = lengths_rn + mid_length;
           }
         } else {
           // Only one line, length is equal to centroid distance (centroids = node points)
@@ -75298,7 +75297,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53188" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63950" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
