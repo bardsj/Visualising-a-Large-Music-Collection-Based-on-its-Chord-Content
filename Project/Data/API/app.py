@@ -222,5 +222,5 @@ def not_found(e):
 def not_found(e):
     return jsonify(error=str(e)), 500
 
-
-app.run(debug=True)
+if __name__ == '__main__':
+    app.run(debug=True)

@@ -38,7 +38,6 @@ export class ChartClust extends React.Component {
         if (prevProps.focus !== this.props.focus) {
             this.updateFocus()
         }
-
     }
 
     createChart() {
