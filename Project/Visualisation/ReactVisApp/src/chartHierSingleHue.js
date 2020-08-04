@@ -17,7 +17,7 @@ export class ChartHierSingleHue extends React.Component {
         }
         fetch(r_url, { mode: 'cors' })
             .then(r => r.json())
-            .then(r => this.setState({ data: r, request_params: request_params }))
+            .then(r => this.setState({ data: r, request_params: request_params },()=>{this.createChart()}))
 
     }
 
@@ -26,16 +26,15 @@ export class ChartHierSingleHue extends React.Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (this.state.request_params !== this.props.request_params) {
+        if (prevProps.request_params !== this.props.request_params) {
             this.fetchData(this.props.request_params)
         }
-        if ((this.state.data && !this.state.sets) || (this.state.data && (prevProps.support !== this.props.support))) {
+        if (prevProps.support !== this.props.support) {
             this.createChart()
         }
         if (prevProps.focus !== this.props.focus) {
             this.updateFocus()
         }
-
     }
 
     createChart() {

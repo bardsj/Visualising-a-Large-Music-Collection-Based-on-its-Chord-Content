@@ -20,7 +20,7 @@ export class ChartClust extends React.Component {
         }
         fetch(r_url, { mode: 'cors' })
             .then(r => r.json())
-            .then(r => this.setState({ data: r, request_params: request_params }))
+            .then(r => this.setState({ data: r, request_params: request_params },()=>{this.createChart()}))
 
     }
 
@@ -29,10 +29,10 @@ export class ChartClust extends React.Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (this.state.request_params !== this.props.request_params) {
+        if (prevProps.request_params !== this.props.request_params) {
             this.fetchData(this.props.request_params)
         }
-        if ((this.state.data && !this.state.sets) || (this.state.data && (prevProps.support !== this.props.support))) {
+        if (prevProps.support !== this.props.support) {
             this.createChart()
         }
         if (prevProps.focus !== this.props.focus) {
@@ -245,7 +245,7 @@ export class ChartClust extends React.Component {
             .attr("class", "link")
             .attr("d", (d) => lineGen(create_points(d)))
             .attr("stroke", d => cmap[d.tag])
-            .attr("stroke", d => d.km_label == 2 ? "red" : cmap[d.tag])
+            //.attr("stroke", d => d.km_label == 2 ? "red" : cmap[d.tag])
             .attr("fill", "none")
             .attr("stroke-width", 1)
             .attr("stroke-opacity", d => (d.values / d3.max(sets.map(x => x.values))) ** this.props.focus)
@@ -271,7 +271,7 @@ export class ChartClust extends React.Component {
 
         this.setState({sets:sets})        
 
-        
+        /*
         // See control points for reference
         svg.append("circle")
             .attr("cx", centre.x + root_nodes[2].ln.x)
@@ -284,7 +284,7 @@ export class ChartClust extends React.Component {
             .attr("cy", centre.y - root_nodes[2].rn.y)
             .attr("r", 10)
             .attr("fill", "red")
-        
+        */
 
     }
 

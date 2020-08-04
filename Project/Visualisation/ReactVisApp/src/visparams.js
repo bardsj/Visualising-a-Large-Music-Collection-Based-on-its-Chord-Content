@@ -29,7 +29,6 @@ export function VisParams(props) {
                 <p style={{ float: "right" , paddingLeft: 10, gridRow:3, gridColumn:3}}>{props.beta}</p>
             </div>
         )
-        console.log(controls)
     }
     else {
         controls = (

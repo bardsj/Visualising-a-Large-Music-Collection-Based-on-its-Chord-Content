@@ -57485,6 +57485,8 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
         return _this2.setState({
           data: r,
           request_params: request_params
+        }, function () {
+          _this2.createChart();
         });
       });
     }
@@ -57496,11 +57498,11 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "componentDidUpdate",
     value: function componentDidUpdate(prevProps) {
-      if (this.state.request_params !== this.props.request_params) {
+      if (prevProps.request_params !== this.props.request_params) {
         this.fetchData(this.props.request_params);
       }
 
-      if (this.state.data && !this.state.sets || this.state.data && prevProps.support !== this.props.support) {
+      if (prevProps.support !== this.props.support) {
         this.createChart();
       }
 
@@ -57718,6 +57720,8 @@ var ChartParallel = /*#__PURE__*/function (_React$Component) {
         return _this2.setState({
           data: r,
           request_params: request_params
+        }, function () {
+          _this2.createChart();
         });
       });
     }
@@ -57729,11 +57733,11 @@ var ChartParallel = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "componentDidUpdate",
     value: function componentDidUpdate(prevProps) {
-      if (this.state.request_params !== this.props.request_params) {
+      if (prevProps.request_params !== this.props.request_params) {
         this.fetchData(this.props.request_params);
       }
 
-      if (this.state.data && !this.state.sets || this.state.data && prevProps.support !== this.props.support) {
+      if (prevProps.support !== this.props.support) {
         this.createChart();
       }
 
@@ -57975,6 +57979,8 @@ var ChartHier = /*#__PURE__*/function (_React$Component) {
         return _this2.setState({
           data: r,
           request_params: request_params
+        }, function () {
+          _this2.createChart();
         });
       });
     }
@@ -57986,11 +57992,11 @@ var ChartHier = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "componentDidUpdate",
     value: function componentDidUpdate(prevProps) {
-      if (this.state.request_params !== this.props.request_params) {
+      if (prevProps.request_params !== this.props.request_params) {
         this.fetchData(this.props.request_params);
       }
 
-      if (this.state.data && !this.state.sets || this.state.data && prevProps.support !== this.props.support) {
+      if (prevProps.support !== this.props.support) {
         this.createChart();
       }
 
@@ -74298,7 +74304,6 @@ function VisParams(props) {
         gridColumn: 3
       }
     }, props.beta));
-    console.log(controls);
   } else {
     controls = /*#__PURE__*/_react.default.createElement("div", {
       style: {
@@ -74556,6 +74561,8 @@ var ChartHierSingleHue = /*#__PURE__*/function (_React$Component) {
         return _this2.setState({
           data: r,
           request_params: request_params
+        }, function () {
+          _this2.createChart();
         });
       });
     }
@@ -74567,11 +74574,11 @@ var ChartHierSingleHue = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "componentDidUpdate",
     value: function componentDidUpdate(prevProps) {
-      if (this.state.request_params !== this.props.request_params) {
+      if (prevProps.request_params !== this.props.request_params) {
         this.fetchData(this.props.request_params);
       }
 
-      if (this.state.data && !this.state.sets || this.state.data && prevProps.support !== this.props.support) {
+      if (prevProps.support !== this.props.support) {
         this.createChart();
       }
 
@@ -74835,6 +74842,8 @@ var ChartClust = /*#__PURE__*/function (_React$Component) {
         return _this2.setState({
           data: r,
           request_params: request_params
+        }, function () {
+          _this2.createChart();
         });
       });
     }
@@ -74846,11 +74855,11 @@ var ChartClust = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "componentDidUpdate",
     value: function componentDidUpdate(prevProps) {
-      if (this.state.request_params !== this.props.request_params) {
+      if (prevProps.request_params !== this.props.request_params) {
         this.fetchData(this.props.request_params);
       }
 
-      if (this.state.data && !this.state.sets || this.state.data && prevProps.support !== this.props.support) {
+      if (prevProps.support !== this.props.support) {
         this.createChart();
       }
 
@@ -75111,9 +75120,8 @@ var ChartClust = /*#__PURE__*/function (_React$Component) {
         return lineGen(create_points(d));
       }).attr("stroke", function (d) {
         return cmap[d.tag];
-      }).attr("stroke", function (d) {
-        return d.km_label == 2 ? "red" : cmap[d.tag];
-      }).attr("fill", "none").attr("stroke-width", 1).attr("stroke-opacity", function (d) {
+      }) //.attr("stroke", d => d.km_label == 2 ? "red" : cmap[d.tag])
+      .attr("fill", "none").attr("stroke-width", 1).attr("stroke-opacity", function (d) {
         return Math.pow(d.values / d3.max(sets.map(function (x) {
           return x.values;
         })), _this3.props.focus);
@@ -75140,10 +75148,20 @@ var ChartClust = /*#__PURE__*/function (_React$Component) {
       });
       this.setState({
         sets: sets
-      }); // See control points for reference
-
-      svg.append("circle").attr("cx", centre.x + root_nodes[2].ln.x).attr("cy", centre.y - root_nodes[2].ln.y).attr("r", 10).attr("fill", "blue");
-      svg.append("circle").attr("cx", centre.x + root_nodes[2].rn.x).attr("cy", centre.y - root_nodes[2].rn.y).attr("r", 10).attr("fill", "red");
+      });
+      /*
+      // See control points for reference
+      svg.append("circle")
+          .attr("cx", centre.x + root_nodes[2].ln.x)
+          .attr("cy", centre.y - root_nodes[2].ln.y)
+          .attr("r", 10)
+          .attr("fill", "blue")
+        svg.append("circle")
+          .attr("cx", centre.x + root_nodes[2].rn.x)
+          .attr("cy", centre.y - root_nodes[2].rn.y)
+          .attr("r", 10)
+          .attr("fill", "red")
+      */
     }
   }, {
     key: "updateFocus",
