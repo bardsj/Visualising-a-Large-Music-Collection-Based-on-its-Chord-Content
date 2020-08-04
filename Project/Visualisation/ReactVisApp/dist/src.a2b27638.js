@@ -57476,6 +57476,7 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
         r_url = "http://127.0.0.1:5000/circular";
       }
 
+      r_url = r_url + "&order_opt=avsdf";
       fetch(r_url, {
         mode: 'cors'
       }).then(function (r) {
@@ -74070,7 +74071,7 @@ var Options = /*#__PURE__*/function (_React$Component) {
         onChange: function onChange(e) {
           return _this.props.handleChartType(e.target.value);
         }
-      }, /*#__PURE__*/_react.default.createElement("option", null, "Circular"), /*#__PURE__*/_react.default.createElement("option", null, "Parallel"), /*#__PURE__*/_react.default.createElement("option", null, "Circular Hierarchical"), /*#__PURE__*/_react.default.createElement("option", null, "Circular Hierarchical - Single Hue"), /*#__PURE__*/_react.default.createElement("option", null, "Circular KMeans")), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Label, null, "Genre"), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Group, null, genres.map(function (genre, index) {
+      }, /*#__PURE__*/_react.default.createElement("option", null, "Circular"), /*#__PURE__*/_react.default.createElement("option", null, "Parallel"), /*#__PURE__*/_react.default.createElement("option", null, "Circular Hierarchical"), /*#__PURE__*/_react.default.createElement("option", null, "Circular Hierarchical - Single Hue"), /*#__PURE__*/_react.default.createElement("option", null, "Circular Clustered")), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Label, null, "Genre"), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Group, null, genres.map(function (genre, index) {
         return /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Check, {
           onChange: function onChange(e) {
             return _this.props.handleFilter(e);
@@ -74754,13 +74755,13 @@ var ChartHierSingleHue = /*#__PURE__*/function (_React$Component) {
 }(_react.default.Component);
 
 exports.ChartHierSingleHue = ChartHierSingleHue;
-},{"@babel/runtime/helpers/slicedToArray":"node_modules/@babel/runtime/helpers/slicedToArray.js","@babel/runtime/helpers/construct":"node_modules/@babel/runtime/helpers/construct.js","@babel/runtime/helpers/toConsumableArray":"node_modules/@babel/runtime/helpers/toConsumableArray.js","@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js","@babel/runtime/helpers/inherits":"node_modules/@babel/runtime/helpers/inherits.js","@babel/runtime/helpers/possibleConstructorReturn":"node_modules/@babel/runtime/helpers/possibleConstructorReturn.js","@babel/runtime/helpers/getPrototypeOf":"node_modules/@babel/runtime/helpers/getPrototypeOf.js","react":"node_modules/react/index.js","d3":"node_modules/d3/index.js"}],"src/chartKMeans.js":[function(require,module,exports) {
+},{"@babel/runtime/helpers/slicedToArray":"node_modules/@babel/runtime/helpers/slicedToArray.js","@babel/runtime/helpers/construct":"node_modules/@babel/runtime/helpers/construct.js","@babel/runtime/helpers/toConsumableArray":"node_modules/@babel/runtime/helpers/toConsumableArray.js","@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js","@babel/runtime/helpers/inherits":"node_modules/@babel/runtime/helpers/inherits.js","@babel/runtime/helpers/possibleConstructorReturn":"node_modules/@babel/runtime/helpers/possibleConstructorReturn.js","@babel/runtime/helpers/getPrototypeOf":"node_modules/@babel/runtime/helpers/getPrototypeOf.js","react":"node_modules/react/index.js","d3":"node_modules/d3/index.js"}],"src/chartClust.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.ChartKMeans = void 0;
+exports.ChartClust = void 0;
 
 var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
 
@@ -74796,15 +74797,15 @@ function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflec
 
 function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
 
-var ChartKMeans = /*#__PURE__*/function (_React$Component) {
-  (0, _inherits2.default)(ChartKMeans, _React$Component);
+var ChartClust = /*#__PURE__*/function (_React$Component) {
+  (0, _inherits2.default)(ChartClust, _React$Component);
 
-  var _super = _createSuper(ChartKMeans);
+  var _super = _createSuper(ChartClust);
 
-  function ChartKMeans(props) {
+  function ChartClust(props) {
     var _this;
 
-    (0, _classCallCheck2.default)(this, ChartKMeans);
+    (0, _classCallCheck2.default)(this, ChartClust);
     _this = _super.call(this, props);
     _this.state = {
       data: null,
@@ -74813,7 +74814,7 @@ var ChartKMeans = /*#__PURE__*/function (_React$Component) {
     return _this;
   }
 
-  (0, _createClass2.default)(ChartKMeans, [{
+  (0, _createClass2.default)(ChartClust, [{
     key: "fetchData",
     value: function fetchData(request_params) {
       var _this2 = this;
@@ -74821,9 +74822,9 @@ var ChartKMeans = /*#__PURE__*/function (_React$Component) {
       var r_url = "";
 
       if (request_params.tag_val.length > 0) {
-        r_url = "http://127.0.0.1:5000/circKMeans?tag_val=" + request_params.tag_val.join() + "&tag_name=" + request_params.tag_name;
+        r_url = "http://127.0.0.1:5000/circClust?tag_val=" + request_params.tag_val.join() + "&tag_name=" + request_params.tag_name;
       } else {
-        r_url = "http://127.0.0.1:5000/circKMeans";
+        r_url = "http://127.0.0.1:5000/circClust";
       }
 
       fetch(r_url, {
@@ -75089,7 +75090,6 @@ var ChartKMeans = /*#__PURE__*/function (_React$Component) {
       }).attr("dy", function (d) {
         return -d.coords.y * labelOffset;
       }).attr("text-anchor", "middle").attr("font-size", 10);
-      var beta = this.props.beta;
       var lineGen = d3.line().x(function (d) {
         return d.x + centre.x;
       }).y(function (d) {
@@ -75171,10 +75171,10 @@ var ChartKMeans = /*#__PURE__*/function (_React$Component) {
       });
     }
   }]);
-  return ChartKMeans;
+  return ChartClust;
 }(_react.default.Component);
 
-exports.ChartKMeans = ChartKMeans;
+exports.ChartClust = ChartClust;
 },{"@babel/runtime/helpers/slicedToArray":"node_modules/@babel/runtime/helpers/slicedToArray.js","@babel/runtime/helpers/construct":"node_modules/@babel/runtime/helpers/construct.js","@babel/runtime/helpers/toConsumableArray":"node_modules/@babel/runtime/helpers/toConsumableArray.js","@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js","@babel/runtime/helpers/inherits":"node_modules/@babel/runtime/helpers/inherits.js","@babel/runtime/helpers/possibleConstructorReturn":"node_modules/@babel/runtime/helpers/possibleConstructorReturn.js","@babel/runtime/helpers/getPrototypeOf":"node_modules/@babel/runtime/helpers/getPrototypeOf.js","react":"node_modules/react/index.js","d3":"node_modules/d3/index.js","./colorMap":"src/colorMap.js","react-bootstrap":"node_modules/react-bootstrap/esm/index.js"}],"src/App.js":[function(require,module,exports) {
 "use strict";
 
@@ -75203,7 +75203,7 @@ var _reactBootstrap = require("react-bootstrap");
 
 var _chartHierSingleHue = require("./chartHierSingleHue");
 
-var _chartKMeans = require("./chartKMeans");
+var _chartClust = require("./chartClust");
 
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
 
@@ -75221,7 +75221,7 @@ var _default = function _default() {
       requestParams = _useState2[0],
       setRequestParams = _useState2[1];
 
-  var _useState3 = (0, _react.useState)("Circular KMeans"),
+  var _useState3 = (0, _react.useState)("Circular Clustered"),
       _useState4 = (0, _slicedToArray2.default)(_useState3, 2),
       chartType = _useState4[0],
       setChartType = _useState4[1];
@@ -75265,7 +75265,7 @@ var _default = function _default() {
 
   var chart = "";
 
-  if (chartType == "Circular") {
+  if (chartType === "Circular") {
     chart = /*#__PURE__*/_react.default.createElement(_chartCircular.ChartCircular, {
       id: 1,
       width: 800,
@@ -75274,7 +75274,7 @@ var _default = function _default() {
       focus: focus,
       support: support
     });
-  } else if (chartType == "Parallel") {
+  } else if (chartType === "Parallel") {
     chart = /*#__PURE__*/_react.default.createElement(_chartParallel.ChartParallel, {
       id: 1,
       width: 800,
@@ -75283,7 +75283,7 @@ var _default = function _default() {
       focus: focus,
       support: support
     });
-  } else if (chartType == "Circular Hierarchical") {
+  } else if (chartType === "Circular Hierarchical") {
     chart = /*#__PURE__*/_react.default.createElement(_chartHier.ChartHier, {
       beta: beta,
       id: 1,
@@ -75293,7 +75293,7 @@ var _default = function _default() {
       focus: focus,
       support: support
     });
-  } else if (chartType == "Circular Hierarchical - Single Hue") {
+  } else if (chartType === "Circular Hierarchical - Single Hue") {
     chart = /*#__PURE__*/_react.default.createElement(_chartHierSingleHue.ChartHierSingleHue, {
       beta: beta,
       id: 1,
@@ -75303,8 +75303,8 @@ var _default = function _default() {
       focus: focus,
       support: support
     });
-  } else if (chartType == "Circular KMeans") {
-    chart = /*#__PURE__*/_react.default.createElement(_chartKMeans.ChartKMeans, {
+  } else if (chartType === "Circular Clustered") {
+    chart = /*#__PURE__*/_react.default.createElement(_chartClust.ChartClust, {
       beta: beta,
       id: 1,
       width: 800,
@@ -75347,7 +75347,7 @@ var _default = function _default() {
 };
 
 exports.default = _default;
-},{"@babel/runtime/helpers/slicedToArray":"node_modules/@babel/runtime/helpers/slicedToArray.js","react":"node_modules/react/index.js","./chartCircular":"src/chartCircular.js","./chartParallel":"src/chartParallel.js","./chartHier":"src/chartHier.js","./options":"src/options.js","./visparams":"src/visparams.js","./legend":"src/legend.js","react-bootstrap":"node_modules/react-bootstrap/esm/index.js","./chartHierSingleHue":"src/chartHierSingleHue.js","./chartKMeans":"src/chartKMeans.js"}],"src/index.js":[function(require,module,exports) {
+},{"@babel/runtime/helpers/slicedToArray":"node_modules/@babel/runtime/helpers/slicedToArray.js","react":"node_modules/react/index.js","./chartCircular":"src/chartCircular.js","./chartParallel":"src/chartParallel.js","./chartHier":"src/chartHier.js","./options":"src/options.js","./visparams":"src/visparams.js","./legend":"src/legend.js","react-bootstrap":"node_modules/react-bootstrap/esm/index.js","./chartHierSingleHue":"src/chartHierSingleHue.js","./chartClust":"src/chartClust.js"}],"src/index.js":[function(require,module,exports) {
 "use strict";
 
 var _react = _interopRequireDefault(require("react"));

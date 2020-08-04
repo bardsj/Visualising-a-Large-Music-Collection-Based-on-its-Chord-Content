@@ -4,7 +4,7 @@ import { genreColormap } from './colorMap'
 import { set, path, mean } from "d3";
 import { Popover } from "react-bootstrap";
 
-export class ChartKMeans extends React.Component {
+export class ChartClust extends React.Component {
     constructor(props) {
         super(props)
         this.state = { data: null, request_params: null }
@@ -13,10 +13,10 @@ export class ChartKMeans extends React.Component {
     fetchData(request_params) {
         let r_url = ""
         if (request_params.tag_val.length > 0) {
-            r_url = "http://127.0.0.1:5000/circKMeans?tag_val=" + request_params.tag_val.join() + "&tag_name=" + request_params.tag_name
+            r_url = "http://127.0.0.1:5000/circClust?tag_val=" + request_params.tag_val.join() + "&tag_name=" + request_params.tag_name
         }
         else {
-            r_url = "http://127.0.0.1:5000/circKMeans"
+            r_url = "http://127.0.0.1:5000/circClust"
         }
         fetch(r_url, { mode: 'cors' })
             .then(r => r.json())
@@ -227,8 +227,6 @@ export class ChartKMeans extends React.Component {
             .attr("text-anchor", "middle")
             .attr("font-size", 10)
 
-
-        const beta = this.props.beta
         const lineGen = d3.line().x(d => d.x + centre.x).y(d => centre.y - d.y).curve(d3.curveBundle.beta(1))
 
         // Generate coordinates for line based on cluster value mapping to inner node values

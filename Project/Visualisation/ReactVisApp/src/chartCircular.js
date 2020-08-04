@@ -16,6 +16,7 @@ export class ChartCircular extends React.Component {
         else {
             r_url = "http://127.0.0.1:5000/circular"
         }
+        r_url = r_url + "&order_opt=avsdf"
         fetch(r_url,{mode: 'cors'})
             .then(r => r.json())
             .then(r => this.setState({ data: r, request_params: request_params }))

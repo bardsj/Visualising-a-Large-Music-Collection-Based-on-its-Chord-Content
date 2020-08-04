@@ -18,6 +18,7 @@ CORS(app)
 client = MongoClient("mongodb+srv://publicUser:jdACcF7TyiU2Vshj@msc.5jje5.gcp.mongodb.net/jamendo?retryWrites=false&w=majority")
 col = client.jamendo.itemsetData
 
+# Default ordering based on root nodes - used in heirarchical bundling
 default_order = ["Cmaj","Cmaj7","Cmin","Cmin7","C7", \
         "Dbmaj","Dbmaj7","Dbmin","Dbmin7","Db7",
         "Dmaj","Dmaj7","Dmin","Dmin7","D7",
@@ -32,19 +33,39 @@ default_order = ["Cmaj","Cmaj7","Cmin","Cmin7","C7", \
         "Bmaj","Bmaj7","Bmin","Bmin7","B7"
         ]
 
+
 def getData(request):
+    """
+        Query mongodb for data based on API request params
+
+        Parameters
+        ----------
+        request: flask.request
+            The request recieved by the API containing request parameters in request.args
+        Returns
+        -------
+        sets: list(dict)
+            The data retrieved from MongoDB based on request parameters containing:
+                - labels: list - the frequent itemset labels e.g ["C7","Abmin"]
+                - values: float - the support value as a pecentage of the total dataset
+                - tag: str - the value of the tag type requested (e.g. "jazz") 
+    """
+
+    # If tag values (i.e. genre) specified in the request, return relevant document of
+    # frequent itemsets and relevant metadata
     if 'tag_name' and 'tag_val' in request.args:
         # Get tag request
         tag_val = request.args['tag_val'].split(",")
         tag_name = request.args['tag_name']
         try:
+            # MongoDB query
             data_mult = col.find({"tag_params.tag_name":tag_name,"tag_params.tag_val":{"$in":tag_val}})
+            # Parse into suitable format/data structure
             sets = []
             for d in data_mult:
                 for i,s in zip(d['itemsets']['items'].values(),d['itemsets']['supportPc'].values()):
-                    sets.append({"labels":i, \
-                                    "values":s,\
-                                    "tag":d['tag_params']['tag_val']})
+                    sets.append({"labels":i, "values":s,"tag":d['tag_params']['tag_val']})
+
         except errors.PyMongoError as e:
             abort(500,description="Could not connect to the database - " + str(e))
         if not data_mult:
@@ -64,15 +85,36 @@ def getData(request):
 
 @app.route('/circular',methods=['GET'])
 def returnDataCirc():
+    """
+        API route - data for the simple circular layout, can apply order optimisation method before returning order
+    """
+
+    # Get the data from the db
     sets = getData(request)
+    # Filter for only values of length 2 
+    # for biconnected graph this is sufficient as all supersets (i.e. orders greater than 2) must contain these subsets
     sets = [s for s in sets if len(s['labels']) == 2]
-    #order = AVSDF([s['labels'] for s in sets],local_adjusting=True).run_AVSDF()
-    order = BaurBrandes([s['labels'] for s in sets]).run_bb()
+    # Apply order optimisation
+    if "order_opt" in request.args:
+        if request.args['order_opt'] == "avsdf":
+            order = AVSDF([s['labels'] for s in sets],local_adjusting=False).run_AVSDF()
+        elif request.args['order_opt'] == "bb":
+            order = BaurBrandes([s['labels'] for s in sets]).run_bb()
+        else:
+            abort(500,description="Optimisation type not recognised")
+    else:
+        order = default_order
 
     return jsonify({"sets":sets,"order":order})
 
+
 @app.route('/parallel',methods=['GET'])
 def returnDataParallel():
+    """
+        API route - data for the parallel coordinates layout
+    """
+
+    # Get data from db
     sets = getData(request)
     # Get singletons
     single_sets = [s for s in sets if len(s['labels']) == 1]
@@ -98,53 +140,80 @@ def returnDataParallel():
 
     return jsonify({"sets":sets,"order":order})
 
+
 @app.route('/circHier',methods=['GET'])
 def returnDataHier():
+    """
+        API route - data for circular heirarchical bundling
+        Forces default order as this determines bundling nodes
+    """
+
+    # Get data from db
     sets = getData(request)
+    # Select only doubletons
     sets = [s for s in sets if len(s['labels']) == 2]
     order = default_order
 
     return jsonify({"sets":sets,"order":order})
 
-@app.route('/circKMeans',methods=['GET'])
-def returnKMeans():
+
+@app.route('/circClust',methods=['GET'])
+def returnClust():
+    """
+        API route - get data for circular chart with clustered bundling
+        Applies transformation and clustering to similar edges based on node positions
+        to allow edges to be bundled together
+    """
+
+    # Get data from db
     sets = getData(request)
+    # Filter for doubletons
     sets = [s for s in sets if len(s['labels']) == 2]
-    #order = AVSDF([s['labels'] for s in sets],local_adjusting=False).run_AVSDF()
-    #order = BaurBrandes([s['labels'] for s in sets]).run_bb()
-    order = default_order
+
+    # Apply order optimisation
+    if "order_opt" in request.args:
+        if request.args['order_opt'] == "avsdf":
+            order = AVSDF([s['labels'] for s in sets],local_adjusting=False).run_AVSDF()
+        elif request.args['order_opt'] == "bb":
+            order = BaurBrandes([s['labels'] for s in sets]).run_bb()
+        else:
+            abort(500,description="Optimisation type not recognised")
+    else:
+        order = default_order
 
     # Leave only maj/min chords to see what it looks like clutter wise
     #sets = [s for s in sets if "7" not in "".join(s['labels'])]
     #order = [o for o in order if "7" not in o]
 
+    # Map vertex labels to order index
     order_map = {k:i for i,k in enumerate(order)}
 
+    # Dataframe (easier to manipulate/apply clustering)
     df = pd.DataFrame(sets)
-    df = df[df['labels'].map(len) == 2]
 
     # Sort by order as clustering will be affected by the order of the vertices in edge definitions
     df['labels'] = df['labels'].apply(lambda x: sorted(x,key=lambda x: order_map[x]))
     # Sort set labels in order
     s_labels_ordered = list(df['labels'])
-
+    # Apply sin/cos transformation (takes into account circular nature of data)
     df['sin1'] = df['labels'].apply(lambda x: np.sin((order_map[x[0]]/len(order_map))*2*np.pi))
     df['cos1'] = df['labels'].apply(lambda x: np.cos((order_map[x[0]]/len(order_map))*2*np.pi))
     df['sin2'] = df['labels'].apply(lambda x: np.sin((order_map[x[1]]/len(order_map))*2*np.pi))
     df['cos2'] = df['labels'].apply(lambda x: np.cos((order_map[x[1]]/len(order_map))*2*np.pi))
+    
+    # Apply clustering to edges based on node values
     #labs = KMeans(n_clusters=40,random_state=44).fit(df[['sin1','cos1','sin2','cos2']]).labels_
     labs = AgglomerativeClustering(n_clusters=None,distance_threshold=1).fit(df[['sin1','cos1','sin2','cos2']]).labels_   
 
+    # Add cluster label to returned JSON
     sets_w_lab = []
-
     for set_lab,s,lab in zip(s_labels_ordered,sets,labs):
-        sets_w_lab.append({"labels":set_lab, \
-                    "values":s['values'],\
-                    "tag":s['tag'], \
-                    "km_label": int(lab)})
+        sets_w_lab.append({"labels":set_lab,"values":s['values'],"tag":s['tag'], "km_label": int(lab)})
 
     return jsonify({"sets":sets_w_lab,"order":order})
 
+
+# Error handlers
 @app.errorhandler(404)
 def not_found(e):
     return jsonify(error=str(e)), 404

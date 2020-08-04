@@ -7,14 +7,14 @@ import {VisParams} from "./visparams"
 import {Legend} from "./legend"
 import { Container, Row, Col } from 'react-bootstrap'
 import { ChartHierSingleHue } from "./chartHierSingleHue";
-import { ChartKMeans } from "./chartKMeans";
+import { ChartClust } from "./chartClust";
 
 // <Chart width={600} height={600} request_params={{tag_val:"jazz", tag_name:"genres"}}/>
 
 export default () => {
 
   const [requestParams, setRequestParams] = useState({tag_val:["jazz"], tag_name:"genres"})
-  const [chartType, setChartType] = useState("Circular KMeans")
+  const [chartType, setChartType] = useState("Circular Clustered")
   const [focus, setFocus] = useState(1)
   const [support, setSupport] = useState(1)
   const [beta,setBeta] = useState(1)
@@ -36,20 +36,20 @@ export default () => {
 
   let chart = ""
 
-  if (chartType == "Circular") {
+  if (chartType === "Circular") {
     chart =  <ChartCircular id={1} width={800} height={800} request_params={requestParams} focus={focus} support={support}/>
   }
-  else if (chartType == "Parallel")  {
+  else if (chartType === "Parallel")  {
       chart = <ChartParallel id={1} width={800} height={800} request_params={requestParams} focus={focus} support={support}/>
   }
-  else if (chartType == "Circular Hierarchical") {
+  else if (chartType === "Circular Hierarchical") {
     chart = <ChartHier beta={beta} id={1} width={800} height={800} request_params={requestParams} focus={focus} support={support}/>
   }
-  else if (chartType == "Circular Hierarchical - Single Hue") {
+  else if (chartType === "Circular Hierarchical - Single Hue") {
     chart = <ChartHierSingleHue beta={beta} id={1} width={800} height={800} request_params={requestParams} focus={focus} support={support}/>
   }
-  else if (chartType == "Circular KMeans") {
-    chart = <ChartKMeans beta={beta} id={1} width={800} height={800} request_params={requestParams} focus={focus} support={support}/>
+  else if (chartType === "Circular Clustered") {
+    chart = <ChartClust beta={beta} id={1} width={800} height={800} request_params={requestParams} focus={focus} support={support}/>
   }
 
   let legend = ""
