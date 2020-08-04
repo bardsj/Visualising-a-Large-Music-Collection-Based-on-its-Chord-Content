@@ -74958,12 +74958,16 @@ var ChartKMeans = /*#__PURE__*/function (_React$Component) {
           };
           root_nodes[key] = {
             "ln": mean_ln,
-            "rn": mean_rn
+            "rn": mean_rn,
+            "centroid_ln": mean_ln,
+            "centroid_rn": mean_rn
           };
         } else {
           root_nodes[key] = {
             "ln": value[0][0],
-            "rn": value[1][0]
+            "rn": value[1][0],
+            "centroid_ln": value[0][0],
+            "centroid_rn": value[1][0]
           };
         }
       } /////////////////////// Optimise control point positions ///////////////////////////
@@ -75029,15 +75033,15 @@ var ChartKMeans = /*#__PURE__*/function (_React$Component) {
 
         if (side == "ln") {
           new_root_nodes[key].ln = {
-            "x": new_root_nodes[key].ln.x + r * (new_root_nodes[key].rn.x - new_root_nodes[key].ln.x),
-            "y": new_root_nodes[key].ln.y + r * (new_root_nodes[key].rn.y - new_root_nodes[key].ln.y)
+            "x": new_root_nodes[key].centroid_ln.x + r * (new_root_nodes[key].centroid_rn.x - new_root_nodes[key].centroid_ln.x),
+            "y": new_root_nodes[key].centroid_ln.y + r * (new_root_nodes[key].centroid_rn.y - new_root_nodes[key].centroid_ln.y)
           };
         }
 
         if (side == "rn") {
           new_root_nodes[key].rn = {
-            "x": new_root_nodes[key].rn.x + r * (new_root_nodes[key].ln.x - new_root_nodes[key].rn.x),
-            "y": new_root_nodes[key].rn.y + r * (new_root_nodes[key].ln.y - new_root_nodes[key].rn.y)
+            "x": new_root_nodes[key].centroid_rn.x + r * (new_root_nodes[key].centroid_ln.x - new_root_nodes[key].centroid_rn.x),
+            "y": new_root_nodes[key].centroid_rn.y + r * (new_root_nodes[key].centroid_ln.y - new_root_nodes[key].centroid_rn.y)
           };
         }
 
@@ -75051,18 +75055,18 @@ var ChartKMeans = /*#__PURE__*/function (_React$Component) {
             _value = _Object$entries2$_i[1];
 
         // Do for lhs nodes
-        var r_l = gss(gss_func, 0, 1, _key, i_nodes, root_nodes, "ln"); //const r_l = 0.1
+        var r_l = gss(gss_func, 0, 0.5, _key, i_nodes, root_nodes, "ln"); //const r_l = 0.1
 
         root_nodes[_key].ln = {
-          "x": root_nodes[_key].ln.x + r_l * (root_nodes[_key].rn.x - root_nodes[_key].ln.x),
-          "y": root_nodes[_key].ln.y + r_l * (root_nodes[_key].rn.y - root_nodes[_key].ln.y)
+          "x": root_nodes[_key].centroid_ln.x + r_l * (root_nodes[_key].centroid_rn.x - root_nodes[_key].centroid_ln.x),
+          "y": root_nodes[_key].centroid_ln.y + r_l * (root_nodes[_key].centroid_rn.y - root_nodes[_key].centroid_ln.y)
         }; // Do for rhs nodes
 
-        var r_r = gss(gss_func, 0, 1, _key, i_nodes, root_nodes, "rn"); //const r_r = 0.1
+        var r_r = gss(gss_func, 0, 0.5, _key, i_nodes, root_nodes, "rn"); //const r_r = 0.1
 
         root_nodes[_key].rn = {
-          "x": root_nodes[_key].rn.x + r_r * (root_nodes[_key].ln.x - root_nodes[_key].rn.x),
-          "y": root_nodes[_key].rn.y + r_r * (root_nodes[_key].ln.y - root_nodes[_key].rn.y)
+          "x": root_nodes[_key].centroid_rn.x + r_r * (root_nodes[_key].centroid_ln.x - root_nodes[_key].centroid_rn.x),
+          "y": root_nodes[_key].centroid_rn.y + r_r * (root_nodes[_key].centroid_ln.y - root_nodes[_key].centroid_rn.y)
         };
       } ////////////////////////////////////////////////////////////////////////////
       // Append node groups
@@ -75107,8 +75111,9 @@ var ChartKMeans = /*#__PURE__*/function (_React$Component) {
         return lineGen(create_points(d));
       }).attr("stroke", function (d) {
         return cmap[d.tag];
-      }) //.attr("stroke", d => d.km_label == 2 ? "red" : cmap[d.tag])
-      .attr("fill", "none").attr("stroke-width", 1).attr("stroke-opacity", function (d) {
+      }).attr("stroke", function (d) {
+        return d.km_label == 2 ? "red" : cmap[d.tag];
+      }).attr("fill", "none").attr("stroke-width", 1).attr("stroke-opacity", function (d) {
         return Math.pow(d.values / d3.max(sets.map(function (x) {
           return x.values;
         })), _this3.props.focus);
@@ -75135,20 +75140,10 @@ var ChartKMeans = /*#__PURE__*/function (_React$Component) {
       });
       this.setState({
         sets: sets
-      });
-      /*
-      // See control points for reference
-      svg.append("circle")
-          .attr("cx", centre.x + root_nodes[2].ln.x)
-          .attr("cy", centre.y - root_nodes[2].ln.y)
-          .attr("r", 10)
-          .attr("fill", "red")
-        svg.append("circle")
-          .attr("cx", centre.x + root_nodes[2].rn.x)
-          .attr("cy", centre.y - root_nodes[2].rn.y)
-          .attr("r", 10)
-          .attr("fill", "red")
-      */
+      }); // See control points for reference
+
+      svg.append("circle").attr("cx", centre.x + root_nodes[2].ln.x).attr("cy", centre.y - root_nodes[2].ln.y).attr("r", 10).attr("fill", "blue");
+      svg.append("circle").attr("cx", centre.x + root_nodes[2].rn.x).attr("cy", centre.y - root_nodes[2].rn.y).attr("r", 10).attr("fill", "red");
     }
   }, {
     key: "updateFocus",
@@ -75392,7 +75387,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62455" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "59402" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

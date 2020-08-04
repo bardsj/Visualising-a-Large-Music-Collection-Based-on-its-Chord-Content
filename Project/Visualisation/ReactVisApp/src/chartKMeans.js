@@ -105,9 +105,9 @@ export class ChartKMeans extends React.Component {
                 // Do the same for rhs nodes
                 const points_rn = value[1]
                 const mean_rn = { "x": d3.mean(points_rn.map(x => x.x)), "y": d3.mean(points_rn.map(x => x.y)) }
-                root_nodes[key] = { "ln": mean_ln, "rn": mean_rn }
+                root_nodes[key] = { "ln": mean_ln, "rn": mean_rn, "centroid_ln": mean_ln, "centroid_rn": mean_rn}
             } else {
-                root_nodes[key] = { "ln": value[0][0], "rn": value[1][0] }
+                root_nodes[key] = { "ln": value[0][0], "rn": value[1][0],"centroid_ln": value[0][0], "centroid_rn": value[1][0]}
             }
         }
 
@@ -165,14 +165,14 @@ export class ChartKMeans extends React.Component {
             let new_root_nodes = JSON.parse(JSON.stringify(root_nodes))
             if (side == "ln") {
                 new_root_nodes[key].ln = {
-                    "x": new_root_nodes[key].ln.x + r * (new_root_nodes[key].rn.x - new_root_nodes[key].ln.x),
-                    "y": new_root_nodes[key].ln.y + r * (new_root_nodes[key].rn.y - new_root_nodes[key].ln.y)
+                    "x": new_root_nodes[key].centroid_ln.x + r * (new_root_nodes[key].centroid_rn.x - new_root_nodes[key].centroid_ln.x),
+                    "y": new_root_nodes[key].centroid_ln.y + r * (new_root_nodes[key].centroid_rn.y - new_root_nodes[key].centroid_ln.y)
                 }
             }
             if (side == "rn") {
                 new_root_nodes[key].rn = {
-                    "x": new_root_nodes[key].rn.x + r * (new_root_nodes[key].ln.x - new_root_nodes[key].rn.x),
-                    "y": new_root_nodes[key].rn.y + r * (new_root_nodes[key].ln.y - new_root_nodes[key].rn.y)
+                    "x": new_root_nodes[key].centroid_rn.x + r * (new_root_nodes[key].centroid_ln.x - new_root_nodes[key].centroid_rn.x),
+                    "y": new_root_nodes[key].centroid_rn.y + r * (new_root_nodes[key].centroid_ln.y - new_root_nodes[key].centroid_rn.y)
                 }
             }
             return calc_line_length(key, i_nodes, new_root_nodes, side)
@@ -181,19 +181,19 @@ export class ChartKMeans extends React.Component {
         // Carry out optimisation - set r_l and r_r to constant value if desired
         for (const [key, value] of Object.entries(root_nodes)) {
             // Do for lhs nodes
-            const r_l = gss(gss_func, 0, 1, key, i_nodes, root_nodes, "ln")
+            const r_l = gss(gss_func, 0, 0.5, key, i_nodes, root_nodes, "ln")
             //const r_l = 0.1
             root_nodes[key].ln = {
-                "x": root_nodes[key].ln.x + r_l * (root_nodes[key].rn.x - root_nodes[key].ln.x),
-                "y": root_nodes[key].ln.y + r_l * (root_nodes[key].rn.y - root_nodes[key].ln.y)
+                "x": root_nodes[key].centroid_ln.x + (r_l * (root_nodes[key].centroid_rn.x - root_nodes[key].centroid_ln.x)),
+                "y": root_nodes[key].centroid_ln.y + (r_l * (root_nodes[key].centroid_rn.y - root_nodes[key].centroid_ln.y))
             }
 
             // Do for rhs nodes
-            const r_r = gss(gss_func, 0, 1, key, i_nodes, root_nodes, "rn")
+            const r_r = gss(gss_func, 0, 0.5, key, i_nodes, root_nodes, "rn")
             //const r_r = 0.1
             root_nodes[key].rn = {
-                "x": root_nodes[key].rn.x + r_r * (root_nodes[key].ln.x - root_nodes[key].rn.x),
-                "y": root_nodes[key].rn.y + r_r * (root_nodes[key].ln.y - root_nodes[key].rn.y)
+                "x": root_nodes[key].centroid_rn.x + (r_r * (root_nodes[key].centroid_ln.x - root_nodes[key].centroid_rn.x)),
+                "y": root_nodes[key].centroid_rn.y + (r_r * (root_nodes[key].centroid_ln.y - root_nodes[key].centroid_rn.y))
             }
         }
 
@@ -247,7 +247,7 @@ export class ChartKMeans extends React.Component {
             .attr("class", "link")
             .attr("d", (d) => lineGen(create_points(d)))
             .attr("stroke", d => cmap[d.tag])
-            //.attr("stroke", d => d.km_label == 2 ? "red" : cmap[d.tag])
+            .attr("stroke", d => d.km_label == 2 ? "red" : cmap[d.tag])
             .attr("fill", "none")
             .attr("stroke-width", 1)
             .attr("stroke-opacity", d => (d.values / d3.max(sets.map(x => x.values))) ** this.props.focus)
@@ -273,20 +273,20 @@ export class ChartKMeans extends React.Component {
 
         this.setState({sets:sets})        
 
-        /*
+        
         // See control points for reference
         svg.append("circle")
             .attr("cx", centre.x + root_nodes[2].ln.x)
             .attr("cy", centre.y - root_nodes[2].ln.y)
             .attr("r", 10)
-            .attr("fill", "red")
+            .attr("fill", "blue")
 
         svg.append("circle")
             .attr("cx", centre.x + root_nodes[2].rn.x)
             .attr("cy", centre.y - root_nodes[2].rn.y)
             .attr("r", 10)
             .attr("fill", "red")
-        */
+        
 
     }
 
