@@ -10,3 +10,15 @@ class ApiTest(unittest.TestCase):
     def test_circular_route(self):
         r = self.app.get("/circular")
         self.assertEqual(r.status_code,200)
+
+    def test_parallel_route(self):
+        r = self.app.get("/parallel")
+        self.assertEqual(r.status_code,200)
+
+    def test_circHier_route(self):
+        r = self.app.get("/circHier")
+        self.assertEqual(r.status_code,200)
+    
+    def test_circClust_route(self):
+        r = self.app.get("/circClust")
+        self.assertEqual(r.status_code,200)
