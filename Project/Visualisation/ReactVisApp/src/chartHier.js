@@ -26,12 +26,15 @@ export class ChartHier extends React.Component {
         this.fetchData(this.props.request_params);
     }
 
-    componentDidUpdate() {
+    componentDidUpdate(prevProps) {
         if (this.state.request_params !== this.props.request_params) {
             this.fetchData(this.props.request_params)
         }
-        if (this.state.data) {
+        if ((this.state.data && !this.state.sets) || (this.state.data && (prevProps.support !== this.props.support))) {
             this.createChart()
+        }
+        if (prevProps.focus !== this.props.focus) {
+            this.updateFocus()
         }
 
     }
@@ -169,6 +172,14 @@ export class ChartHier extends React.Component {
                 .attr("stroke-width", 1)
                 .attr("stroke-opacity", d => (d.values / d3.max(sets.map(x => x.values))) ** this.props.focus)
         })
+        this.setState({sets:sets})  
+    }
+
+    updateFocus() {
+        const svg = d3.select(this.refs[this.props.id + 'chartsvg'])
+
+        svg.selectAll(".link")
+            .attr("stroke-opacity", d => (d.values / d3.max(this.state.sets.map(x => x.values))) ** this.props.focus)
     }
 
 

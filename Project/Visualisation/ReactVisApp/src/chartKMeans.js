@@ -28,12 +28,15 @@ export class ChartKMeans extends React.Component {
         this.fetchData(this.props.request_params);
     }
 
-    componentDidUpdate() {
+    componentDidUpdate(prevProps) {
         if (this.state.request_params !== this.props.request_params) {
             this.fetchData(this.props.request_params)
         }
-        if (this.state.data) {
+        if ((this.state.data && !this.state.sets) || (this.state.data && (prevProps.support !== this.props.support))) {
             this.createChart()
+        }
+        if (prevProps.focus !== this.props.focus) {
+            this.updateFocus()
         }
 
     }
@@ -226,7 +229,7 @@ export class ChartKMeans extends React.Component {
 
 
         const beta = this.props.beta
-        const lineGen = d3.line().x(d => d.x + centre.x).y(d => centre.y - d.y)//.curve(d3.curveBundle.beta(1))
+        const lineGen = d3.line().x(d => d.x + centre.x).y(d => centre.y - d.y).curve(d3.curveBundle.beta(1))
 
         // Generate coordinates for line based on cluster value mapping to inner node values
         const create_points = (d) => {
@@ -268,6 +271,8 @@ export class ChartKMeans extends React.Component {
                 .attr("stroke-opacity", d => (d.values / d3.max(sets.map(x => x.values))) ** this.props.focus)
         })
 
+        this.setState({sets:sets})        
+
         /*
         // See control points for reference
         svg.append("circle")
@@ -283,6 +288,13 @@ export class ChartKMeans extends React.Component {
             .attr("fill", "red")
         */
 
+    }
+
+    updateFocus() {
+        const svg = d3.select(this.refs[this.props.id + 'chartsvg'])
+
+        svg.selectAll(".link")
+            .attr("stroke-opacity", d => (d.values / d3.max(this.state.sets.map(x => x.values))) ** this.props.focus)
     }
 
 

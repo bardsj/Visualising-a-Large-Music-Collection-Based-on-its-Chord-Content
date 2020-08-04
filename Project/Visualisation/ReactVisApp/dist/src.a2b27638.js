@@ -57494,13 +57494,17 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
     }
   }, {
     key: "componentDidUpdate",
-    value: function componentDidUpdate() {
+    value: function componentDidUpdate(prevProps) {
       if (this.state.request_params !== this.props.request_params) {
         this.fetchData(this.props.request_params);
       }
 
-      if (this.state.data) {
+      if (this.state.data && !this.state.sets || this.state.data && prevProps.support !== this.props.support) {
         this.createChart();
+      }
+
+      if (prevProps.focus !== this.props.focus) {
+        this.updateFocus();
       }
     }
   }, {
@@ -57602,6 +57606,21 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
             return x.values;
           })), _this3.props.focus);
         });
+      });
+      this.setState({
+        sets: sets
+      });
+    }
+  }, {
+    key: "updateFocus",
+    value: function updateFocus() {
+      var _this4 = this;
+
+      var svg = d3.select(this.refs[this.props.id + 'chartsvg']);
+      svg.selectAll(".link").attr("stroke-opacity", function (d) {
+        return Math.pow(d.values / d3.max(_this4.state.sets.map(function (x) {
+          return x.values;
+        })), _this4.props.focus);
       });
     }
   }, {
@@ -57708,13 +57727,17 @@ var ChartParallel = /*#__PURE__*/function (_React$Component) {
     }
   }, {
     key: "componentDidUpdate",
-    value: function componentDidUpdate() {
+    value: function componentDidUpdate(prevProps) {
       if (this.state.request_params !== this.props.request_params) {
         this.fetchData(this.props.request_params);
       }
 
-      if (this.state.data) {
+      if (this.state.data && !this.state.sets || this.state.data && prevProps.support !== this.props.support) {
         this.createChart();
+      }
+
+      if (prevProps.focus !== this.props.focus) {
+        this.updateFocus();
       }
     }
   }, {
@@ -57839,6 +57862,21 @@ var ChartParallel = /*#__PURE__*/function (_React$Component) {
 
       nodes_group.raise();
       label_bg.raise();
+      this.setState({
+        sets: data
+      });
+    }
+  }, {
+    key: "updateFocus",
+    value: function updateFocus() {
+      var _this4 = this;
+
+      var svg = d3.select(this.refs[this.props.id + 'chartsvg']);
+      svg.selectAll(".link").attr("stroke-opacity", function (d) {
+        return Math.pow(d.values / d3.max(_this4.state.sets.map(function (x) {
+          return x.values;
+        })), _this4.props.focus);
+      });
     }
   }, {
     key: "render",
@@ -57946,13 +57984,17 @@ var ChartHier = /*#__PURE__*/function (_React$Component) {
     }
   }, {
     key: "componentDidUpdate",
-    value: function componentDidUpdate() {
+    value: function componentDidUpdate(prevProps) {
       if (this.state.request_params !== this.props.request_params) {
         this.fetchData(this.props.request_params);
       }
 
-      if (this.state.data) {
+      if (this.state.data && !this.state.sets || this.state.data && prevProps.support !== this.props.support) {
         this.createChart();
+      }
+
+      if (prevProps.focus !== this.props.focus) {
+        this.updateFocus();
       }
     }
   }, {
@@ -58095,6 +58137,21 @@ var ChartHier = /*#__PURE__*/function (_React$Component) {
             return x.values;
           })), _this3.props.focus);
         });
+      });
+      this.setState({
+        sets: sets
+      });
+    }
+  }, {
+    key: "updateFocus",
+    value: function updateFocus() {
+      var _this4 = this;
+
+      var svg = d3.select(this.refs[this.props.id + 'chartsvg']);
+      svg.selectAll(".link").attr("stroke-opacity", function (d) {
+        return Math.pow(d.values / d3.max(_this4.state.sets.map(function (x) {
+          return x.values;
+        })), _this4.props.focus);
       });
     }
   }, {
@@ -74508,13 +74565,17 @@ var ChartHierSingleHue = /*#__PURE__*/function (_React$Component) {
     }
   }, {
     key: "componentDidUpdate",
-    value: function componentDidUpdate() {
+    value: function componentDidUpdate(prevProps) {
       if (this.state.request_params !== this.props.request_params) {
         this.fetchData(this.props.request_params);
       }
 
-      if (this.state.data) {
+      if (this.state.data && !this.state.sets || this.state.data && prevProps.support !== this.props.support) {
         this.createChart();
+      }
+
+      if (prevProps.focus !== this.props.focus) {
+        this.updateFocus();
       }
     }
   }, {
@@ -74659,6 +74720,21 @@ var ChartHierSingleHue = /*#__PURE__*/function (_React$Component) {
           })), _this3.props.focus);
         });
       });
+      this.setState({
+        sets: sets
+      });
+    }
+  }, {
+    key: "updateFocus",
+    value: function updateFocus() {
+      var _this4 = this;
+
+      var svg = d3.select(this.refs[this.props.id + 'chartsvg']);
+      svg.selectAll(".link").attr("stroke-opacity", function (d) {
+        return Math.pow(d.values / d3.max(_this4.state.sets.map(function (x) {
+          return x.values;
+        })), _this4.props.focus);
+      });
     }
   }, {
     key: "render",
@@ -74768,13 +74844,17 @@ var ChartKMeans = /*#__PURE__*/function (_React$Component) {
     }
   }, {
     key: "componentDidUpdate",
-    value: function componentDidUpdate() {
+    value: function componentDidUpdate(prevProps) {
       if (this.state.request_params !== this.props.request_params) {
         this.fetchData(this.props.request_params);
       }
 
-      if (this.state.data) {
+      if (this.state.data && !this.state.sets || this.state.data && prevProps.support !== this.props.support) {
         this.createChart();
+      }
+
+      if (prevProps.focus !== this.props.focus) {
+        this.updateFocus();
       }
     }
   }, {
@@ -75010,8 +75090,7 @@ var ChartKMeans = /*#__PURE__*/function (_React$Component) {
         return d.x + centre.x;
       }).y(function (d) {
         return centre.y - d.y;
-      }); //.curve(d3.curveBundle.beta(1))
-      // Generate coordinates for line based on cluster value mapping to inner node values
+      }).curve(d3.curveBundle.beta(1)); // Generate coordinates for line based on cluster value mapping to inner node values
 
       var create_points = function create_points(d) {
         var line = [node2point(d.labels[0]), {
@@ -75054,6 +75133,9 @@ var ChartKMeans = /*#__PURE__*/function (_React$Component) {
           })), _this3.props.focus);
         });
       });
+      this.setState({
+        sets: sets
+      });
       /*
       // See control points for reference
       svg.append("circle")
@@ -75067,6 +75149,18 @@ var ChartKMeans = /*#__PURE__*/function (_React$Component) {
           .attr("r", 10)
           .attr("fill", "red")
       */
+    }
+  }, {
+    key: "updateFocus",
+    value: function updateFocus() {
+      var _this4 = this;
+
+      var svg = d3.select(this.refs[this.props.id + 'chartsvg']);
+      svg.selectAll(".link").attr("stroke-opacity", function (d) {
+        return Math.pow(d.values / d3.max(_this4.state.sets.map(function (x) {
+          return x.values;
+        })), _this4.props.focus);
+      });
     }
   }, {
     key: "render",
@@ -75298,7 +75392,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63950" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62455" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
