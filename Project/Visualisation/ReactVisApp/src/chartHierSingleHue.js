@@ -13,7 +13,7 @@ export class ChartHierSingleHue extends React.Component {
             r_url = "http://127.0.0.1:5000/circHier?tag_val=" + request_params.tag_val.join() + "&tag_name=" + request_params.tag_name
         }
         else {
-            r_url = "http://127.0.0.1:5000/circHier"
+            r_url = "http://127.0.0.1:5000/circHier?"
         }
         fetch(r_url, { mode: 'cors' })
             .then(r => r.json())

@@ -14,7 +14,7 @@ export class ChartCircular extends React.Component {
             r_url = "http://127.0.0.1:5000/circular?tag_val=" + request_params.tag_val.join() + "&tag_name=" + request_params.tag_name
         }
         else {
-            r_url = "http://127.0.0.1:5000/circular"
+            r_url = "http://127.0.0.1:5000/circular?"
         }
         r_url = r_url + "&order_opt=avsdf"
         fetch(r_url,{mode: 'cors'})

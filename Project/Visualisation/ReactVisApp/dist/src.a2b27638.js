@@ -57473,7 +57473,7 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
       if (request_params.tag_val.length > 0) {
         r_url = "http://127.0.0.1:5000/circular?tag_val=" + request_params.tag_val.join() + "&tag_name=" + request_params.tag_name;
       } else {
-        r_url = "http://127.0.0.1:5000/circular";
+        r_url = "http://127.0.0.1:5000/circular?";
       }
 
       r_url = r_url + "&order_opt=avsdf";
@@ -57968,7 +57968,7 @@ var ChartHier = /*#__PURE__*/function (_React$Component) {
       if (request_params.tag_val.length > 0) {
         r_url = "http://127.0.0.1:5000/circHier?tag_val=" + request_params.tag_val.join() + "&tag_name=" + request_params.tag_name;
       } else {
-        r_url = "http://127.0.0.1:5000/circHier";
+        r_url = "http://127.0.0.1:5000/circHier?";
       }
 
       fetch(r_url, {
@@ -74550,7 +74550,7 @@ var ChartHierSingleHue = /*#__PURE__*/function (_React$Component) {
       if (request_params.tag_val.length > 0) {
         r_url = "http://127.0.0.1:5000/circHier?tag_val=" + request_params.tag_val.join() + "&tag_name=" + request_params.tag_name;
       } else {
-        r_url = "http://127.0.0.1:5000/circHier";
+        r_url = "http://127.0.0.1:5000/circHier?";
       }
 
       fetch(r_url, {
@@ -74831,7 +74831,7 @@ var ChartClust = /*#__PURE__*/function (_React$Component) {
       if (request_params.tag_val.length > 0) {
         r_url = "http://127.0.0.1:5000/circClust?tag_val=" + request_params.tag_val.join() + "&tag_name=" + request_params.tag_name;
       } else {
-        r_url = "http://127.0.0.1:5000/circClust";
+        r_url = "http://127.0.0.1:5000/circClust?";
       }
 
       fetch(r_url, {
@@ -75405,7 +75405,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "59402" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56248" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

@@ -16,7 +16,7 @@ export class ChartClust extends React.Component {
             r_url = "http://127.0.0.1:5000/circClust?tag_val=" + request_params.tag_val.join() + "&tag_name=" + request_params.tag_name
         }
         else {
-            r_url = "http://127.0.0.1:5000/circClust"
+            r_url = "http://127.0.0.1:5000/circClust?"
         }
         fetch(r_url, { mode: 'cors' })
             .then(r => r.json())
