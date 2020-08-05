@@ -113,31 +113,57 @@ export class ChartClust extends React.Component {
         /////////////////////// Optimise control point positions ///////////////////////////
 
         // Calculate the total line length for a particular cluster group
-        function calc_line_length(key, i_nodes, root_nodes, side) {
+        function calc_line_length(key, i_nodes, root_nodes) {
             const centroid = root_nodes[key]
             let total_line_length = 0
             // Calculate length between lhs and rhs centroids
-            const mid_length = Math.sqrt((centroid.ln.x - centroid.rn.x) ** 2 + (centroid.ln.y - centroid.rn.y) ** 2)
+            //const mid_length = Math.sqrt((centroid.ln.x - centroid.rn.x) ** 2 + (centroid.ln.y - centroid.rn.y) ** 2)
 
-            if (i_nodes[key][0].length > 1) {
-                // Sum total line lengths
-                //total_line_length = lengths_ln + lengths_rn + mid_length
-                if (side == "ln") {
-                    // Calculate total length between lhs nodes and centroid
-                    const lengths_ln = d3.sum(i_nodes[key][0].map(x => Math.sqrt((x.x - centroid.ln.x) ** 2 + (x.y - centroid.ln.y) ** 2)))
-                    total_line_length = lengths_ln + mid_length
-                } else {
-                    // Calculate total length between lhs nodes and centroid
-                    const lengths_rn = d3.sum(i_nodes[key][1].map(x => Math.sqrt((x.x - centroid.rn.x) ** 2 + (x.y - centroid.rn.y) ** 2)))
-                    total_line_length = lengths_rn + mid_length
-                }
+            const lineGenMid_t = d3.line().x(d => d.x + centre.x).y(d => centre.y - d.y)
+            const lineGenCatmul_t = d3.line().x(d => d.x + centre.x).y(d => centre.y - d.y).curve(d3.curveCatmullRomOpen.alpha(0))
 
-            } else {
-                // Only one line, length is equal to centroid distance (centroids = node points)
-                //total_line_length = Math.sqrt((centroid.ln.x - centroid.rn.x) ** 2 + (centroid.ln.y - centroid.rn.y) ** 2)
-                total_line_length = mid_length
+            // Generate coordinates for line based on cluster value mapping to inner node values
+            const create_points_mid_t = (d) => {
+                let line = [{ "x": root_nodes[d.km_label].ln.x, "y": root_nodes[d.km_label].ln.y },
+                { "x": root_nodes[d.km_label].rn.x, "y": root_nodes[d.km_label].rn.y }]
+                return line
             }
 
+            const create_points_source_t = (d) => {
+                let line = [node2point(d.labels[0]),node2point(d.labels[0]),
+                { "x": root_nodes[d.km_label].ln.x, "y": root_nodes[d.km_label].ln.y },
+                { "x": root_nodes[d.km_label].rn.x, "y": root_nodes[d.km_label].rn.y }]
+
+                return line
+            }
+
+            const create_points_target_t = (d) => {
+                let line = [{ "x": root_nodes[d.km_label].ln.x, "y": root_nodes[d.km_label].ln.y },
+                { "x": root_nodes[d.km_label].rn.x, "y": root_nodes[d.km_label].rn.y },
+                node2point(d.labels[1]),node2point(d.labels[1])]
+                return line
+            }
+
+            // Sum total line lengths
+            const lengths_mid = sets.filter(x => x.km_label == key).map(create_points_mid_t).map(lineGenMid_t).map((x) => {
+                const svg_temp = d3.create("svg")
+                const path = svg_temp.append("path").attr("d", x)
+                svg_temp.remove("*")
+                return path['_groups'][0][0].getTotalLength()
+            })
+            const lengths_source = sets.filter(x => x.km_label == key).map(create_points_source_t).map(lineGenCatmul_t).map((x) => {
+                const svg_temp = d3.create("svg")
+                const path = svg_temp.append("path").attr("d", x)
+                svg_temp.remove("*")
+                return path['_groups'][0][0].getTotalLength()
+            })
+            const lengths_target = sets.filter(x => x.km_label == key).map(create_points_target_t).map(lineGenCatmul_t).map((x) => {
+                const svg_temp = d3.create("svg")
+                const path = svg_temp.append("path").attr("d", x)
+                svg_temp.remove("*")
+                return path['_groups'][0][0].getTotalLength()
+            })
+            total_line_length = d3.sum(lengths_source) + d3.sum(lengths_target) + lengths_mid[0]
             return total_line_length
         }
 
@@ -180,16 +206,16 @@ export class ChartClust extends React.Component {
         // Carry out optimisation - set r_l and r_r to constant value if desired
         for (const [key, value] of Object.entries(root_nodes)) {
             // Do for lhs nodes
-            const r_l = gss(gss_func, 0, 0.5, key, i_nodes, root_nodes, "ln")
-            //const r_l = 0.1
+            //const r_l = gss(gss_func, 0.5, 0, key, i_nodes, root_nodes, "ln")
+            const r_l = 0.1
             root_nodes[key].ln = {
                 "x": root_nodes[key].centroid_ln.x + (r_l * (root_nodes[key].centroid_rn.x - root_nodes[key].centroid_ln.x)),
                 "y": root_nodes[key].centroid_ln.y + (r_l * (root_nodes[key].centroid_rn.y - root_nodes[key].centroid_ln.y))
             }
 
             // Do for rhs nodes
-            const r_r = gss(gss_func, 0, 0.5, key, i_nodes, root_nodes, "rn")
-            //const r_r = 0.1
+            //const r_r = gss(gss_func, 0.5, 0, key, i_nodes, root_nodes, "rn")
+            const r_r = 0.1
             root_nodes[key].rn = {
                 "x": root_nodes[key].centroid_rn.x + (r_r * (root_nodes[key].centroid_ln.x - root_nodes[key].centroid_rn.x)),
                 "y": root_nodes[key].centroid_rn.y + (r_r * (root_nodes[key].centroid_ln.y - root_nodes[key].centroid_rn.y))
@@ -226,23 +252,58 @@ export class ChartClust extends React.Component {
             .attr("text-anchor", "middle")
             .attr("font-size", 10)
 
-        const lineGen = d3.line().x(d => d.x + centre.x).y(d => centre.y - d.y).curve(d3.curveBundle.beta(1))
+        const lineGenMid = d3.line().x(d => d.x + centre.x).y(d => centre.y - d.y)
+        const lineGenCatmul = d3.line().x(d => d.x + centre.x).y(d => centre.y - d.y).curve(d3.curveCatmullRomOpen.alpha(0))
 
         // Generate coordinates for line based on cluster value mapping to inner node values
-        const create_points = (d) => {
-            let line = [node2point(d.labels[0]),
-                { "x": root_nodes[d.km_label].ln.x, "y": root_nodes[d.km_label].ln.y },
-                { "x": root_nodes[d.km_label].rn.x, "y": root_nodes[d.km_label].rn.y },
-                node2point(d.labels[1])]
+        const create_points_mid = (d) => {
+            let line = [{ "x": root_nodes[d.km_label].ln.x, "y": root_nodes[d.km_label].ln.y },
+            { "x": root_nodes[d.km_label].rn.x, "y": root_nodes[d.km_label].rn.y }]
             return line
         }
 
-        const links = svg.selectAll("path")
-            .data(sets)
-            .enter()
-            .append("path")
+        const create_points_source = (d) => {
+            let line = [node2point(d.labels[0]),node2point(d.labels[0]),
+            { "x": root_nodes[d.km_label].ln.x, "y": root_nodes[d.km_label].ln.y },
+            { "x": root_nodes[d.km_label].rn.x, "y": root_nodes[d.km_label].rn.y }]
+
+            return line
+        }
+
+        const create_points_target = (d) => {
+            let line = [{ "x": root_nodes[d.km_label].ln.x, "y": root_nodes[d.km_label].ln.y },
+            { "x": root_nodes[d.km_label].rn.x, "y": root_nodes[d.km_label].rn.y },
+            node2point(d.labels[1]),node2point(d.labels[1])]
+            return line
+        }
+
+        const link_groups = svg.selectAll(".link")
+                                .data(sets)
+                                .enter()
+                                .append("g")
+                                .attr("class", "link")
+
+        link_groups.append("path")
             .attr("class", "link")
-            .attr("d", (d) => lineGen(create_points(d)))
+            .attr("d", (d) => lineGenMid(create_points_mid(d)))
+            .attr("stroke", d => cmap[d.tag])
+            //.attr("stroke", d => d.km_label == 2 ? "red" : cmap[d.tag])
+            .attr("fill", "none")
+            .attr("stroke-width", 1)
+            .attr("stroke-opacity", d => (d.values / d3.max(sets.map(x => x.values))) ** this.props.focus)
+
+        link_groups.append("path")
+            .attr("class", "link")
+            .attr("d", (d) => lineGenCatmul(create_points_source(d)))
+            .attr("stroke", d => cmap[d.tag])
+            //.attr("stroke", d => d.km_label == 2 ? "red" : cmap[d.tag])
+            .attr("fill", "none")
+            .attr("stroke-width", 1)
+            .attr("stroke-opacity", d => (d.values / d3.max(sets.map(x => x.values))) ** this.props.focus)
+
+        link_groups.append("path")
+            .attr("class", "link")
+            .attr("d", (d) => lineGenCatmul(create_points_target(d)))
             .attr("stroke", d => cmap[d.tag])
             //.attr("stroke", d => d.km_label == 2 ? "red" : cmap[d.tag])
             .attr("fill", "none")

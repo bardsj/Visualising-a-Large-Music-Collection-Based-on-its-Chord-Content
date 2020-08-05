@@ -74984,34 +74984,81 @@ var ChartClust = /*#__PURE__*/function (_React$Component) {
       // Calculate the total line length for a particular cluster group
 
 
-      function calc_line_length(key, i_nodes, root_nodes, side) {
+      function calc_line_length(key, i_nodes, root_nodes) {
         var centroid = root_nodes[key];
         var total_line_length = 0; // Calculate length between lhs and rhs centroids
+        //const mid_length = Math.sqrt((centroid.ln.x - centroid.rn.x) ** 2 + (centroid.ln.y - centroid.rn.y) ** 2)
 
-        var mid_length = Math.sqrt(Math.pow(centroid.ln.x - centroid.rn.x, 2) + Math.pow(centroid.ln.y - centroid.rn.y, 2));
+        var lineGenMid_t = d3.line().x(function (d) {
+          return d.x + centre.x;
+        }).y(function (d) {
+          return centre.y - d.y;
+        });
+        var lineGenCatmul_t = d3.line().x(function (d) {
+          return d.x + centre.x;
+        }).y(function (d) {
+          return centre.y - d.y;
+        }).curve(d3.curveCatmullRomOpen.alpha(0)); // Generate coordinates for line based on cluster value mapping to inner node values
 
-        if (i_nodes[key][0].length > 1) {
-          // Sum total line lengths
-          //total_line_length = lengths_ln + lengths_rn + mid_length
-          if (side == "ln") {
-            // Calculate total length between lhs nodes and centroid
-            var lengths_ln = d3.sum(i_nodes[key][0].map(function (x) {
-              return Math.sqrt(Math.pow(x.x - centroid.ln.x, 2) + Math.pow(x.y - centroid.ln.y, 2));
-            }));
-            total_line_length = lengths_ln + mid_length;
-          } else {
-            // Calculate total length between lhs nodes and centroid
-            var lengths_rn = d3.sum(i_nodes[key][1].map(function (x) {
-              return Math.sqrt(Math.pow(x.x - centroid.rn.x, 2) + Math.pow(x.y - centroid.rn.y, 2));
-            }));
-            total_line_length = lengths_rn + mid_length;
-          }
-        } else {
-          // Only one line, length is equal to centroid distance (centroids = node points)
-          //total_line_length = Math.sqrt((centroid.ln.x - centroid.rn.x) ** 2 + (centroid.ln.y - centroid.rn.y) ** 2)
-          total_line_length = mid_length;
-        }
+        var create_points_mid_t = function create_points_mid_t(d) {
+          var line = [{
+            "x": root_nodes[d.km_label].ln.x,
+            "y": root_nodes[d.km_label].ln.y
+          }, {
+            "x": root_nodes[d.km_label].rn.x,
+            "y": root_nodes[d.km_label].rn.y
+          }];
+          return line;
+        };
 
+        var create_points_source_t = function create_points_source_t(d) {
+          var line = [node2point(d.labels[0]), node2point(d.labels[0]), {
+            "x": root_nodes[d.km_label].ln.x,
+            "y": root_nodes[d.km_label].ln.y
+          }, {
+            "x": root_nodes[d.km_label].rn.x,
+            "y": root_nodes[d.km_label].rn.y
+          }];
+          return line;
+        };
+
+        var create_points_target_t = function create_points_target_t(d) {
+          var line = [{
+            "x": root_nodes[d.km_label].ln.x,
+            "y": root_nodes[d.km_label].ln.y
+          }, {
+            "x": root_nodes[d.km_label].rn.x,
+            "y": root_nodes[d.km_label].rn.y
+          }, node2point(d.labels[1]), node2point(d.labels[1])];
+          return line;
+        }; // Sum total line lengths
+
+
+        var lengths_mid = sets.filter(function (x) {
+          return x.km_label == key;
+        }).map(create_points_mid_t).map(lineGenMid_t).map(function (x) {
+          var svg_temp = d3.create("svg");
+          var path = svg_temp.append("path").attr("d", x);
+          svg_temp.remove("*");
+          return path['_groups'][0][0].getTotalLength();
+        });
+        var lengths_source = sets.filter(function (x) {
+          return x.km_label == key;
+        }).map(create_points_source_t).map(lineGenCatmul_t).map(function (x) {
+          var svg_temp = d3.create("svg");
+          var path = svg_temp.append("path").attr("d", x);
+          svg_temp.remove("*");
+          return path['_groups'][0][0].getTotalLength();
+        });
+        var lengths_target = sets.filter(function (x) {
+          return x.km_label == key;
+        }).map(create_points_target_t).map(lineGenCatmul_t).map(function (x) {
+          var svg_temp = d3.create("svg");
+          var path = svg_temp.append("path").attr("d", x);
+          svg_temp.remove("*");
+          return path['_groups'][0][0].getTotalLength();
+        });
+        total_line_length = d3.sum(lengths_source) + d3.sum(lengths_target) + lengths_mid[0];
         return total_line_length;
       } // Golden section search
 
@@ -75065,15 +75112,15 @@ var ChartClust = /*#__PURE__*/function (_React$Component) {
             _value = _Object$entries2$_i[1];
 
         // Do for lhs nodes
-        var r_l = gss(gss_func, 0, 0.5, _key, i_nodes, root_nodes, "ln"); //const r_l = 0.1
-
+        //const r_l = gss(gss_func, 0.5, 0, key, i_nodes, root_nodes, "ln")
+        var r_l = 0.1;
         root_nodes[_key].ln = {
           "x": root_nodes[_key].centroid_ln.x + r_l * (root_nodes[_key].centroid_rn.x - root_nodes[_key].centroid_ln.x),
           "y": root_nodes[_key].centroid_ln.y + r_l * (root_nodes[_key].centroid_rn.y - root_nodes[_key].centroid_ln.y)
         }; // Do for rhs nodes
+        //const r_r = gss(gss_func, 0.5, 0, key, i_nodes, root_nodes, "rn")
 
-        var r_r = gss(gss_func, 0, 0.5, _key, i_nodes, root_nodes, "rn"); //const r_r = 0.1
-
+        var r_r = 0.1;
         root_nodes[_key].rn = {
           "x": root_nodes[_key].centroid_rn.x + r_r * (root_nodes[_key].centroid_ln.x - root_nodes[_key].centroid_rn.x),
           "y": root_nodes[_key].centroid_rn.y + r_r * (root_nodes[_key].centroid_ln.y - root_nodes[_key].centroid_rn.y)
@@ -75099,25 +75146,73 @@ var ChartClust = /*#__PURE__*/function (_React$Component) {
       }).attr("dy", function (d) {
         return -d.coords.y * labelOffset;
       }).attr("text-anchor", "middle").attr("font-size", 10);
-      var lineGen = d3.line().x(function (d) {
+      var lineGenMid = d3.line().x(function (d) {
         return d.x + centre.x;
       }).y(function (d) {
         return centre.y - d.y;
-      }).curve(d3.curveBundle.beta(1)); // Generate coordinates for line based on cluster value mapping to inner node values
+      });
+      var lineGenCatmul = d3.line().x(function (d) {
+        return d.x + centre.x;
+      }).y(function (d) {
+        return centre.y - d.y;
+      }).curve(d3.curveCatmullRomOpen.alpha(0)); // Generate coordinates for line based on cluster value mapping to inner node values
 
-      var create_points = function create_points(d) {
-        var line = [node2point(d.labels[0]), {
+      var create_points_mid = function create_points_mid(d) {
+        var line = [{
           "x": root_nodes[d.km_label].ln.x,
           "y": root_nodes[d.km_label].ln.y
         }, {
           "x": root_nodes[d.km_label].rn.x,
           "y": root_nodes[d.km_label].rn.y
-        }, node2point(d.labels[1])];
+        }];
         return line;
       };
 
-      var links = svg.selectAll("path").data(sets).enter().append("path").attr("class", "link").attr("d", function (d) {
-        return lineGen(create_points(d));
+      var create_points_source = function create_points_source(d) {
+        var line = [node2point(d.labels[0]), node2point(d.labels[0]), {
+          "x": root_nodes[d.km_label].ln.x,
+          "y": root_nodes[d.km_label].ln.y
+        }, {
+          "x": root_nodes[d.km_label].rn.x,
+          "y": root_nodes[d.km_label].rn.y
+        }];
+        return line;
+      };
+
+      var create_points_target = function create_points_target(d) {
+        var line = [{
+          "x": root_nodes[d.km_label].ln.x,
+          "y": root_nodes[d.km_label].ln.y
+        }, {
+          "x": root_nodes[d.km_label].rn.x,
+          "y": root_nodes[d.km_label].rn.y
+        }, node2point(d.labels[1]), node2point(d.labels[1])];
+        return line;
+      };
+
+      var link_groups = svg.selectAll(".link").data(sets).enter().append("g").attr("class", "link");
+      link_groups.append("path").attr("class", "link").attr("d", function (d) {
+        return lineGenMid(create_points_mid(d));
+      }).attr("stroke", function (d) {
+        return cmap[d.tag];
+      }) //.attr("stroke", d => d.km_label == 2 ? "red" : cmap[d.tag])
+      .attr("fill", "none").attr("stroke-width", 1).attr("stroke-opacity", function (d) {
+        return Math.pow(d.values / d3.max(sets.map(function (x) {
+          return x.values;
+        })), _this3.props.focus);
+      });
+      link_groups.append("path").attr("class", "link").attr("d", function (d) {
+        return lineGenCatmul(create_points_source(d));
+      }).attr("stroke", function (d) {
+        return cmap[d.tag];
+      }) //.attr("stroke", d => d.km_label == 2 ? "red" : cmap[d.tag])
+      .attr("fill", "none").attr("stroke-width", 1).attr("stroke-opacity", function (d) {
+        return Math.pow(d.values / d3.max(sets.map(function (x) {
+          return x.values;
+        })), _this3.props.focus);
+      });
+      link_groups.append("path").attr("class", "link").attr("d", function (d) {
+        return lineGenCatmul(create_points_target(d));
       }).attr("stroke", function (d) {
         return cmap[d.tag];
       }) //.attr("stroke", d => d.km_label == 2 ? "red" : cmap[d.tag])
