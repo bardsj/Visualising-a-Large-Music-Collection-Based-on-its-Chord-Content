@@ -75334,7 +75334,7 @@ var _default = function _default() {
       requestParams = _useState2[0],
       setRequestParams = _useState2[1];
 
-  var _useState3 = (0, _react.useState)("Circular Clustered"),
+  var _useState3 = (0, _react.useState)("Parallel"),
       _useState4 = (0, _slicedToArray2.default)(_useState3, 2),
       chartType = _useState4[0],
       setChartType = _useState4[1];
