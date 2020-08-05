@@ -75430,7 +75430,7 @@ var _default = function _default() {
 
   var legend = "";
 
-  if (requestParams.tag_val.length > 0) {
+  if (requestParams.tag_val.length > 0 || chartType == "Circular Hierarchical - Single Hue") {
     legend = /*#__PURE__*/_react.default.createElement(_legend.Legend, {
       chartType: chartType,
       requestParams: requestParams
@@ -75500,7 +75500,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56248" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62474" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

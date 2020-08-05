@@ -53,7 +53,7 @@ export default () => {
   }
 
   let legend = ""
-  if (requestParams.tag_val.length > 0) {
+  if (requestParams.tag_val.length > 0 || chartType == "Circular Hierarchical - Single Hue") {
     legend = <Legend chartType={chartType} requestParams={requestParams}/>
   }
 
