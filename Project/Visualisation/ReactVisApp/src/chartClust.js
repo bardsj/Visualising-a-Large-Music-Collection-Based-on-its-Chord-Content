@@ -168,7 +168,7 @@ export class ChartClust extends React.Component {
         }
 
         // Golden section search
-        function gss(f, a, b, key, i_nodes, root_nodes, side, tol = 0.0000000000001) {
+        function gss(f, a, b, key, i_nodes, root_nodes, side, tol = 0.000000000000000000001) {
             const gr = (Math.sqrt(5) + 1) / 2
             let c = b - (b - a) / gr
             let d = a + (b - a) / gr
@@ -206,16 +206,16 @@ export class ChartClust extends React.Component {
         // Carry out optimisation - set r_l and r_r to constant value if desired
         for (const [key, value] of Object.entries(root_nodes)) {
             // Do for lhs nodes
-            //const r_l = gss(gss_func, 0.5, 0, key, i_nodes, root_nodes, "ln")
-            const r_l = 0.1
+            const r_l = gss(gss_func, 0.5, 0, key, i_nodes, root_nodes, "ln")
+            //const r_l = 0.1
             root_nodes[key].ln = {
                 "x": root_nodes[key].centroid_ln.x + (r_l * (root_nodes[key].centroid_rn.x - root_nodes[key].centroid_ln.x)),
                 "y": root_nodes[key].centroid_ln.y + (r_l * (root_nodes[key].centroid_rn.y - root_nodes[key].centroid_ln.y))
             }
 
             // Do for rhs nodes
-            //const r_r = gss(gss_func, 0.5, 0, key, i_nodes, root_nodes, "rn")
-            const r_r = 0.1
+            const r_r = gss(gss_func, 0.5, 0, key, i_nodes, root_nodes, "rn")
+            //const r_r = 0.1
             root_nodes[key].rn = {
                 "x": root_nodes[key].centroid_rn.x + (r_r * (root_nodes[key].centroid_ln.x - root_nodes[key].centroid_rn.x)),
                 "y": root_nodes[key].centroid_rn.y + (r_r * (root_nodes[key].centroid_ln.y - root_nodes[key].centroid_rn.y))

@@ -75064,7 +75064,7 @@ var ChartClust = /*#__PURE__*/function (_React$Component) {
 
 
       function gss(f, a, b, key, i_nodes, root_nodes, side) {
-        var tol = arguments.length > 7 && arguments[7] !== undefined ? arguments[7] : 0.0000000000001;
+        var tol = arguments.length > 7 && arguments[7] !== undefined ? arguments[7] : 0.000000000000000000001;
         var gr = (Math.sqrt(5) + 1) / 2;
         var c = b - (b - a) / gr;
         var d = a + (b - a) / gr;
@@ -75112,15 +75112,15 @@ var ChartClust = /*#__PURE__*/function (_React$Component) {
             _value = _Object$entries2$_i[1];
 
         // Do for lhs nodes
-        //const r_l = gss(gss_func, 0.5, 0, key, i_nodes, root_nodes, "ln")
-        var r_l = 0.1;
+        var r_l = gss(gss_func, 0.5, 0, _key, i_nodes, root_nodes, "ln"); //const r_l = 0.1
+
         root_nodes[_key].ln = {
           "x": root_nodes[_key].centroid_ln.x + r_l * (root_nodes[_key].centroid_rn.x - root_nodes[_key].centroid_ln.x),
           "y": root_nodes[_key].centroid_ln.y + r_l * (root_nodes[_key].centroid_rn.y - root_nodes[_key].centroid_ln.y)
         }; // Do for rhs nodes
-        //const r_r = gss(gss_func, 0.5, 0, key, i_nodes, root_nodes, "rn")
 
-        var r_r = 0.1;
+        var r_r = gss(gss_func, 0.5, 0, _key, i_nodes, root_nodes, "rn"); //const r_r = 0.1
+
         root_nodes[_key].rn = {
           "x": root_nodes[_key].centroid_rn.x + r_r * (root_nodes[_key].centroid_ln.x - root_nodes[_key].centroid_rn.x),
           "y": root_nodes[_key].centroid_rn.y + r_r * (root_nodes[_key].centroid_ln.y - root_nodes[_key].centroid_rn.y)
