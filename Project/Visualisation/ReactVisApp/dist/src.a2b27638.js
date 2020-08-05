@@ -57397,12 +57397,12 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 function genreColormap() {
   var genres = ['pop', 'rock', 'electronic', 'hiphop', 'jazz', 'indie', 'filmscore', 'classical', 'chillout', 'ambient', 'folk', 'metal', 'latin', 'rnb', 'reggae', 'punk', 'country', 'house', 'blues']; // Colour map
 
-  var scale = d3.scalePoint().domain(genres.slice(0, -1)).range([0, 1]);
+  var scale = d3.scalePoint().domain(genres).range([0, 1]);
   var colorMap = {
     null: "rgb(0, 0, 0)"
   };
 
-  for (var i = 0; i < genres.length - 1; i++) {
+  for (var i = 0; i < genres.length; i++) {
     colorMap[genres[i]] = d3.interpolateTurbo(scale(genres[i]));
   }
 
