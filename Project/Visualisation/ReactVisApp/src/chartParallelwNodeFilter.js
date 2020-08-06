@@ -72,9 +72,6 @@ export class ChartParallel extends React.Component {
             scY.push(d3.scalePoint().domain(ax_nodes).range([margin.top, height - margin.bottom]))
             node_list_ax.push(... ax_nodes.map(x=>({ax:i,node:x})))
         }
-        console.log(node_list_ax)
-
-        console.log(scY[0]("Fmin"))
         // Linear x scale for parallel axes
         const scX = d3.scaleLinear().domain([0, n_ax - 1]).range([margin.left, width - margin.right])
 
