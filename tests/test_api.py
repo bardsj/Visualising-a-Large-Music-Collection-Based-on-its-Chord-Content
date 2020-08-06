@@ -22,3 +22,7 @@ class ApiTest(unittest.TestCase):
     def test_circClust_route(self):
         r = self.app.get("/circClust")
         self.assertEqual(r.status_code,200)
+
+    def test_parallelClust_route(self):
+        r = self.app.get("/parallelClust")
+        self.assertEqual(r.status_code,200)
