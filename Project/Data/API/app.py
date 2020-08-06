@@ -158,7 +158,7 @@ def returnDataHier():
 
 
 @app.route('/circClust',methods=['GET'])
-def returnClust():
+def returnCircClust():
     """
         API route - get data for circular chart with clustered bundling
         Applies transformation and clustering to similar edges based on node positions
@@ -209,6 +209,50 @@ def returnClust():
     sets_w_lab = []
     for set_lab,s,lab in zip(s_labels_ordered,sets,labs):
         sets_w_lab.append({"labels":set_lab,"values":s['values'],"tag":s['tag'], "km_label": int(lab)})
+
+    return jsonify({"sets":sets_w_lab,"order":order})
+
+
+@app.route('/parallelClust',methods=['GET'])
+def returnPrallelClust():
+    """
+        API route - get data for parallel chart with clustered bundling
+        Cluster edges based on source/target node positions to allow edges to be bundled together
+    """
+
+    # Get data from db
+    sets = getData(request)
+    # Filter for doubletons
+    sets = [s for s in sets if len(s['labels']) > 1]
+    order = default_order
+
+    # Map vertex labels to order index
+    order_map = {k:i for i,k in enumerate(order)}
+
+    # Dataframe (easier to manipulate/apply clustering)
+    df = pd.DataFrame(sets)
+
+    # Sort by order as clustering will be affected by the order of the vertices in edge definitions
+    df['labels'] = df['labels'].apply(lambda x: sorted(x,key=lambda x: order_map[x]))
+    # Sort set labels in order
+    s_labels_ordered = list(df['labels'])
+    # Struct to hold clustering results
+    res = {i:[] for i in range(len(df))}
+    # Pop get increasing parallel axes nodes
+    for i in range(max(df['labels'].str.len())):
+        df = df[df['labels'].str.len() > i+1]
+        ag = AgglomerativeClustering(n_clusters=None,distance_threshold=10)
+        df["src"] = df['labels'].apply(lambda x: order_map[x[i]])
+        df["tgt"] = df['labels'].apply(lambda x: order_map[x[i+1]])
+        if len(df) > 10:
+            labs = ag.fit(df[["src","tgt"]]).labels_
+            for i,l in zip(df.index,labs):
+                res[i].append(int(l)) 
+
+    # Add cluster label to returned JSON
+    sets_w_lab = []
+    for i,set_lab,s in zip(range(len(sets)),s_labels_ordered,sets):
+        sets_w_lab.append({"labels":set_lab,"values":s['values'],"tag":s['tag'], "km_label": res[i]})
 
     return jsonify({"sets":sets_w_lab,"order":order})
 

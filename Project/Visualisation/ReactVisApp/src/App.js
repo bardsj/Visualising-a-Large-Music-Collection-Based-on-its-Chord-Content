@@ -8,13 +8,14 @@ import {Legend} from "./legend"
 import { Container, Row, Col } from 'react-bootstrap'
 import { ChartHierSingleHue } from "./chartHierSingleHue";
 import { ChartClust } from "./chartClust";
+import { ChartParallelClust } from "./chartParallelClust";
 
 // <Chart width={600} height={600} request_params={{tag_val:"jazz", tag_name:"genres"}}/>
 
 export default () => {
 
   const [requestParams, setRequestParams] = useState({tag_val:["jazz"], tag_name:"genres"})
-  const [chartType, setChartType] = useState("Parallel")
+  const [chartType, setChartType] = useState("Parallel Clustered")
   const [focus, setFocus] = useState(1)
   const [support, setSupport] = useState(1)
   const [beta,setBeta] = useState(1)
@@ -50,6 +51,9 @@ export default () => {
   }
   else if (chartType === "Circular Clustered") {
     chart = <ChartClust beta={beta} id={1} width={800} height={800} request_params={requestParams} focus={focus} support={support}/>
+  }
+  else if (chartType === "Parallel Clustered") {
+    chart = <ChartParallelClust beta={beta} id={1} width={800} height={800} request_params={requestParams} focus={focus} support={support}/>
   }
 
   let legend = ""
