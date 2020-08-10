@@ -56,7 +56,7 @@ export class ChartParallel extends React.Component {
         node_list = node_list.filter(x=>filtered_set.includes(x))
 
         // Colour map
-        const cmap = genreColormap()
+        const cmap = genreColormap(this.state.request_params.tag_val)
         
 
         // Add axes field to data by taking index of node in data node lists

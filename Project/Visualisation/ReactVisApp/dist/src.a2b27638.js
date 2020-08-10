@@ -57821,7 +57821,7 @@ var ChartParallel = /*#__PURE__*/function (_React$Component) {
         return filtered_set.includes(x);
       }); // Colour map
 
-      var cmap = (0, _colorMap.genreColormap)(); // Add axes field to data by taking index of node in data node lists
+      var cmap = (0, _colorMap.genreColormap)(this.state.request_params.tag_val); // Add axes field to data by taking index of node in data node lists
 
       var data_ax = data.map(function (d) {
         return {
