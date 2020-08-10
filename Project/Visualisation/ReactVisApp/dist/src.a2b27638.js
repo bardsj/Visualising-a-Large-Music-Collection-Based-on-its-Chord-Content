@@ -57387,6 +57387,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.genreColormap = genreColormap;
+exports.nodeColormap = nodeColormap;
 
 var d3 = _interopRequireWildcard(require("d3"));
 
@@ -57404,6 +57405,18 @@ function genreColormap() {
 
   for (var i = 0; i < genres.length; i++) {
     colorMap[genres[i]] = d3.interpolateTurbo(scale(genres[i]));
+  }
+
+  return colorMap;
+}
+
+function nodeColormap() {
+  var root_nodes = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
+  var scale = d3.scalePoint().domain(root_nodes).range([0, 11]);
+  var colorMap = {};
+
+  for (var i = 0; i < root_nodes.length; i++) {
+    colorMap[root_nodes[i]] = d3.schemeSet3[scale(root_nodes[i])];
   }
 
   return colorMap;
@@ -57538,12 +57551,13 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
         return x['labels'];
       }))));
       order = order.filter(function (x) {
-        return filtered_set.includes(x);
+        return filtered_set.includes(x) || x.includes("sep");
       }); // Calculate radial coordinate from ordered list of nodes
 
       var sc_radial = d3.scalePoint().domain(order).range([0, Math.PI * 2 - Math.PI * 2 / order.length]); // Colour map
 
-      var cmap = (0, _colorMap.genreColormap)(); // Convert radial coordinate to cartesian
+      var cmap = (0, _colorMap.genreColormap)();
+      var ncmap = (0, _colorMap.nodeColormap)(); // Convert radial coordinate to cartesian
 
       var node2point = function node2point(d) {
         return {
@@ -57571,7 +57585,13 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
         return "translate(" + x + "," + y + ")";
       }); // Append node circles to node groups
 
-      var nodes = nodes_group.append("circle").attr("class", "node").attr("r", 5); // Text offset
+      var nodes = nodes_group.append("circle").attr("class", "node").attr("r", 5).attr("fill", function (d) {
+        if (d.label[1] == "b") {
+          return ncmap[d.label.slice(0, 2)];
+        } else {
+          return ncmap[d.label[0]];
+        }
+      }); // Text offset
 
       var labelOffset = 0.06; // Append text to labels
 
@@ -57616,6 +57636,17 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
             return x.values;
           })), _this3.props.focus);
         });
+      }); // Remove spacing nodes
+
+      if (!this.props.optType) {
+        nodes_group.filter(function (x) {
+          return x.label.includes("sep");
+        }).remove();
+      } // Remove seps from order before writing to state
+
+
+      order = order.filter(function (x) {
+        return !x.includes("sep");
       });
       this.setState({
         sets: sets
@@ -75661,7 +75692,7 @@ var _default = function _default() {
       requestParams = _useState2[0],
       setRequestParams = _useState2[1];
 
-  var _useState3 = (0, _react.useState)("Circular Hierarchical - Single Hue"),
+  var _useState3 = (0, _react.useState)("Circular"),
       _useState4 = (0, _slicedToArray2.default)(_useState3, 2),
       chartType = _useState4[0],
       setChartType = _useState4[1];

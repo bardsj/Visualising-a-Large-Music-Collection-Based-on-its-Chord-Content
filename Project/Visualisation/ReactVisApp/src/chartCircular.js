@@ -1,6 +1,7 @@
 import React from "react";
 import * as d3 from 'd3';
-import {genreColormap} from './colorMap'
+import {genreColormap,nodeColormap} from './colorMap'
+import { zip } from "d3";
 
 export class ChartCircular extends React.Component {
     constructor(props) {
@@ -58,13 +59,14 @@ export class ChartCircular extends React.Component {
 
         // Filter out nodes from order that all not in filtered sets
         const filtered_set = new Array(... new Set(sets.flatMap(x=>x['labels'])))
-        order = order.filter(x=>filtered_set.includes(x))
+        order = order.filter(x=>filtered_set.includes(x) || x.includes("sep"))
 
         // Calculate radial coordinate from ordered list of nodes
         const sc_radial = d3.scalePoint().domain(order).range([0, Math.PI * 2 - (Math.PI*2/order.length)])
 
         // Colour map
         const cmap = genreColormap()
+        const ncmap = nodeColormap()
 
         // Convert radial coordinate to cartesian
         const node2point = (d) => {
@@ -92,14 +94,23 @@ export class ChartCircular extends React.Component {
         const nodes = nodes_group.append("circle")
             .attr("class", "node")
             .attr("r", 5)
+            .attr("fill",(d)=>{
+                if (d.label[1]=="b") {
+                    return ncmap[d.label.slice(0,2)]
+                }
+                else {
+                    return ncmap[d.label[0]]
+                }
+            })
 
         // Text offset
         const labelOffset = 0.06
 
+
         // Append text to labels
         const labels = nodes_group.append("text")
             .text((d) => d.label)
-            .attr("fill", "black")
+            .attr("fill","black")
             .attr("dx", (d) => d.coords.x * labelOffset)
             .attr("dy", (d) => -d.coords.y * labelOffset)
             .attr("text-anchor", "middle")
@@ -138,6 +149,14 @@ export class ChartCircular extends React.Component {
                 .attr("stroke-width", 1)
                 .attr("stroke-opacity", d => (d.values / d3.max(sets.map(x => x.values))) ** this.props.focus)
         })
+
+        // Remove spacing nodes
+        if (!this.props.optType) {
+            nodes_group.filter(x=>x.label.includes("sep")).remove()
+        }
+
+        // Remove seps from order before writing to state
+        order = order.filter(x=>!x.includes("sep"))
 
         this.setState({sets:sets})  
     }

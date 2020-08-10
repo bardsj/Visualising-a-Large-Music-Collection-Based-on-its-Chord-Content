@@ -12,3 +12,14 @@ export function genreColormap() {
     }
     return colorMap
 }
+
+export function nodeColormap() {
+    const root_nodes = ["C","Db","D","Eb","E","F","Gb","G","Ab","A","Bb","B"]
+    const scale = d3.scalePoint().domain(root_nodes).range([0, 11])
+    let colorMap = {}
+
+    for (let i = 0; i < root_nodes.length; i++) {
+        colorMap[root_nodes[i]] = d3.schemeSet3[scale(root_nodes[i])]
+    }
+    return colorMap
+}
