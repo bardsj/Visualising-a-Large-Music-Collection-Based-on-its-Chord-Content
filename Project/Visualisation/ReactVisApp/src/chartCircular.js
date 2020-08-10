@@ -8,7 +8,7 @@ export class ChartCircular extends React.Component {
         this.state = { data: null, request_params: null }
     }
 
-    fetchData(request_params) {
+    fetchData(request_params,optType) {
         let r_url = ""
         if (request_params.tag_val.length > 0) {
             r_url = "http://127.0.0.1:5000/circular?tag_val=" + request_params.tag_val.join() + "&tag_name=" + request_params.tag_name
@@ -16,7 +16,9 @@ export class ChartCircular extends React.Component {
         else {
             r_url = "http://127.0.0.1:5000/circular?"
         }
-        r_url = r_url + "&order_opt=avsdf"
+        if (optType) {
+            r_url = r_url + "&order_opt=" + optType
+        }
         fetch(r_url,{mode: 'cors'})
             .then(r => r.json())
             .then(r => this.setState({ data: r, request_params: request_params },()=>{this.createChart()}))
@@ -24,18 +26,21 @@ export class ChartCircular extends React.Component {
     }
 
     componentDidMount() {
-        this.fetchData(this.props.request_params);
+        this.fetchData(this.props.request_params,this.props.optType)
     }
 
     componentDidUpdate(prevProps) {
         if (prevProps.request_params !== this.props.request_params) {
-            this.fetchData(this.props.request_params)
+            this.fetchData(this.props.request_params,this.props.optType)
         }
         if (prevProps.support !== this.props.support) {
             this.createChart()
         }
         if (prevProps.focus !== this.props.focus) {
             this.updateFocus()
+        }
+        if (prevProps.optType !== this.props.optType) {
+            this.fetchData(this.props.request_params,this.props.optType)
         }
     }
 

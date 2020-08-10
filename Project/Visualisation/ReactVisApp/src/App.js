@@ -15,10 +15,11 @@ import { ChartParallelClust } from "./chartParallelClust";
 export default () => {
 
   const [requestParams, setRequestParams] = useState({tag_val:["jazz"], tag_name:"genres"})
-  const [chartType, setChartType] = useState("Parallel Clustered")
+  const [chartType, setChartType] = useState("Circular Hierarchical - Single Hue")
   const [focus, setFocus] = useState(1)
   const [support, setSupport] = useState(1)
   const [beta,setBeta] = useState(1)
+  const [optType,setOptType] = useState(null)
 
   const handleFilter = (e) => {
     if (e.target.checked == true) {
@@ -35,13 +36,25 @@ export default () => {
     setChartType(e)
   }
 
+  const handleOptType = (e) => {
+    if (e == "AVSDF") {
+      setOptType("avsdf")
+    }
+    if (e == "Baur Brandes") {
+      setOptType("bb")
+    }
+    if (e == "Root Node Order") {
+      setOptType(null)
+    }
+  }
+ 
   let chart = ""
 
   if (chartType === "Circular") {
-    chart =  <ChartCircular id={1} width={800} height={800} request_params={requestParams} focus={focus} support={support}/>
+    chart =  <ChartCircular id={1} width={800} height={800} request_params={requestParams} focus={focus} support={support} optType={optType}/>
   }
   else if (chartType === "Parallel")  {
-      chart = <ChartParallel id={1} width={800} height={800} request_params={requestParams} focus={focus} support={support}/>
+      chart = <ChartParallel id={1} width={800} height={800} request_params={requestParams} focus={focus} support={support} />
   }
   else if (chartType === "Circular Hierarchical") {
     chart = <ChartHier beta={beta} id={1} width={800} height={800} request_params={requestParams} focus={focus} support={support}/>
@@ -50,7 +63,7 @@ export default () => {
     chart = <ChartHierSingleHue beta={beta} id={1} width={800} height={800} request_params={requestParams} focus={focus} support={support}/>
   }
   else if (chartType === "Circular Clustered") {
-    chart = <ChartClust beta={beta} id={1} width={800} height={800} request_params={requestParams} focus={focus} support={support}/>
+    chart = <ChartClust beta={beta} id={1} width={800} height={800} request_params={requestParams} focus={focus} support={support} optType={optType}/>
   }
   else if (chartType === "Parallel Clustered") {
     chart = <ChartParallelClust beta={beta} id={1} width={800} height={800} request_params={requestParams} focus={focus} support={support}/>
@@ -81,7 +94,8 @@ export default () => {
       </Row>
       <Row>
         <Col>
-          <VisParams chartType={chartType} support={support} focus={focus} handleSupport={setSupport} beta={beta} handleBeta={setBeta} handleFocus={setFocus}/>
+          <VisParams chartType={chartType} support={support} focus={focus} handleSupport={setSupport} 
+                    beta={beta} handleBeta={setBeta} handleFocus={setFocus} handleOptType={handleOptType}/>
         </Col>
       </Row>
     </Container>
