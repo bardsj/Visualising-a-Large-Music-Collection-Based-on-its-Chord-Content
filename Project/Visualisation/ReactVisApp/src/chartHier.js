@@ -161,6 +161,7 @@ export class ChartHier extends React.Component {
                 .attr("stroke", "red")
                 .attr("stroke-width", 3)
                 .attr("stroke-opacity", d => (d.values / d3.max(sets.map(x => x.values))) ** 1)
+                nodes_group.raise()
         })
 
         nodes_group.on("mouseleave", (sel) => {
@@ -170,7 +171,10 @@ export class ChartHier extends React.Component {
                 .attr("stroke", d => cmap[d.tag])
                 .attr("stroke-width", 1)
                 .attr("stroke-opacity", d => (d.values / d3.max(sets.map(x => x.values))) ** this.props.focus)
+                nodes_group.raise()
         })
+
+        nodes_group.raise()
         this.setState({sets:sets})  
     }
 

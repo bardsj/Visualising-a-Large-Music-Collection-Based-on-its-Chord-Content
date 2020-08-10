@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { ChartCircular } from "./chartCircular";
-import { ChartParallel } from "./chartParallelwNodeFilter";
+import { ChartParallel } from "./chartParallel";
 import { ChartHier } from "./chartHier";
 import { Options } from "./options"
 import {VisParams} from "./visparams"
