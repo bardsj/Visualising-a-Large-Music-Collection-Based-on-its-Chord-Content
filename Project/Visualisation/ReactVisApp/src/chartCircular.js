@@ -65,7 +65,7 @@ export class ChartCircular extends React.Component {
         const sc_radial = d3.scalePoint().domain(order).range([0, Math.PI * 2 - (Math.PI*2/order.length)])
 
         // Colour map
-        const cmap = genreColormap()
+        const cmap = genreColormap(this.state.request_params.tag_val)
         const ncmap = nodeColormap()
 
         // Convert radial coordinate to cartesian
@@ -139,6 +139,7 @@ export class ChartCircular extends React.Component {
                 .attr("stroke", "red")
                 .attr("stroke-width", 3)
                 .attr("stroke-opacity", d => (d.values / d3.max(sets.map(x => x.values))) ** 1)
+                nodes_group.raise()
         })
 
         nodes_group.on("mouseleave", (sel) => {
@@ -148,6 +149,7 @@ export class ChartCircular extends React.Component {
                 .attr("stroke", d => cmap[d.tag])
                 .attr("stroke-width", 1)
                 .attr("stroke-opacity", d => (d.values / d3.max(sets.map(x => x.values))) ** this.props.focus)
+                nodes_group.raise()
         })
 
         // Remove spacing nodes
@@ -158,6 +160,7 @@ export class ChartCircular extends React.Component {
         // Remove seps from order before writing to state
         order = order.filter(x=>!x.includes("sep"))
 
+        nodes_group.raise()
         this.setState({sets:sets})  
     }
 

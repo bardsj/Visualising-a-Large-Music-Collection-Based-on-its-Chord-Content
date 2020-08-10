@@ -57395,16 +57395,19 @@ function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return 
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
-function genreColormap() {
-  var genres = ['pop', 'rock', 'electronic', 'hiphop', 'jazz', 'indie', 'filmscore', 'classical', 'chillout', 'ambient', 'folk', 'metal', 'latin', 'rnb', 'reggae', 'punk', 'country', 'house', 'blues']; // Colour map
-
-  var scale = d3.scalePoint().domain(genres).range([0, 1]);
+function genreColormap(genres) {
+  //const genres = ['pop','rock','electronic','hiphop','jazz','indie','filmscore','classical','chillout','ambient','folk','metal','latin','rnb','reggae','punk','country','house','blues']
+  // Colour map
   var colorMap = {
     null: "rgb(0, 0, 0)"
   };
 
-  for (var i = 0; i < genres.length; i++) {
-    colorMap[genres[i]] = d3.interpolateTurbo(scale(genres[i]));
+  if (genres) {
+    var scale = d3.scalePoint().domain(genres).range([0, 10]);
+
+    for (var i = 0; i < genres.length; i++) {
+      colorMap[genres[i]] = d3.schemeCategory10[i];
+    }
   }
 
   return colorMap;
@@ -57556,7 +57559,7 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
 
       var sc_radial = d3.scalePoint().domain(order).range([0, Math.PI * 2 - Math.PI * 2 / order.length]); // Colour map
 
-      var cmap = (0, _colorMap.genreColormap)();
+      var cmap = (0, _colorMap.genreColormap)(this.state.request_params.tag_val);
       var ncmap = (0, _colorMap.nodeColormap)(); // Convert radial coordinate to cartesian
 
       var node2point = function node2point(d) {
@@ -57625,6 +57628,7 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
             return x.values;
           })), 1);
         });
+        nodes_group.raise();
       });
       nodes_group.on("mouseleave", function (sel) {
         d3.selectAll(".link").filter(function (d) {
@@ -57636,6 +57640,7 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
             return x.values;
           })), _this3.props.focus);
         });
+        nodes_group.raise();
       }); // Remove spacing nodes
 
       if (!this.props.optType) {
@@ -57648,6 +57653,7 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
       order = order.filter(function (x) {
         return !x.includes("sep");
       });
+      nodes_group.raise();
       this.setState({
         sets: sets
       });
@@ -58076,7 +58082,7 @@ var ChartHier = /*#__PURE__*/function (_React$Component) {
 
       var sc_radial = d3.scalePoint().domain(order).range([0, Math.PI * 2 - Math.PI * 2 / order.length]); // Colour map
 
-      var cmap = (0, _colorMap.genreColormap)(); // Convert radial coordinate to cartesian
+      var cmap = (0, _colorMap.genreColormap)(this.state.request_params.tag_val); // Convert radial coordinate to cartesian
 
       var node2point = function node2point(d) {
         return {
@@ -74407,7 +74413,7 @@ var Legend = /*#__PURE__*/function (_React$Component) {
         var labels = svg.selectAll("g").data(this.props.requestParams.tag_val).enter().append("g").attr("transform", function (d, i) {
           return "translate(20," + String(i * 40 + 20) + ")";
         });
-        var cmap = (0, _colorMap.genreColormap)();
+        var cmap = (0, _colorMap.genreColormap)(this.props.requestParams.tag_val);
         labels.append("rect").attr("fill", function (d) {
           return cmap[d];
         }).attr("width", 20).attr("height", 20);
@@ -74860,7 +74866,7 @@ var ChartClust = /*#__PURE__*/function (_React$Component) {
 
       var sc_radial = d3.scalePoint().domain(order).range([0, Math.PI * 2 - Math.PI * 2 / order.length]); // Colour map
 
-      var cmap = (0, _colorMap.genreColormap)(); // Convert radial coordinate to cartesian
+      var cmap = (0, _colorMap.genreColormap)(this.state.request_params.tag_val); // Convert radial coordinate to cartesian
 
       var node2point = function node2point(d) {
         return {
@@ -75390,7 +75396,7 @@ var ChartParallelClust = /*#__PURE__*/function (_React$Component) {
         return filtered_set.includes(x);
       }); // Colour map
 
-      var cmap = (0, _colorMap.genreColormap)(); // Add axes field to data by taking index of node in data node lists
+      var cmap = (0, _colorMap.genreColormap)(this.state.request_params.tag_val); // Add axes field to data by taking index of node in data node lists
 
       var data_ax = data.map(function (d) {
         return {

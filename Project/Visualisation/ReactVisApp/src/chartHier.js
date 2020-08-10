@@ -57,7 +57,7 @@ export class ChartHier extends React.Component {
         const sc_radial = d3.scalePoint().domain(order).range([0, Math.PI * 2 - (Math.PI*2/order.length)])
 
         // Colour map
-        const cmap = genreColormap()
+        const cmap = genreColormap(this.state.request_params.tag_val)
 
         // Convert radial coordinate to cartesian
         const node2point = (d) => {

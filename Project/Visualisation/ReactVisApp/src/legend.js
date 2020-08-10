@@ -31,7 +31,7 @@ export class Legend extends React.Component {
                     return "translate(20," + String((i * 40) + 20) + ")"
                 })
 
-            const cmap = genreColormap()
+            const cmap = genreColormap(this.props.requestParams.tag_val)
 
             labels.append("rect")
                 .attr("fill", d => cmap[d])
