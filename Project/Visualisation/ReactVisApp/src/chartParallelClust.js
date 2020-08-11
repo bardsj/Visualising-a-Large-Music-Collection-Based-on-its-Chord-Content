@@ -101,18 +101,18 @@ export class ChartParallelClust extends React.Component {
             let mean_rn = {}
             for (const [key, value] of Object.entries(node_pos_ln)) {
                 if (value.length > 1) {
-                    mean_ln[key] = {"x":scX(i),"y":d3.mean(value)}
+                    mean_ln[key] = { "x": scX(i), "y": d3.mean(value) }
                 }
                 else {
-                    mean_ln[key] = {"x":scX(i),"y":value[0]}
+                    mean_ln[key] = { "x": scX(i), "y": value[0] }
                 }
             }
             for (const [key, value] of Object.entries(node_pos_rn)) {
                 if (value.length > 1) {
-                    mean_rn[key] = {"x":scX(i+1),"y":d3.mean(value)}
+                    mean_rn[key] = { "x": scX(i + 1), "y": d3.mean(value) }
                 }
                 else {
-                    mean_rn[key] = {"x":scX(i+1),"y":value[0]}
+                    mean_rn[key] = { "x": scX(i + 1), "y": value[0] }
                 }
             }
             const ax_cetroids = {
@@ -122,129 +122,133 @@ export class ChartParallelClust extends React.Component {
             control_points.push(ax_cetroids)
         }
 
+        // Shift control points towards eachother control point positions
+        for (let ax = 0; ax < control_points.length; ax++) {
+            const r = 0.2
+            for (const [key, value] of Object.entries(control_points[ax].ln)) {
+                const ln_old_x = control_points[ax].ln[key].x
+                const ln_old_y = control_points[ax].ln[key].y
+                control_points[ax].ln[key].x = control_points[ax].ln[key].x - (r * (control_points[ax].ln[key].x - control_points[ax].rn[key].x))
+                control_points[ax].ln[key].y = control_points[ax].ln[key].y - (r * (control_points[ax].ln[key].y - control_points[ax].rn[key].y))
 
-        const create_points = (d) => {
-            let line = []
-            for (let i = 0; i < d.labels.length;i++) {
-                line.push({ "x": scX(d.labels[i].ax), "y": scY[d.labels[i].ax](d.labels[i].node) })
-                if (i < d.labels.length-1) {
-                    line.push({"x":control_points[d.labels[i].ax].ln[d.km_label[i]].x,"y":control_points[d.labels[i].ax].ln[d.km_label[i]].y})
-                    line.push({"x":control_points[d.labels[i].ax].rn[d.km_label[i]].x,"y":control_points[d.labels[i].ax].rn[d.km_label[i]].y})
-                }
+                control_points[ax].rn[key].x = control_points[ax].rn[key].x - (r * (control_points[ax].rn[key].x - ln_old_x))
+                control_points[ax].rn[key].y = control_points[ax].rn[key].y - (r * (control_points[ax].rn[key].y - ln_old_y))
             }
-        return line
-    }
-
-    // Shift control points towards eachother control point positions
-    for (let ax = 0; ax<control_points.length;ax++) {
-        const r  = 0.2
-        for (const [key, value] of Object.entries(control_points[ax].ln)) {
-            const ln_old_x = control_points[ax].ln[key].x
-            const ln_old_y = control_points[ax].ln[key].y
-            control_points[ax].ln[key].x = control_points[ax].ln[key].x - (r*(control_points[ax].ln[key].x - control_points[ax].rn[key].x))
-            control_points[ax].ln[key].y = control_points[ax].ln[key].y - (r*(control_points[ax].ln[key].y - control_points[ax].rn[key].y))
-
-            control_points[ax].rn[key].x = control_points[ax].rn[key].x - (r*(control_points[ax].rn[key].x - ln_old_x))
-            control_points[ax].rn[key].y = control_points[ax].rn[key].y - (r*(control_points[ax].rn[key].y - ln_old_y))
         }
-    } 
 
-    // Add node groups to create parallel axes
-    const nodes_group = svg.selectAll("g")
-        .data(node_list_ax)
-        .enter()
-        .append("g")
-        .attr("transform", (d) => "translate(" + scX(d.ax) + "," + scY[d.ax](d.node) + ")")
-    // Append circle to node groups
-    const nodes = nodes_group.append("circle")
-        .attr("r", 2)
-    // Append labels to node groups
-    const labels = nodes_group.append("text")
-        .text(d => d.node)
-        .attr("class", "label")
-        .attr("font-size", 10)
-        .attr("dx", -4)
-        .attr("dy", 2)
-        .attr("text-anchor", "end")
+        // Add node groups to create parallel axes
+        const nodes_group = svg.selectAll("g")
+            .data(node_list_ax)
+            .enter()
+            .append("g")
+            .attr("transform", (d) => "translate(" + scX(d.ax) + "," + scY[d.ax](d.node) + ")")
+        // Append circle to node groups
+        const nodes = nodes_group.append("circle")
+            .attr("r", 2)
+        // Append labels to node groups
+        const labels = nodes_group.append("text")
+            .text(d => d.node)
+            .attr("class", "label")
+            .attr("font-size", 10)
+            .attr("dx", -4)
+            .attr("dy", 2)
+            .attr("text-anchor", "end")
 
-    // Add transparent rectangle to labels for easier hover selection
-    const label_bg = nodes_group.append("rect")
-        .attr("width", 30)
-        .attr("height", 20)
-        .attr("fill", "transparent")
-        .attr("transform", "translate(-34,-6)")
+        // Add transparent rectangle to labels for easier hover selection
+        const label_bg = nodes_group.append("rect")
+            .attr("width", 30)
+            .attr("height", 20)
+            .attr("fill", "transparent")
+            .attr("transform", "translate(-34,-6)")
 
-    // Path generator
-    const lineGen = d3.line().y(d => d.y).x(d => d.x).curve(d3.curveBundle.beta(1))
+        // Path generator
+        const lineGen = d3.line().y(d => d.y).x(d => d.x).curve(d3.curveBundle.beta(1))
 
-    // Append paths
-    const links = svg.selectAll("path")
-        .data(data_ax)
-        .enter()
-        .append("path")
-        .attr("class", "link")
-        .attr("d", d => lineGen(create_points(d)))
-        .attr("fill", "none")
-        .attr("stroke", d => cmap[d.tag])
-        .attr("fill", "none")
-        .attr("stroke-width", 1)
-        .attr("stroke-opacity", d => (d.values / d3.max(data.map(x => x.values))) ** this.props.focus)
+        const create_points = (d,i) => {
+            let line = [{ "x": scX(d.labels[i].ax), "y": scY[d.labels[i].ax](d.labels[i].node) },
+            { "x": control_points[d.labels[i].ax].ln[d.km_label[i]].x, "y": control_points[d.labels[i].ax].ln[d.km_label[i]].y },
+            { "x": control_points[d.labels[i].ax].rn[d.km_label[i]].x, "y": control_points[d.labels[i].ax].rn[d.km_label[i]].y },
+            { "x": scX(d.labels[i+1].ax), "y": scY[d.labels[i+1].ax](d.labels[i+1].node) }
+            ]
+            return line
+        }
 
-    // Highlight paths when hovering on node
-    label_bg.on("mouseenter", (sel) => {
+        const node_cmap_sc = d3.scalePoint().range([0,1]).domain(node_list)
+        // Append lines for each axes seperately to allow each to be coloured based on start node
+        let data_filt = []
+        for (let i = 0; i < n_ax; i++) {
+            data_filt.push(... data_ax.filter(x=>x.labels.length > i+1).map(d=>Object.assign(d,{ax:i})))
+        }
+        // Append paths
+        let links = svg.selectAll("path")
+            .data(data_filt)
+            .enter()
+            .append("path")
+            .attr("class", "link")
+            .attr("d", d => lineGen(create_points(d, d.ax)))
+            .attr("fill", "none")
+            .attr("stroke", d => d3.interpolateTurbo(node_cmap_sc(d.labels[d.ax].node)))
+            .attr("fill", "none")
+            .attr("stroke-width", 1)
+            .attr("stroke-opacity", d => (d.values / d3.max(data.map(x => x.values))) ** this.props.focus)
 
-        d3.selectAll(".label")
-            .filter(l => l == sel)
-            .transition(0.1)
-            .attr("font-size", 15)
+        
 
+        // Highlight paths when hovering on node
+        label_bg.on("mouseenter", (sel) => {
 
-        d3.selectAll(".link")
-            //.filter(d=>d.labels.includes(sel.label))
-            .filter(d => d.labels[sel.ax] ? d.labels[sel.ax].node === sel.node : null)
-            .transition(0.1)
-            .attr("stroke", "red")
-            .attr("stroke-width", 3)
-            .attr("stroke-opacity", d => (d.values / d3.max(data.map(x => x.values))) ** 1)
-    })
-
-label_bg.on("mouseleave", (sel) => {
-
-    d3.selectAll(".label")
-        .filter(l => l == sel)
-        .transition(0.1)
-        .attr("font-size", 10)
-
-    d3.selectAll(".link")
-        .filter(d => d.labels[sel.ax] ? d.labels[sel.ax].node === sel.node : null)
-        .transition(0.1)
-        .attr("stroke", d => cmap[d.tag])
-        .attr("stroke-width", 1)
-        .attr("stroke-opacity", d => (d.values / d3.max(data.map(x => x.values))) ** this.props.focus)
-})
+            d3.selectAll(".label")
+                .filter(l => l == sel)
+                .transition(0.1)
+                .attr("font-size", 15)
 
 
-// Raise label groups above paths
-nodes_group.raise()
-label_bg.raise()
+            d3.selectAll(".link")
+                //.filter(d=>d.labels.includes(sel.label))
+                .filter(d => d.labels[sel.ax] ? d.labels[sel.ax].node === sel.node : null)
+                .transition(0.1)
+                .attr("stroke", "red")
+                .attr("stroke-width", 3)
+                .attr("stroke-opacity", d => (d.values / d3.max(data.map(x => x.values))) ** 1)
+        })
 
-this.setState({ sets: data })  
+        label_bg.on("mouseleave", (sel) => {
+
+            d3.selectAll(".label")
+                .filter(l => l == sel)
+                .transition(0.1)
+                .attr("font-size", 10)
+
+            d3.selectAll(".link")
+                .filter(d => d.labels[sel.ax] ? d.labels[sel.ax].node === sel.node : null)
+                .transition(0.1)
+                .attr("stroke", d => cmap[d.tag])
+                .attr("stroke-width", 1)
+                .attr("stroke-opacity", d => (d.values / d3.max(data.map(x => x.values))) ** this.props.focus)
+        })
+
+
+        // Raise label groups above paths
+        nodes_group.raise()
+        label_bg.raise()
+
+        this.setState({ sets: data })
     }
 
-updateFocus() {
-    const svg = d3.select(this.refs[this.props.id + 'chartsvg'])
+    updateFocus() {
+        const svg = d3.select(this.refs[this.props.id + 'chartsvg'])
 
-    svg.selectAll(".link")
-        .attr("stroke-opacity", d => (d.values / d3.max(this.state.sets.map(x => x.values))) ** this.props.focus)
-}
+        svg.selectAll(".link")
+            .attr("stroke-opacity", d => (d.values / d3.max(this.state.sets.map(x => x.values))) ** this.props.focus)
+    }
 
 
-render() {
-    return (
-        <svg ref={this.props.id + 'chartsvg'} width={this.props.width} height={this.props.height} style={{ display: "block", margin: "auto" }}>
+    render() {
+        return (
+            <svg ref={this.props.id + 'chartsvg'} width={this.props.width} height={this.props.height} style={{ display: "block", margin: "auto" }}>
 
-        </svg>
-    )
-}
+            </svg>
+        )
+    }
 
 }

@@ -241,7 +241,7 @@ def returnPrallelClust():
     # Pop get increasing parallel axes nodes
     for i in range(max(df['labels'].str.len())):
         df = df[df['labels'].str.len() > i+1]
-        ag = AgglomerativeClustering(n_clusters=None,distance_threshold=10)
+        ag = AgglomerativeClustering(n_clusters=None,distance_threshold=30)
         df["src"] = df['labels'].apply(lambda x: order_map[x[i]])
         df["tgt"] = df['labels'].apply(lambda x: order_map[x[i+1]])
         if len(df) > 10:

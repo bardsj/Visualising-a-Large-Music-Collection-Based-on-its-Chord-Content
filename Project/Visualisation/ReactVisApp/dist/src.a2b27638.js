@@ -75510,38 +75510,14 @@ var ChartParallelClust = /*#__PURE__*/function (_React$Component) {
 
       for (var _i = 0; _i < n_ax; _i++) {
         _loop2(_i);
-      }
-
-      var create_points = function create_points(d) {
-        var line = [];
-
-        for (var _i2 = 0; _i2 < d.labels.length; _i2++) {
-          line.push({
-            "x": scX(d.labels[_i2].ax),
-            "y": scY[d.labels[_i2].ax](d.labels[_i2].node)
-          });
-
-          if (_i2 < d.labels.length - 1) {
-            line.push({
-              "x": control_points[d.labels[_i2].ax].ln[d.km_label[_i2]].x,
-              "y": control_points[d.labels[_i2].ax].ln[d.km_label[_i2]].y
-            });
-            line.push({
-              "x": control_points[d.labels[_i2].ax].rn[d.km_label[_i2]].x,
-              "y": control_points[d.labels[_i2].ax].rn[d.km_label[_i2]].y
-            });
-          }
-        }
-
-        return line;
-      }; // Shift control points towards eachother control point positions
+      } // Shift control points towards eachother control point positions
 
 
       for (var ax = 0; ax < control_points.length; ax++) {
         var r = 0.2;
 
-        for (var _i3 = 0, _Object$entries = Object.entries(control_points[ax].ln); _i3 < _Object$entries.length; _i3++) {
-          var _Object$entries$_i = (0, _slicedToArray2.default)(_Object$entries[_i3], 2),
+        for (var _i2 = 0, _Object$entries = Object.entries(control_points[ax].ln); _i2 < _Object$entries.length; _i2++) {
+          var _Object$entries$_i = (0, _slicedToArray2.default)(_Object$entries[_i2], 2),
               key = _Object$entries$_i[0],
               value = _Object$entries$_i[1];
 
@@ -75571,12 +75547,48 @@ var ChartParallelClust = /*#__PURE__*/function (_React$Component) {
         return d.y;
       }).x(function (d) {
         return d.x;
-      }).curve(d3.curveBundle.beta(1)); // Append paths
+      }).curve(d3.curveBundle.beta(1));
 
-      var links = svg.selectAll("path").data(data_ax).enter().append("path").attr("class", "link").attr("d", function (d) {
-        return lineGen(create_points(d));
+      var create_points = function create_points(d, i) {
+        var line = [{
+          "x": scX(d.labels[i].ax),
+          "y": scY[d.labels[i].ax](d.labels[i].node)
+        }, {
+          "x": control_points[d.labels[i].ax].ln[d.km_label[i]].x,
+          "y": control_points[d.labels[i].ax].ln[d.km_label[i]].y
+        }, {
+          "x": control_points[d.labels[i].ax].rn[d.km_label[i]].x,
+          "y": control_points[d.labels[i].ax].rn[d.km_label[i]].y
+        }, {
+          "x": scX(d.labels[i + 1].ax),
+          "y": scY[d.labels[i + 1].ax](d.labels[i + 1].node)
+        }];
+        return line;
+      };
+
+      var node_cmap_sc = d3.scalePoint().range([0, 1]).domain(node_list); // Append lines for each axes seperately to allow each to be coloured based on start node
+
+      var data_filt = [];
+
+      var _loop3 = function _loop3(_i3) {
+        data_filt.push.apply(data_filt, (0, _toConsumableArray2.default)(data_ax.filter(function (x) {
+          return x.labels.length > _i3 + 1;
+        }).map(function (d) {
+          return Object.assign(d, {
+            ax: _i3
+          });
+        })));
+      };
+
+      for (var _i3 = 0; _i3 < n_ax; _i3++) {
+        _loop3(_i3);
+      } // Append paths
+
+
+      var links = svg.selectAll("path").data(data_filt).enter().append("path").attr("class", "link").attr("d", function (d) {
+        return lineGen(create_points(d, d.ax));
       }).attr("fill", "none").attr("stroke", function (d) {
-        return cmap[d.tag];
+        return d3.interpolateTurbo(node_cmap_sc(d.labels[d.ax].node));
       }).attr("fill", "none").attr("stroke-width", 1).attr("stroke-opacity", function (d) {
         return Math.pow(d.values / d3.max(data.map(function (x) {
           return x.values;
