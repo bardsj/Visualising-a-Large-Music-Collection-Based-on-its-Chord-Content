@@ -20,6 +20,7 @@ export default () => {
   const [support, setSupport] = useState(1)
   const [beta,setBeta] = useState(1)
   const [optType,setOptType] = useState(null)
+  const [cPath,setCPath] = useState(false)
 
   const handleFilter = (e) => {
     if (e.target.checked == true) {
@@ -54,7 +55,7 @@ export default () => {
     chart =  <ChartCircular id={1} width={800} height={800} request_params={requestParams} focus={focus} support={support} optType={optType}/>
   }
   else if (chartType === "Parallel")  {
-      chart = <ChartParallel id={1} width={800} height={800} request_params={requestParams} focus={focus} support={support} />
+      chart = <ChartParallel id={1} width={800} height={800} request_params={requestParams} focus={focus} support={support} cPath={cPath}/>
   }
   else if (chartType === "Circular Hierarchical") {
     chart = <ChartHier beta={beta} id={1} width={800} height={800} request_params={requestParams} focus={focus} support={support}/>
@@ -66,7 +67,7 @@ export default () => {
     chart = <ChartClust beta={beta} id={1} width={800} height={800} request_params={requestParams} focus={focus} support={support} optType={optType}/>
   }
   else if (chartType === "Parallel Clustered") {
-    chart = <ChartParallelClust beta={beta} id={1} width={800} height={800} request_params={requestParams} focus={focus} support={support}/>
+    chart = <ChartParallelClust beta={beta} id={1} width={800} height={800} request_params={requestParams} focus={focus} support={support} cPath={cPath}/>
   }
 
   let legend = ""
@@ -95,7 +96,8 @@ export default () => {
       <Row>
         <Col>
           <VisParams chartType={chartType} support={support} focus={focus} handleSupport={setSupport} 
-                    beta={beta} handleBeta={setBeta} handleFocus={setFocus} handleOptType={handleOptType}/>
+                    beta={beta} handleBeta={setBeta} handleFocus={setFocus} handleOptType={handleOptType}
+                    cPath={cPath} handleCPath={setCPath}/>
         </Col>
       </Row>
     </Container>

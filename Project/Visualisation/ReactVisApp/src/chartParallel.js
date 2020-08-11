@@ -23,7 +23,8 @@ export class ChartParallel extends React.Component {
     }
 
     componentDidMount() {
-        this.fetchData(this.props.request_params);
+        console.log(this.props)
+        //this.fetchData(this.props.request_params);
     }
 
     componentDidUpdate(prevProps) {
@@ -111,7 +112,7 @@ export class ChartParallel extends React.Component {
             .attr("class", "link")
             .attr("d", d => lineGen(d.labels))
             .attr("fill", "none")
-            .attr("stroke", d => cmap[d.tag])
+            .attr("stroke", d => {cmap[d.tag]})
             .attr("fill", "none")
             .attr("stroke-width", 1)
             .attr("stroke-opacity", d => (d.values / d3.max(data.map(x => x.values))) ** this.props.focus)

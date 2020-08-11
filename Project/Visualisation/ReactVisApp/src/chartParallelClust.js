@@ -36,6 +36,9 @@ export class ChartParallelClust extends React.Component {
         if (prevProps.focus !== this.props.focus) {
             this.updateFocus()
         }
+        if (prevProps.cPath !== this.props.cPath) {
+            this.createChart()
+        }
     }
 
     createChart() {
@@ -187,7 +190,7 @@ export class ChartParallelClust extends React.Component {
             .attr("class", "link")
             .attr("d", d => lineGen(create_points(d, d.ax)))
             .attr("fill", "none")
-            .attr("stroke", d => d3.interpolateTurbo(node_cmap_sc(d.labels[d.ax].node)))
+            .attr("stroke", d => this.props.cPath ? d3.interpolateTurbo(node_cmap_sc(d.labels[d.ax].node)) : cmap[d.tag])
             .attr("fill", "none")
             .attr("stroke-width", 1)
             .attr("stroke-opacity", d => (d.values / d3.max(data.map(x => x.values))) ** this.props.focus)
@@ -222,7 +225,7 @@ export class ChartParallelClust extends React.Component {
             d3.selectAll(".link")
                 .filter(d => d.labels[sel.ax] ? d.labels[sel.ax].node === sel.node : null)
                 .transition(0.1)
-                .attr("stroke", d => d3.interpolateTurbo(node_cmap_sc(d.labels[d.ax].node)))
+                .attr("stroke", d => this.props.cPath ? d3.interpolateTurbo(node_cmap_sc(d.labels[d.ax].node)) : cmap[d.tag])
                 .attr("stroke-width", 1)
                 .attr("stroke-opacity", d => (d.values / d3.max(data.map(x => x.values))) ** this.props.focus)
         })

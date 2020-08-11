@@ -57772,7 +57772,7 @@ var ChartParallel = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "componentDidMount",
     value: function componentDidMount() {
-      this.fetchData(this.props.request_params);
+      console.log(this.props); //this.fetchData(this.props.request_params);
     }
   }, {
     key: "componentDidUpdate",
@@ -57874,7 +57874,7 @@ var ChartParallel = /*#__PURE__*/function (_React$Component) {
       var links = svg.selectAll("path").data(data_ax).enter().append("path").attr("class", "link").attr("d", function (d) {
         return lineGen(d.labels);
       }).attr("fill", "none").attr("stroke", function (d) {
-        return cmap[d.tag];
+        cmap[d.tag];
       }).attr("fill", "none").attr("stroke-width", 1).attr("stroke-opacity", function (d) {
         return Math.pow(d.values / d3.max(data.map(function (x) {
           return x.values;
@@ -74182,7 +74182,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 function VisParams(props) {
   var controls = "";
 
-  if (props.chartType.includes("Hierarchical") || props.chartType.includes("Parallel")) {
+  if (props.chartType.includes("Hierarchical")) {
     controls = /*#__PURE__*/_react.default.createElement("div", {
       style: {
         display: "grid",
@@ -74251,6 +74251,91 @@ function VisParams(props) {
         gridColumn: 3
       }
     }, props.support));
+  } else if (props.chartType.includes("Parallel")) {
+    controls = /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("div", {
+      style: {
+        paddingLeft: 20,
+        paddingBottom: 10
+      }
+    }, /*#__PURE__*/_react.default.createElement("input", {
+      type: "checkbox",
+      id: "cPaths",
+      defaultChecked: props.cPaths,
+      onChange: function onChange(e) {
+        return props.handleCPath(e.target.checked);
+      }
+    }), /*#__PURE__*/_react.default.createElement("label", {
+      style: {
+        paddingLeft: 20
+      }
+    }, "Colour paths by node start")), /*#__PURE__*/_react.default.createElement("div", {
+      style: {
+        display: "grid",
+        paddingLeft: 20,
+        gridTemplateColumns: "60px 150px 50px"
+      }
+    }, /*#__PURE__*/_react.default.createElement("p", {
+      style: {
+        float: "left",
+        paddingRight: 10,
+        paddingBottom: 10,
+        gridRow: 1,
+        gridColumn: 1
+      }
+    }, "Focus"), /*#__PURE__*/_react.default.createElement("input", {
+      style: {
+        float: "left",
+        marginTop: -25,
+        gridRow: 1,
+        gridColumn: 2
+      },
+      type: "range",
+      min: "0.1",
+      max: "5",
+      step: "0.1",
+      defaultValue: props.focus,
+      id: "focus",
+      onChange: function onChange(e) {
+        return props.handleFocus(e.target.value);
+      }
+    }), /*#__PURE__*/_react.default.createElement("p", {
+      style: {
+        float: "right",
+        paddingLeft: 10,
+        gridRow: 1,
+        gridColumn: 3
+      }
+    }, props.focus), /*#__PURE__*/_react.default.createElement("p", {
+      style: {
+        float: "left",
+        paddingRight: 10,
+        paddingBottom: 10,
+        gridRow: 2,
+        gridColumn: 1
+      }
+    }, "Support"), /*#__PURE__*/_react.default.createElement("input", {
+      style: {
+        float: "left",
+        marginTop: -25,
+        gridRow: 2,
+        gridColumn: 2
+      },
+      type: "range",
+      min: "1",
+      max: "20",
+      defaultValue: props.support,
+      id: "support",
+      onChange: function onChange(e) {
+        return props.handleSupport(e.target.value);
+      }
+    }), /*#__PURE__*/_react.default.createElement("p", {
+      style: {
+        float: "right",
+        paddingLeft: 10,
+        gridRow: 2,
+        gridColumn: 3
+      }
+    }, props.support)));
   } else {
     controls = /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("div", {
       style: {
@@ -75364,6 +75449,10 @@ var ChartParallelClust = /*#__PURE__*/function (_React$Component) {
       if (prevProps.focus !== this.props.focus) {
         this.updateFocus();
       }
+
+      if (prevProps.cPath !== this.props.cPath) {
+        this.createChart();
+      }
     }
   }, {
     key: "createChart",
@@ -75588,7 +75677,7 @@ var ChartParallelClust = /*#__PURE__*/function (_React$Component) {
       var links = svg.selectAll("path").data(data_filt).enter().append("path").attr("class", "link").attr("d", function (d) {
         return lineGen(create_points(d, d.ax));
       }).attr("fill", "none").attr("stroke", function (d) {
-        return d3.interpolateTurbo(node_cmap_sc(d.labels[d.ax].node));
+        return _this3.props.cPath ? d3.interpolateTurbo(node_cmap_sc(d.labels[d.ax].node)) : cmap[d.tag];
       }).attr("fill", "none").attr("stroke-width", 1).attr("stroke-opacity", function (d) {
         return Math.pow(d.values / d3.max(data.map(function (x) {
           return x.values;
@@ -75615,7 +75704,7 @@ var ChartParallelClust = /*#__PURE__*/function (_React$Component) {
         d3.selectAll(".link").filter(function (d) {
           return d.labels[sel.ax] ? d.labels[sel.ax].node === sel.node : null;
         }).transition(0.1).attr("stroke", function (d) {
-          return d3.interpolateTurbo(node_cmap_sc(d.labels[d.ax].node));
+          return _this3.props.cPath ? d3.interpolateTurbo(node_cmap_sc(d.labels[d.ax].node)) : cmap[d.tag];
         }).attr("stroke-width", 1).attr("stroke-opacity", function (d) {
           return Math.pow(d.values / d3.max(data.map(function (x) {
             return x.values;
@@ -75732,6 +75821,11 @@ var _default = function _default() {
       optType = _useState12[0],
       setOptType = _useState12[1];
 
+  var _useState13 = (0, _react.useState)(false),
+      _useState14 = (0, _slicedToArray2.default)(_useState13, 2),
+      cPath = _useState14[0],
+      setCPath = _useState14[1];
+
   var handleFilter = function handleFilter(e) {
     if (e.target.checked == true) {
       requestParams.tag_val.push(e.target.value);
@@ -75787,7 +75881,8 @@ var _default = function _default() {
       height: 800,
       request_params: requestParams,
       focus: focus,
-      support: support
+      support: support,
+      cPath: cPath
     });
   } else if (chartType === "Circular Hierarchical") {
     chart = /*#__PURE__*/_react.default.createElement(_chartHier.ChartHier, {
@@ -75828,7 +75923,8 @@ var _default = function _default() {
       height: 800,
       request_params: requestParams,
       focus: focus,
-      support: support
+      support: support,
+      cPath: cPath
     });
   }
 
@@ -75860,7 +75956,9 @@ var _default = function _default() {
     beta: beta,
     handleBeta: setBeta,
     handleFocus: setFocus,
-    handleOptType: handleOptType
+    handleOptType: handleOptType,
+    cPath: cPath,
+    handleCPath: setCPath
   })))));
 };
 
