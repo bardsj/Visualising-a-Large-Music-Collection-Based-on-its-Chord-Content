@@ -222,7 +222,7 @@ export class ChartParallelClust extends React.Component {
             d3.selectAll(".link")
                 .filter(d => d.labels[sel.ax] ? d.labels[sel.ax].node === sel.node : null)
                 .transition(0.1)
-                .attr("stroke", d => cmap[d.tag])
+                .attr("stroke", d => d3.interpolateTurbo(node_cmap_sc(d.labels[d.ax].node)))
                 .attr("stroke-width", 1)
                 .attr("stroke-opacity", d => (d.values / d3.max(data.map(x => x.values))) ** this.props.focus)
         })

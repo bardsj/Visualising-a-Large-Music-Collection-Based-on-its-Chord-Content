@@ -75615,7 +75615,7 @@ var ChartParallelClust = /*#__PURE__*/function (_React$Component) {
         d3.selectAll(".link").filter(function (d) {
           return d.labels[sel.ax] ? d.labels[sel.ax].node === sel.node : null;
         }).transition(0.1).attr("stroke", function (d) {
-          return cmap[d.tag];
+          return d3.interpolateTurbo(node_cmap_sc(d.labels[d.ax].node));
         }).attr("stroke-width", 1).attr("stroke-opacity", function (d) {
           return Math.pow(d.values / d3.max(data.map(function (x) {
             return x.values;
@@ -75905,7 +75905,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62114" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55547" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
