@@ -68,8 +68,10 @@ export class ChartParallelClust extends React.Component {
 
         // Categorical y scale
         for (let i = 0; i < n_ax; i++) {
-            const ax_nodes = new Array(... new Set(data_ax.filter(x => x.labels[i]).map(x => x.labels[i].node)))
-            scY.push(d3.scalePoint().domain(node_list.filter(x=>ax_nodes.includes(x))).range([margin.top, height - margin.bottom]))
+            //const ax_nodes = new Array(... new Set(data_ax.filter(x => x.labels[i]).map(x => x.labels[i].node)))
+            //scY.push(d3.scalePoint().domain(node_list.filter(x=>ax_nodes.includes(x))).range([margin.top, height - margin.bottom]))
+            const ax_nodes = node_list
+            scY.push(d3.scalePoint().domain(node_list).range([margin.top, height - margin.bottom]))
             node_list_ax.push(...ax_nodes.map(x => ({ ax: i, node: x })))
         }
         // Linear x scale for parallel axes

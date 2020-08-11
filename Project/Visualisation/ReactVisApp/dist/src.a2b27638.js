@@ -75417,14 +75417,10 @@ var ChartParallelClust = /*#__PURE__*/function (_React$Component) {
       var node_list_ax = []; // Categorical y scale
 
       var _loop = function _loop(i) {
-        var ax_nodes = (0, _construct2.default)(Array, (0, _toConsumableArray2.default)(new Set(data_ax.filter(function (x) {
-          return x.labels[i];
-        }).map(function (x) {
-          return x.labels[i].node;
-        }))));
-        scY.push(d3.scalePoint().domain(node_list.filter(function (x) {
-          return ax_nodes.includes(x);
-        })).range([margin.top, height - margin.bottom]));
+        //const ax_nodes = new Array(... new Set(data_ax.filter(x => x.labels[i]).map(x => x.labels[i].node)))
+        //scY.push(d3.scalePoint().domain(node_list.filter(x=>ax_nodes.includes(x))).range([margin.top, height - margin.bottom]))
+        var ax_nodes = node_list;
+        scY.push(d3.scalePoint().domain(node_list).range([margin.top, height - margin.bottom]));
         node_list_ax.push.apply(node_list_ax, (0, _toConsumableArray2.default)(ax_nodes.map(function (x) {
           return {
             ax: i,
@@ -75699,7 +75695,7 @@ var _default = function _default() {
       requestParams = _useState2[0],
       setRequestParams = _useState2[1];
 
-  var _useState3 = (0, _react.useState)("Circular"),
+  var _useState3 = (0, _react.useState)("Parallel Clustered"),
       _useState4 = (0, _slicedToArray2.default)(_useState3, 2),
       chartType = _useState4[0],
       setChartType = _useState4[1];
@@ -75897,7 +75893,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60415" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62114" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
