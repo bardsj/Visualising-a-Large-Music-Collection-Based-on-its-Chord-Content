@@ -57772,7 +57772,7 @@ var ChartParallel = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "componentDidMount",
     value: function componentDidMount() {
-      console.log(this.props); //this.fetchData(this.props.request_params);
+      this.fetchData(this.props.request_params);
     }
   }, {
     key: "componentDidUpdate",
@@ -57787,6 +57787,10 @@ var ChartParallel = /*#__PURE__*/function (_React$Component) {
 
       if (prevProps.focus !== this.props.focus) {
         this.updateFocus();
+      }
+
+      if (prevProps.cPath !== this.props.cPath) {
+        this.createChart();
       }
     }
   }, {
@@ -57821,20 +57825,7 @@ var ChartParallel = /*#__PURE__*/function (_React$Component) {
         return filtered_set.includes(x);
       }); // Colour map
 
-      var cmap = (0, _colorMap.genreColormap)(this.state.request_params.tag_val); // Add axis field for n axes from node list
-
-      var node_list_ax = [];
-
-      for (var i = 0; i < n_ax; i++) {
-        for (var j = 0; j < node_list.length; j++) {
-          node_list_ax.push({
-            node: node_list[j],
-            ax: i
-          });
-        }
-      }
-
-      node_list_ax = node_list_ax.flat(); // Add axes field to data by taking index of node in data node lists
+      var cmap = (0, _colorMap.genreColormap)(this.state.request_params.tag_val); // Add axes field to data by taking index of node in data node lists
 
       var data_ax = data.map(function (d) {
         return {
@@ -57845,16 +57836,36 @@ var ChartParallel = /*#__PURE__*/function (_React$Component) {
             };
           }),
           values: d.values,
-          tag: d.tag
+          tag: d.tag,
+          km_label: d.km_label
         };
-      }); // Categorical y scale
+      });
+      var scY = []; // Add axis field for n axes from node list
 
-      var scY = d3.scalePoint().domain(node_list).range([margin.top, height - margin.bottom]); // Linear x scale for parallel axes
+      var node_list_ax = []; // Categorical y scale
+
+      var _loop = function _loop(i) {
+        //const ax_nodes = new Array(... new Set(data_ax.filter(x => x.labels[i]).map(x => x.labels[i].node)))
+        //scY.push(d3.scalePoint().domain(node_list.filter(x=>ax_nodes.includes(x))).range([margin.top, height - margin.bottom]))
+        var ax_nodes = node_list;
+        scY.push(d3.scalePoint().domain(node_list).range([margin.top, height - margin.bottom]));
+        node_list_ax.push.apply(node_list_ax, (0, _toConsumableArray2.default)(ax_nodes.map(function (x) {
+          return {
+            ax: i,
+            node: x
+          };
+        })));
+      };
+
+      for (var i = 0; i < n_ax; i++) {
+        _loop(i);
+      } // Linear x scale for parallel axes
+
 
       var scX = d3.scaleLinear().domain([0, n_ax - 1]).range([margin.left, width - margin.right]); // Add node groups to create parallel axes
 
       var nodes_group = svg.selectAll("g").data(node_list_ax).enter().append("g").attr("transform", function (d) {
-        return "translate(" + scX(d.ax) + "," + scY(d.node) + ")";
+        return "translate(" + scX(d.ax) + "," + scY[d.ax](d.node) + ")";
       }); // Append circle to node groups
 
       var nodes = nodes_group.append("circle").attr("r", 2); // Append labels to node groups
@@ -57866,15 +57877,45 @@ var ChartParallel = /*#__PURE__*/function (_React$Component) {
       var label_bg = nodes_group.append("rect").attr("width", 30).attr("height", 20).attr("fill", "transparent").attr("transform", "translate(-34,-6)"); // Path generator
 
       var lineGen = d3.line().y(function (d) {
-        return scY(d.node);
+        return d.y;
       }).x(function (d) {
-        return scX(d.ax);
-      }).curve(d3.curveCardinal); // Append paths
+        return d.x;
+      });
 
-      var links = svg.selectAll("path").data(data_ax).enter().append("path").attr("class", "link").attr("d", function (d) {
-        return lineGen(d.labels);
+      var create_points = function create_points(d, i) {
+        var line = [{
+          "x": scX(d.labels[i].ax),
+          "y": scY[d.labels[i].ax](d.labels[i].node)
+        }, {
+          "x": scX(d.labels[i + 1].ax),
+          "y": scY[d.labels[i + 1].ax](d.labels[i + 1].node)
+        }];
+        return line;
+      };
+
+      var node_cmap_sc = d3.scalePoint().range([0, 1]).domain(node_list); // Append lines for each axes seperately to allow each to be coloured based on start node
+
+      var data_filt = [];
+
+      var _loop2 = function _loop2(_i) {
+        data_filt.push.apply(data_filt, (0, _toConsumableArray2.default)(data_ax.filter(function (x) {
+          return x.labels.length > _i + 1;
+        }).map(function (d) {
+          return Object.assign(d, {
+            ax: _i
+          });
+        })));
+      };
+
+      for (var _i = 0; _i < n_ax; _i++) {
+        _loop2(_i);
+      } // Append paths
+
+
+      var links = svg.selectAll("path").data(data_filt).enter().append("path").attr("class", "link").attr("d", function (d) {
+        return lineGen(create_points(d, d.ax));
       }).attr("fill", "none").attr("stroke", function (d) {
-        cmap[d.tag];
+        return _this3.props.cPath ? d3.interpolateTurbo(node_cmap_sc(d.labels[d.ax].node)) : cmap[d.tag];
       }).attr("fill", "none").attr("stroke-width", 1).attr("stroke-opacity", function (d) {
         return Math.pow(d.values / d3.max(data.map(function (x) {
           return x.values;
@@ -57901,11 +57942,18 @@ var ChartParallel = /*#__PURE__*/function (_React$Component) {
         d3.selectAll(".link").filter(function (d) {
           return d.labels[sel.ax] ? d.labels[sel.ax].node === sel.node : null;
         }).transition(0.1).attr("stroke", function (d) {
-          return cmap[d.tag];
+          return _this3.props.cPath ? d3.interpolateTurbo(node_cmap_sc(d.labels[d.ax].node)) : cmap[d.tag];
         }).attr("stroke-width", 1).attr("stroke-opacity", function (d) {
           return Math.pow(d.values / d3.max(data.map(function (x) {
             return x.values;
           })), _this3.props.focus);
+        }); // Raise label groups above paths
+
+        nodes_group.raise();
+        label_bg.raise();
+
+        _this3.setState({
+          sets: data
         });
       }); // Raise label groups above paths
 
@@ -76003,7 +76051,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55547" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53596" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
