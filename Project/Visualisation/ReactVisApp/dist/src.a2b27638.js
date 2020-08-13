@@ -57573,7 +57573,44 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
       var centre = {
         x: width / 2,
         y: width / 2
-      }; // Create objects containing node labels and coordinates from list of edges (sets)
+      }; // If no opt type selected (i.e. root node order)
+
+      if (!this.props.optType) {
+        // Get groups of root nodes based on current order
+        var root_ix = [0];
+
+        for (var i = 0; i < order.length - 1; i++) {
+          if (order[i][1] == "b") {
+            if (order[i].slice(0, 2) !== order[i + 1].slice(0, 2)) {
+              root_ix.push(i);
+              root_ix.push(i + 1);
+            }
+          } else {
+            if (order[i][0] !== order[i + 1][0]) {
+              root_ix.push(i);
+              root_ix.push(i + 1);
+            }
+          }
+        }
+
+        root_ix.push(order.length - 1); // Split into pair chunks
+
+        var root_ix_pairs = [];
+
+        for (var _i = 0; _i < root_ix.length; _i += 2) {
+          root_ix_pairs.push([root_ix[_i], root_ix[_i + 1]]);
+        }
+
+        var arcGen = d3.arc().innerRadius(r + 5).outerRadius(r + 40).startAngle(function (d) {
+          return sc_radial(order[d[0]]) - 0.03;
+        }).endAngle(function (d) {
+          return sc_radial(order[d[1]]) + 0.03;
+        });
+        var root_arcs = svg.selectAll("path").data(root_ix_pairs).enter().append("path").attr("d", function (d) {
+          return arcGen(d);
+        }).attr("transform", "translate(" + centre.y + "," + centre.x + ")").attr("fill", "#ebebeb");
+      } // Create objects containing node labels and coordinates from list of edges (sets)
+
 
       var node_points = order.map(function (x) {
         return {
@@ -58135,7 +58172,44 @@ var ChartHier = /*#__PURE__*/function (_React$Component) {
       var centre = {
         x: width / 2,
         y: width / 2
-      }; // Create objects containing node labels and coordinates from list of edges (sets)
+      }; // If no opt type selected (i.e. root node order)
+
+      if (!this.props.optType) {
+        // Get groups of root nodes based on current order
+        var root_ix = [0];
+
+        for (var i = 0; i < order.length - 1; i++) {
+          if (order[i][1] == "b") {
+            if (order[i].slice(0, 2) !== order[i + 1].slice(0, 2)) {
+              root_ix.push(i);
+              root_ix.push(i + 1);
+            }
+          } else {
+            if (order[i][0] !== order[i + 1][0]) {
+              root_ix.push(i);
+              root_ix.push(i + 1);
+            }
+          }
+        }
+
+        root_ix.push(order.length - 1); // Split into pair chunks
+
+        var root_ix_pairs = [];
+
+        for (var _i = 0; _i < root_ix.length; _i += 2) {
+          root_ix_pairs.push([root_ix[_i], root_ix[_i + 1]]);
+        }
+
+        var arcGen = d3.arc().innerRadius(r + 5).outerRadius(r + 40).startAngle(function (d) {
+          return sc_radial(order[d[0]]) - 0.03;
+        }).endAngle(function (d) {
+          return sc_radial(order[d[1]]) + 0.03;
+        });
+        var root_arcs = svg.selectAll("path").data(root_ix_pairs).enter().append("path").attr("d", function (d) {
+          return arcGen(d);
+        }).attr("transform", "translate(" + centre.y + "," + centre.x + ")").attr("fill", "#ebebeb");
+      } // Create objects containing node labels and coordinates from list of edges (sets)
+
 
       var node_points = order.map(function (x) {
         return {
@@ -58146,18 +58220,18 @@ var ChartHier = /*#__PURE__*/function (_React$Component) {
 
       var i_nodes = {}; // For each root note get angle of sub nodes
 
-      for (var i = 0; i < order.length; i++) {
-        if (order[i][1] != "b") {
-          if (order[i][0] in i_nodes) {
-            i_nodes[order[i][0]].push(sc_radial(order[i]));
+      for (var _i2 = 0; _i2 < order.length; _i2++) {
+        if (order[_i2][1] != "b") {
+          if (order[_i2][0] in i_nodes) {
+            i_nodes[order[_i2][0]].push(sc_radial(order[_i2]));
           } else {
-            i_nodes[order[i][0]] = [sc_radial(order[i])];
+            i_nodes[order[_i2][0]] = [sc_radial(order[_i2])];
           }
         } else {
           if (order.slice(0, 2) in i_nodes) {
-            i_nodes[order[i].slice(0, 2)].push(sc_radial(order[i]));
+            i_nodes[order[_i2].slice(0, 2)].push(sc_radial(order[_i2]));
           } else {
-            i_nodes[order[i].slice(0, 2)] = [sc_radial(order[i])];
+            i_nodes[order[_i2].slice(0, 2)] = [sc_radial(order[_i2])];
           }
         }
       } // Calculate mean angle for each root note
@@ -58165,8 +58239,8 @@ var ChartHier = /*#__PURE__*/function (_React$Component) {
 
       var root_nodes = {};
 
-      for (var _i = 0, _Object$entries = Object.entries(i_nodes); _i < _Object$entries.length; _i++) {
-        var _Object$entries$_i = (0, _slicedToArray2.default)(_Object$entries[_i], 2),
+      for (var _i3 = 0, _Object$entries = Object.entries(i_nodes); _i3 < _Object$entries.length; _i3++) {
+        var _Object$entries$_i = (0, _slicedToArray2.default)(_Object$entries[_i3], 2),
             key = _Object$entries$_i[0],
             value = _Object$entries$_i[1];
 
@@ -74719,7 +74793,44 @@ var ChartHierSingleHue = /*#__PURE__*/function (_React$Component) {
       var centre = {
         x: width / 2,
         y: width / 2
-      }; // Create objects containing node labels and coordinates from list of edges (sets)
+      }; // If no opt type selected (i.e. root node order)
+
+      if (!this.props.optType) {
+        // Get groups of root nodes based on current order
+        var root_ix = [0];
+
+        for (var i = 0; i < order.length - 1; i++) {
+          if (order[i][1] == "b") {
+            if (order[i].slice(0, 2) !== order[i + 1].slice(0, 2)) {
+              root_ix.push(i);
+              root_ix.push(i + 1);
+            }
+          } else {
+            if (order[i][0] !== order[i + 1][0]) {
+              root_ix.push(i);
+              root_ix.push(i + 1);
+            }
+          }
+        }
+
+        root_ix.push(order.length - 1); // Split into pair chunks
+
+        var root_ix_pairs = [];
+
+        for (var _i = 0; _i < root_ix.length; _i += 2) {
+          root_ix_pairs.push([root_ix[_i], root_ix[_i + 1]]);
+        }
+
+        var arcGen = d3.arc().innerRadius(r + 5).outerRadius(r + 40).startAngle(function (d) {
+          return sc_radial(order[d[0]]) - 0.03;
+        }).endAngle(function (d) {
+          return sc_radial(order[d[1]]) + 0.03;
+        });
+        var root_arcs = svg.selectAll("path").data(root_ix_pairs).enter().append("path").attr("d", function (d) {
+          return arcGen(d);
+        }).attr("transform", "translate(" + centre.y + "," + centre.x + ")").attr("fill", "#ebebeb");
+      } // Create objects containing node labels and coordinates from list of edges (sets)
+
 
       var node_points = order.map(function (x) {
         return {
@@ -74730,18 +74841,18 @@ var ChartHierSingleHue = /*#__PURE__*/function (_React$Component) {
 
       var i_nodes = {}; // For each root note get angle of sub nodes
 
-      for (var i = 0; i < order.length; i++) {
-        if (order[i][1] != "b") {
-          if (order[i][0] in i_nodes) {
-            i_nodes[order[i][0]].push(sc_radial(order[i]));
+      for (var _i2 = 0; _i2 < order.length; _i2++) {
+        if (order[_i2][1] != "b") {
+          if (order[_i2][0] in i_nodes) {
+            i_nodes[order[_i2][0]].push(sc_radial(order[_i2]));
           } else {
-            i_nodes[order[i][0]] = [sc_radial(order[i])];
+            i_nodes[order[_i2][0]] = [sc_radial(order[_i2])];
           }
         } else {
           if (order.slice(0, 2) in i_nodes) {
-            i_nodes[order[i].slice(0, 2)].push(sc_radial(order[i]));
+            i_nodes[order[_i2].slice(0, 2)].push(sc_radial(order[_i2]));
           } else {
-            i_nodes[order[i].slice(0, 2)] = [sc_radial(order[i])];
+            i_nodes[order[_i2].slice(0, 2)] = [sc_radial(order[_i2])];
           }
         }
       } // Calculate mean angle for each root note
@@ -74749,8 +74860,8 @@ var ChartHierSingleHue = /*#__PURE__*/function (_React$Component) {
 
       var root_nodes = {};
 
-      for (var _i = 0, _Object$entries = Object.entries(i_nodes); _i < _Object$entries.length; _i++) {
-        var _Object$entries$_i = (0, _slicedToArray2.default)(_Object$entries[_i], 2),
+      for (var _i3 = 0, _Object$entries = Object.entries(i_nodes); _i3 < _Object$entries.length; _i3++) {
+        var _Object$entries$_i = (0, _slicedToArray2.default)(_Object$entries[_i3], 2),
             key = _Object$entries$_i[0],
             value = _Object$entries$_i[1];
 
@@ -75010,7 +75121,44 @@ var ChartClust = /*#__PURE__*/function (_React$Component) {
       var centre = {
         x: width / 2,
         y: width / 2
-      }; // Create objects containing node labels and coordinates from list of edges (sets)
+      }; // If no opt type selected (i.e. root node order)
+
+      if (!this.props.optType) {
+        // Get groups of root nodes based on current order
+        var root_ix = [0];
+
+        for (var i = 0; i < order.length - 1; i++) {
+          if (order[i][1] == "b") {
+            if (order[i].slice(0, 2) !== order[i + 1].slice(0, 2)) {
+              root_ix.push(i);
+              root_ix.push(i + 1);
+            }
+          } else {
+            if (order[i][0] !== order[i + 1][0]) {
+              root_ix.push(i);
+              root_ix.push(i + 1);
+            }
+          }
+        }
+
+        root_ix.push(order.length - 1); // Split into pair chunks
+
+        var root_ix_pairs = [];
+
+        for (var _i = 0; _i < root_ix.length; _i += 2) {
+          root_ix_pairs.push([root_ix[_i], root_ix[_i + 1]]);
+        }
+
+        var arcGen = d3.arc().innerRadius(r + 5).outerRadius(r + 40).startAngle(function (d) {
+          return sc_radial(order[d[0]]) - 0.03;
+        }).endAngle(function (d) {
+          return sc_radial(order[d[1]]) + 0.03;
+        });
+        var root_arcs = svg.selectAll("path").data(root_ix_pairs).enter().append("path").attr("d", function (d) {
+          return arcGen(d);
+        }).attr("transform", "translate(" + centre.y + "," + centre.x + ")").attr("fill", "#ebebeb");
+      } // Create objects containing node labels and coordinates from list of edges (sets)
+
 
       var node_points = order.map(function (x) {
         return {
@@ -75030,20 +75178,21 @@ var ChartClust = /*#__PURE__*/function (_React$Component) {
         return [x.labels, x.km_label];
       }); /////////////////////////// Calculate control points //////////////////////////
 
-      for (var i = 0; i < angle_map.length; i++) {
-        if (angle_map[i][1] in i_nodes) {
+      for (var _i2 = 0; _i2 < angle_map.length; _i2++) {
+        if (angle_map[_i2][1] in i_nodes) {
           // Push lhs and rhs node positions
-          i_nodes[angle_map[i][1]][0].push(node2point(angle_map[i][0][0]));
-          i_nodes[angle_map[i][1]][1].push(node2point(angle_map[i][0][1]));
+          i_nodes[angle_map[_i2][1]][0].push(node2point(angle_map[_i2][0][0]));
+
+          i_nodes[angle_map[_i2][1]][1].push(node2point(angle_map[_i2][0][1]));
         } else {
-          i_nodes[angle_map[i][1]] = [[node2point(angle_map[i][0][0])], [node2point(angle_map[i][0][1])]];
+          i_nodes[angle_map[_i2][1]] = [[node2point(angle_map[_i2][0][0])], [node2point(angle_map[_i2][0][1])]];
         }
       }
 
       var root_nodes = {};
 
-      for (var _i = 0, _Object$entries = Object.entries(i_nodes); _i < _Object$entries.length; _i++) {
-        var _Object$entries$_i = (0, _slicedToArray2.default)(_Object$entries[_i], 2),
+      for (var _i3 = 0, _Object$entries = Object.entries(i_nodes); _i3 < _Object$entries.length; _i3++) {
+        var _Object$entries$_i = (0, _slicedToArray2.default)(_Object$entries[_i3], 2),
             key = _Object$entries$_i[0],
             value = _Object$entries$_i[1];
 
@@ -75210,8 +75359,8 @@ var ChartClust = /*#__PURE__*/function (_React$Component) {
       } // Carry out optimisation - set r_l and r_r to constant value if desired
 
 
-      for (var _i2 = 0, _Object$entries2 = Object.entries(root_nodes); _i2 < _Object$entries2.length; _i2++) {
-        var _Object$entries2$_i = (0, _slicedToArray2.default)(_Object$entries2[_i2], 2),
+      for (var _i4 = 0, _Object$entries2 = Object.entries(root_nodes); _i4 < _Object$entries2.length; _i4++) {
+        var _Object$entries2$_i = (0, _slicedToArray2.default)(_Object$entries2[_i4], 2),
             _key = _Object$entries2$_i[0],
             _value = _Object$entries2$_i[1];
 
@@ -75844,7 +75993,7 @@ var _default = function _default() {
       requestParams = _useState2[0],
       setRequestParams = _useState2[1];
 
-  var _useState3 = (0, _react.useState)("Parallel Clustered"),
+  var _useState3 = (0, _react.useState)("Circular"),
       _useState4 = (0, _slicedToArray2.default)(_useState3, 2),
       chartType = _useState4[0],
       setChartType = _useState4[1];
@@ -76051,7 +76200,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53596" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49465" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

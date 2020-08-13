@@ -15,7 +15,7 @@ import { ChartParallelClust } from "./chartParallelClust";
 export default () => {
 
   const [requestParams, setRequestParams] = useState({tag_val:["jazz"], tag_name:"genres"})
-  const [chartType, setChartType] = useState("Parallel Clustered")
+  const [chartType, setChartType] = useState("Circular")
   const [focus, setFocus] = useState(1)
   const [support, setSupport] = useState(1)
   const [beta,setBeta] = useState(1)

@@ -67,6 +67,47 @@ export class ChartHier extends React.Component {
         // Centre of the circle
         const centre = { x: width / 2, y: width / 2 }
 
+        // If no opt type selected (i.e. root node order)
+        if (!this.props.optType) {
+            // Get groups of root nodes based on current order
+            let root_ix = [0]
+            for (let i = 0; i < order.length - 1; i++) {
+                if (order[i][1] == "b") {
+                    if (order[i].slice(0, 2) !== order[i + 1].slice(0, 2)) {
+                        root_ix.push(i)
+                        root_ix.push(i+1)
+                    }
+                } else {
+                    if (order[i][0] !== order[i + 1][0]) {
+                        root_ix.push(i)
+                        root_ix.push(i+1)
+                    }
+                }
+            }
+            root_ix.push(order.length-1)
+            // Split into pair chunks
+            let root_ix_pairs = []
+            for (let i = 0;i<root_ix.length;i+=2) {
+                root_ix_pairs.push([root_ix[i],root_ix[i+1]])
+            }
+            
+            const arcGen = d3.arc()
+                            .innerRadius(r+5)
+                            .outerRadius(r+40)
+                            .startAngle(d=>sc_radial(order[d[0]])-0.03)
+                            .endAngle(d=>sc_radial(order[d[1]])+0.03)
+
+
+            const root_arcs = svg.selectAll("path")
+                                .data(root_ix_pairs)
+                                .enter()
+                                .append("path")
+                                .attr("d",d=>arcGen(d))
+                                .attr("transform","translate("+centre.y+","+centre.x+")")
+                                .attr("fill","#ebebeb")
+
+        } 
+
         // Create objects containing node labels and coordinates from list of edges (sets)
         const node_points = order.map(x => ({ "label": x, "coords": node2point(x) }))
 
