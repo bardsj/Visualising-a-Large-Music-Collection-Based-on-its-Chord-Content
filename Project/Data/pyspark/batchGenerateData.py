@@ -34,23 +34,23 @@ for i,genre in enumerate(['pop','rock','electronic','hiphop','jazz','indie','fil
     else:
         tag_filt = None
 
-    items = SparkFrequentItemsetsFPG(spark, None, params,tag_filter=tag_filt)
-    itemsets = items.get_itemsets()
-    count = items.getDataframeCount()
-    # Get k = 2 length itemsets to calculate circular order
-    ksets_circ = itemsets[itemsets['items'].str.len()==2]
-    # Convert to dict for storage
-    itemsets = itemsets.to_dict()
-    order = AVSDF(list(ksets_circ['items'])).run_AVSDF()
+    for majmin_agg in [False,True]:
+        items = SparkFrequentItemsetsFPG(spark, None, params,tag_filter=tag_filt,majmin_agg=majmin_agg)
+        itemsets = items.get_itemsets()
+        count = items.getDataframeCount()
+        # Get k = 2 length itemsets to calculate circular order
+        ksets_circ = itemsets[itemsets['items'].str.len()==2]
+        # Convert to dict for storage
+        itemsets = itemsets.to_dict()
 
-    write_results.append({
-        "_id":str(i).zfill(4)+"-"+str(params['minSupport'])+"-"+str(params['filterRatio'])+"-"+str(params['filterConfidence']),
-        "filter_params":params,
-        "tag_params":tag_filt,
-        "itemsets":itemsets,
-        "AVSDF_order":order,
-        "dfCount":count
-    })
+        write_results.append({
+            "_id":str(i).zfill(4)+"-"+str(params['minSupport'])+"-"+str(params['filterRatio'])+"-"+str(params['filterConfidence'])+"-"+str(majmin_agg),
+            "filter_params":params,
+            "tag_params":tag_filt,
+            "itemsets":itemsets,
+            "majmin_agg":majmin_agg,
+            "dfCount":count
+        })
 
 
 with open("Project/Data/pyspark/itemsets.json","w+") as filename:

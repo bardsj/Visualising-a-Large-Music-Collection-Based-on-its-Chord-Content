@@ -25,5 +25,7 @@ tag_filt = {"tag_name":"genres","tag_val":"jazz"}
 items = SparkFrequentItemsetsFPG(spark, None, params,tag_filter=tag_filt)
 itemsets = items.get_itemsets()
 
-with open("Data/API/chordItemsets"+time.strftime("%Y-%m-%d-%H-%M-%S")+".pkl","wb") as filename:
-        pickle.dump(itemsets,filename)
+#with open("Data/API/chordItemsets"+time.strftime("%Y-%m-%d-%H-%M-%S")+".pkl","wb") as filename:
+#        pickle.dump(itemsets,filename)
+
+print(itemsets.head())

@@ -19,13 +19,16 @@ class ChordLoader:
         Limit the number of documents loaded from mongodb source
     tag_filter : dict, optional
         Filter the dataframe by metadata tags - in the form {'tag_name':'genres','tag_val':'jazz'}
+    majmin_agg : bool
+        Aggregate by maj/min chords
 
     """
-    def __init__(self,spark,params,limit=None,tag_filter=None):
+    def __init__(self,spark,params,limit=None,tag_filter=None,majmin_agg=False):
         self.limit = limit
         self.spark = spark
         self.params = params
         self.tag_filter = tag_filter
+        self.majmin_agg = majmin_agg
         self.df = self._load_data()
 
     def getDataframeCount(self):
@@ -65,11 +68,30 @@ class ChordLoader:
         if self.params['filterConfidence']:
             df = df.filter(df["confidence"] > self.params['filterConfidence'])
 
-        # User defined function to get key values (chords) from nested structure in dataframe and filter below value
-        getKeysUDF = F.udf(lambda x: list({k for k,v in x.asDict().items() if (v != None) and (v > f_ratio)}),ArrayType(StringType()))
-
-        # Apply UDF and select only chord and id cols
-        df = df.withColumn("chordItems",getKeysUDF(df['chordRatio'])).select("_id","chordItems")
+        # If major/minor chord aggregation selected
+        if self.majmin_agg:
+            chord_map = {"Cmaj":"Cmaj","Cmaj7":"Cmaj","Cmin":"Cmin","Cmin7":"Cmin","C7":"Cmaj", \
+                        "Dbmaj":"Dbmaj","Dbmaj7":"Dbmaj","Dbmin":"Dbmin","Dbmin7":"Dbmin","Db7":"Dbmaj",
+                        "Dmaj":"Dmaj","Dmaj7":"Dmaj","Dmin":"Dmin","Dmin7":"Dmin","D7":"Dmaj",
+                        "Ebmaj":"Ebmaj","Ebmaj7":"Ebmaj","Ebmin":"Ebmin","Ebmin7":"Ebmin","Eb7":"Ebmaj",
+                        "Emaj":"Emaj","Emaj7":"Emaj","Emin":"Emin","Emin7":"Emin","E7":"Emaj",
+                        "Fmaj":"Fmaj","Fmaj7":"Fmaj","Fmin":"Fmin","Fmin7":"Fmin","F7":"Fmaj",
+                        "Gbmaj":"Gbmaj","Gbmaj7":"Gbmaj","Gbmin":"Gbmin","Gbmin7":"Gbmin","Gb7":"Gbmaj",
+                        "Gmaj":"Gmaj","Gmaj7":"Gmaj","Gmin":"Gmin","Gmin7":"Gmin","G7":"Gmaj",
+                        "Abmaj":"Abmaj","Abmaj7":"Abmaj","Abmin":"Abmin","Abmin7":"Abmin","Ab7":"Abmaj",
+                        "Amaj":"Amaj","Amaj7":"Amaj","Amin":"Amin","Amin7":"Amin","A7":"Amaj",
+                        "Bbmaj":"Bbmaj","Bbmaj7":"Bbmaj","Bbmin":"Bbmin","Bbmin7":"Bbmin","Bb7":"Bbmaj",
+                        "Bmaj":"Bmaj","Bmaj7":"Bmaj","Bmin":"Bmin","Bmin7":"Bmin","B7":"Bmaj"
+                        }
+            # User defined function to get key values (chords) from nested structure in dataframe, map to chord agg
+            getKeysUDF = F.udf(lambda x: list(set({chord_map[k] for k,v in x.asDict().items() if type(v) is float})),ArrayType(StringType()))
+            # Apply UDF and select only chord and id cols
+            df = df.withColumn("chordItems",getKeysUDF(df['chordRatio'])).select("_id","chordItems")
+        else:
+            # User defined function to get key values (chords) from nested structure in dataframe and filter below value
+            getKeysUDF = F.udf(lambda x: list({k for k,v in x.asDict().items() if (v != None) and (v > f_ratio)}),ArrayType(StringType()))
+            # Apply UDF and select only chord and id cols
+            df = df.withColumn("chordItems",getKeysUDF(df['chordRatio'])).select("_id","chordItems")
 
         def getMeta(_id,tag_res):
             """
@@ -101,7 +123,7 @@ class ChordLoader:
             # Filter so only rows with filtered genre category is present
             df = df.na.drop()
 
-        df = df.cache()
+        #df = df.cache()
 
         return df
 
@@ -122,11 +144,13 @@ class SparkFrequentItemsetsFPG(ChordLoader):
         interested in generating frequent itemsets)
     tag_filter : dict, optional
         Filter the dataframe by metadata tags - in the form {'tag_name':'genres','tag_val':'jazz'}
+    majmin_agg : bool
+        Aggregate by maj/min chords
 
     """
 
-    def __init__(self,spark,limit=None,params={"minSupport":0.2, "minConfidence":0.5,"filterRatio":None,"filterConfidence":None},tag_filter=None):
-        ChordLoader.__init__(self,spark,params,limit,tag_filter)
+    def __init__(self,spark,limit=None,params={"minSupport":0.2, "minConfidence":0.5,"filterRatio":None,"filterConfidence":None},tag_filter=None,majmin_agg=False):
+        ChordLoader.__init__(self,spark,params,limit,tag_filter,majmin_agg)
 
     def _run_FPGrowth(self,df):
         # Apply spark ml libs FP-growth algorithm for frequent itemset mining
@@ -162,11 +186,12 @@ class SparkFrequentItemsetsSON(ChordLoader):
         interested in generating frequent itemsets)
     tag_filter : dict, optional
         Filter the dataframe by metadata tags - in the form {'tag_name':'genres','tag_val':'jazz'}
-
+    majmin_agg : bool
+        Aggregate by maj/min chords
 
     """
-    def __init__(self,spark,params={"minSupport":0.2,"filterRatio":None,"filterConfidence":None},limit=None,tag_filter=None):
-        ChordLoader.__init__(self,spark,params,limit,tag_filter)
+    def __init__(self,spark,params={"minSupport":0.2,"filterRatio":None,"filterConfidence":None},limit=None,tag_filter=None,majmin_agg=False):
+        ChordLoader.__init__(self,spark,params,limit,tag_filter,majmin_agg)
 
 
     def get_itemsets(self):
