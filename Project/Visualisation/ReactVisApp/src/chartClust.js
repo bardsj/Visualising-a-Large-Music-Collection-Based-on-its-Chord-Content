@@ -10,7 +10,7 @@ export class ChartClust extends React.Component {
         this.state = { data: null, request_params: null }
     }
 
-    fetchData(request_params,optType,majMinSel) {
+    fetchData(request_params) {
         let r_url = ""
         if (request_params.tag_val.length > 0) {
             r_url = "http://127.0.0.1:5000/circClust?tag_val=" + request_params.tag_val.join() + "&tag_name=" + request_params.tag_name
@@ -18,37 +18,33 @@ export class ChartClust extends React.Component {
         else {
             r_url = "http://127.0.0.1:5000/circClust?"
         }
-        if (optType) {
-            r_url = r_url + "&order_opt=" + optType
+        if (request_params.optType) {
+            r_url = r_url + "&order_opt=" + request_params.optType
         }
-        if (majMinSel) {
-            r_url = r_url + "&majmin_agg=" + majMinSel
+        if (request_params.majMinSel) {
+            r_url = r_url + "&majmin_agg=" + request_params.majMinSel
         }
         fetch(r_url, { mode: 'cors' })
             .then(r => r.json())
-            .then(r => this.setState({ data: r, request_params: request_params },()=>{this.createChart()}))
+            .then(r => this.setState({ data: r, request_params: request_params }, () => { this.createChart() }))
 
     }
 
     componentDidMount() {
-        this.fetchData(this.props.request_params, this.props.optType, this.props.majMinSel)
+        this.fetchData(this.props.request_params)
     }
 
     componentDidUpdate(prevProps) {
         if (prevProps.request_params !== this.props.request_params) {
-            this.fetchData(this.props.request_params, this.props.optType, this.props.majMinSel)
-        }
-        if (prevProps.support !== this.props.support) {
-            this.createChart()
-        }
-        if (prevProps.focus !== this.props.focus) {
-            this.updateFocus()
-        }
-        if (prevProps.optType !== this.props.optType) {
-            this.fetchData(this.props.request_params, this.props.optType, this.props.majMinSel)
-        }
-        if (prevProps.majMinSel !== this.props.majMinSel) {
-            this.fetchData(this.props.request_params, this.props.optType, this.props.majMinSel)
+            if (prevProps.request_params.support !== this.props.request_params.support) {
+                this.createChart()
+            }
+            else if (prevProps.request_params.focus !== this.props.request_params.focus) {
+                this.updateFocus()
+            }
+            else {
+                this.fetchData(this.props.request_params)
+            }
         }
     }
 
@@ -60,7 +56,7 @@ export class ChartClust extends React.Component {
         let order = this.state.data.order
         let sets = this.state.data.sets
         // Filter based on slider support val
-        sets = sets.filter(x => x.values > this.props.support / 100)
+        sets = sets.filter(x => x.values > this.props.request_params.support / 100)
         const r = (this.props.height / 2) - 50;
 
         // Filter out nodes from order that all not in filtered sets
@@ -82,7 +78,7 @@ export class ChartClust extends React.Component {
         const centre = { x: width / 2, y: width / 2 }
 
         // If no opt type selected (i.e. root node order)
-        if (!this.props.optType) {
+        if (!this.props.request_params.optType) {
             // Get groups of root nodes based on current order
             let root_ix = [0]
             for (let i = 0; i < order.length - 1; i++) {
@@ -343,7 +339,7 @@ export class ChartClust extends React.Component {
             //.attr("stroke", d => d.km_label == 2 ? "red" : cmap[d.tag])
             .attr("fill", "none")
             .attr("stroke-width", 1)
-            .attr("stroke-opacity", d => (d.values / d3.max(sets.map(x => x.values))) ** this.props.focus)
+            .attr("stroke-opacity", d => (d.values / d3.max(sets.map(x => x.values))) ** this.props.request_params.focus)
 
         link_groups.append("path")
             .attr("class", "link")
@@ -352,7 +348,7 @@ export class ChartClust extends React.Component {
             //.attr("stroke", d => d.km_label == 2 ? "red" : cmap[d.tag])
             .attr("fill", "none")
             .attr("stroke-width", 1)
-            .attr("stroke-opacity", d => (d.values / d3.max(sets.map(x => x.values))) ** this.props.focus)
+            .attr("stroke-opacity", d => (d.values / d3.max(sets.map(x => x.values))) ** this.props.request_params.focus)
 
         link_groups.append("path")
             .attr("class", "link")
@@ -361,7 +357,7 @@ export class ChartClust extends React.Component {
             //.attr("stroke", d => d.km_label == 2 ? "red" : cmap[d.tag])
             .attr("fill", "none")
             .attr("stroke-width", 1)
-            .attr("stroke-opacity", d => (d.values / d3.max(sets.map(x => x.values))) ** this.props.focus)
+            .attr("stroke-opacity", d => (d.values / d3.max(sets.map(x => x.values))) ** this.props.request_params.focus)
 
         nodes_group.on("mouseenter", (sel) => {
             d3.selectAll(".link")
@@ -380,7 +376,7 @@ export class ChartClust extends React.Component {
                 .transition(0.1)
                 .attr("stroke", d => cmap[d.tag])
                 .attr("stroke-width", 1)
-                .attr("stroke-opacity", d => (d.values / d3.max(sets.map(x => x.values))) ** this.props.focus)
+                .attr("stroke-opacity", d => (d.values / d3.max(sets.map(x => x.values))) ** this.props.request_params.focus)
                 nodes_group.raise()
         })
 
@@ -408,7 +404,7 @@ export class ChartClust extends React.Component {
         const svg = d3.select(this.refs[this.props.id + 'chartsvg'])
 
         svg.selectAll(".link")
-            .attr("stroke-opacity", d => (d.values / d3.max(this.state.sets.map(x => x.values))) ** this.props.focus)
+            .attr("stroke-opacity", d => (d.values / d3.max(this.state.sets.map(x => x.values))) ** this.props.request_params.focus)
     }
 
 

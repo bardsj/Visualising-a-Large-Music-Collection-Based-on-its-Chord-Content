@@ -14,66 +14,59 @@ import { ChartParallelClust } from "./chartParallelClust";
 
 export default () => {
 
-  const [requestParams, setRequestParams] = useState({tag_val:["jazz"], tag_name:"genres"})
-  const [chartType, setChartType] = useState("Circular")
-  const [focus, setFocus] = useState(1)
-  const [support, setSupport] = useState(1)
-  const [beta,setBeta] = useState(1)
-  const [optType,setOptType] = useState(null)
-  const [cPath,setCPath] = useState(false)
-  const [majMinSel,setMajMinSel] = useState(false)
+  const [requestParams, setRequestParams] = useState({tag_val:["jazz"], tag_name:"genres",chartType:"Circular",focus:1,support:1,beta:1,optType:null,cPath:false,majMinSel:false})
 
   const handleFilter = (e) => {
     if (e.target.checked == true) {
       requestParams.tag_val.push(e.target.value)
-      setRequestParams({"tag_name":"genres","tag_val":requestParams.tag_val})
+      setRequestParams({...requestParams,"tag_name":"genres","tag_val":requestParams.tag_val})
     }
     else {
       requestParams.tag_val = requestParams.tag_val.filter(x=> x!=e.target.value)
-      setRequestParams({"tag_name":"genres","tag_val":requestParams.tag_val})
+      setRequestParams({...requestParams,"tag_name":"genres","tag_val":requestParams.tag_val})
     }
   }
 
   const handleChartType = (e) => {
-    setChartType(e)
+    setRequestParams({...requestParams,chartType:e})
   }
 
   const handleOptType = (e) => {
     if (e == "AVSDF") {
-      setOptType("avsdf")
+      setRequestParams({...requestParams,optType:"avsdf"})
     }
     if (e == "Baur Brandes") {
-      setOptType("bb")
+      setRequestParams({...requestParams,optType:"bb"})
     }
     if (e == "Root Node Order") {
-      setOptType(null)
+      setRequestParams({...requestParams,optType:null})
     }
   }
  
   let chart = ""
 
-  if (chartType === "Circular") {
-    chart =  <ChartCircular id={1} width={800} height={800} request_params={requestParams} focus={focus} support={support} optType={optType} majMinSel={majMinSel}/>
+  if (requestParams.chartType === "Circular") {
+    chart =  <ChartCircular id={1} width={800} height={800} request_params={requestParams}/>
   }
-  else if (chartType === "Parallel")  {
-      chart = <ChartParallel id={1} width={800} height={800} request_params={requestParams} focus={focus} support={support} cPath={cPath} majMinSel={majMinSel}/>
+  else if (requestParams.chartType === "Parallel")  {
+      chart = <ChartParallel id={1} width={800} height={800} request_params={requestParams}/>
   }
-  else if (chartType === "Circular Hierarchical") {
-    chart = <ChartHier beta={beta} id={1} width={800} height={800} request_params={requestParams} focus={focus} support={support} majMinSel={majMinSel}/>
+  else if (requestParams.chartType === "Circular Hierarchical") {
+    chart = <ChartHier id={1} width={800} height={800} request_params={requestParams}/>
   }
-  else if (chartType === "Circular Hierarchical - Single Hue") {
-    chart = <ChartHierSingleHue beta={beta} id={1} width={800} height={800} request_params={requestParams} focus={focus} support={support} majMinSel={majMinSel}/>
+  else if (requestParams.chartType === "Circular Hierarchical - Single Hue") {
+    chart = <ChartHierSingleHue id={1} width={800} height={800} request_params={requestParams}/>
   }
-  else if (chartType === "Circular Clustered") {
-    chart = <ChartClust beta={beta} id={1} width={800} height={800} request_params={requestParams} focus={focus} support={support} optType={optType} majMinSel={majMinSel}/>
+  else if (requestParams.chartType === "Circular Clustered") {
+    chart = <ChartClust id={1} width={800} height={800} request_params={requestParams}/>
   }
-  else if (chartType === "Parallel Clustered") {
-    chart = <ChartParallelClust beta={beta} id={1} width={800} height={800} request_params={requestParams} focus={focus} support={support} cPath={cPath} majMinSel={majMinSel}/>
+  else if (requestParams.chartType === "Parallel Clustered") {
+    chart = <ChartParallelClust id={1} width={800} height={800} request_params={requestParams}/>
   }
 
   let legend = ""
-  if (requestParams.tag_val.length > 0 || chartType == "Circular Hierarchical - Single Hue") {
-    legend = <Legend chartType={chartType} requestParams={requestParams}/>
+  if (requestParams.tag_val.length > 0 || requestParams.chartType == "Circular Hierarchical - Single Hue") {
+    legend = <Legend requestParams={requestParams}/>
   }
 
 
@@ -81,7 +74,7 @@ export default () => {
     <Container fluid>
       <Row>
         <Col>
-          <Options chartType={chartType} requestParams={requestParams} handleFilter={handleFilter} handleChartType={handleChartType}/>
+          <Options requestParams={requestParams} setRequestParams={setRequestParams} handleFilter={handleFilter} handleChartType={handleChartType}/>
         </Col>
       </Row>
       <Row>
@@ -96,9 +89,7 @@ export default () => {
       </Row>
       <Row>
         <Col>
-          <VisParams chartType={chartType} support={support} focus={focus} handleSupport={setSupport} 
-                    beta={beta} handleBeta={setBeta} handleFocus={setFocus} handleOptType={handleOptType}
-                    cPath={cPath} handleCPath={setCPath} majMinSel={majMinSel} handleMajMinSel={setMajMinSel}/>
+          <VisParams requestParams={requestParams} setRequestParams={setRequestParams} handleOptType={handleOptType}/>
         </Col>
       </Row>
     </Container>

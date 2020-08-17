@@ -16,25 +16,33 @@ export class ChartParallel extends React.Component {
         else {
             r_url = "http://127.0.0.1:5000/parallel"
         }
-        fetch(r_url,{mode: 'cors'})
+        if (request_params.optType) {
+            r_url = r_url + "&order_opt=" + request_params.optType
+        }
+        if (request_params.majMinSel) {
+            r_url = r_url + "&majmin_agg=" + request_params.majMinSel
+        }
+        fetch(r_url, { mode: 'cors' })
             .then(r => r.json())
-            .then(r => this.setState({ data: r, request_params: request_params },()=>{this.createChart()}))
+            .then(r => this.setState({ data: r, request_params: request_params }, () => { this.createChart() }))
 
     }
 
     componentDidMount() {
-        this.fetchData(this.props.request_params);
+        this.fetchData(this.props.request_params)
     }
 
     componentDidUpdate(prevProps) {
         if (prevProps.request_params !== this.props.request_params) {
-            this.fetchData(this.props.request_params)
-        }
-        if (prevProps.support !== this.props.support) {
-            this.createChart()
-        }
-        if (prevProps.focus !== this.props.focus) {
-            this.updateFocus()
+            if (prevProps.request_params.support !== this.props.request_params.support) {
+                this.createChart()
+            }
+            else if (prevProps.request_params.focus !== this.props.request_params.focus) {
+                this.updateFocus()
+            }
+            else {
+                this.fetchData(this.props.request_params)
+            }
         }
     }
 
@@ -45,7 +53,7 @@ export class ChartParallel extends React.Component {
         const height = this.props.height
         let node_list = this.state.data.order
         let data = this.state.data.sets
-        data = data.filter(x=> x.values > this.props.support/100)
+        data = data.filter(x=> x.values > this.props.request_params.support/100)
         const margin = ({ top: 20, bottom: 20, left: 60, right: 10 })
 
         // Number of parallel axes from max itemset length
@@ -114,7 +122,7 @@ export class ChartParallel extends React.Component {
             .attr("stroke", d => cmap[d.tag])
             .attr("fill", "none")
             .attr("stroke-width", 1)
-            .attr("stroke-opacity", d => (d.values / d3.max(data.map(x => x.values))) ** this.props.focus)
+            .attr("stroke-opacity", d => (d.values / d3.max(data.map(x => x.values))) ** this.props.request_params.focus)
 
         // Highlight paths when hovering on node
         label_bg.on("mouseenter", (sel) => {
@@ -146,7 +154,7 @@ export class ChartParallel extends React.Component {
                 .transition(0.1)
                 .attr("stroke", d => cmap[d.tag])
                 .attr("stroke-width", 1)
-                .attr("stroke-opacity", d => (d.values / d3.max(data.map(x => x.values))) ** this.props.focus)
+                .attr("stroke-opacity", d => (d.values / d3.max(data.map(x => x.values))) ** this.props.request_params.focus)
         })
 
 
@@ -161,7 +169,7 @@ export class ChartParallel extends React.Component {
         const svg = d3.select(this.refs[this.props.id + 'chartsvg'])
 
         svg.selectAll(".link")
-            .attr("stroke-opacity", d => (d.values / d3.max(this.state.sets.map(x => x.values))) ** this.props.focus)
+            .attr("stroke-opacity", d => (d.values / d3.max(this.state.sets.map(x => x.values))) ** this.props.request_params.focus)
     }
 
 

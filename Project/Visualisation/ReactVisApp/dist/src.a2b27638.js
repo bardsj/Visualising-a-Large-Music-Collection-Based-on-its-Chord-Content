@@ -28285,7 +28285,24 @@ if ("development" === 'production') {
 } else {
   module.exports = require('./cjs/react-dom.development.js');
 }
-},{"./cjs/react-dom.development.js":"node_modules/react-dom/cjs/react-dom.development.js"}],"node_modules/@babel/runtime/helpers/arrayWithHoles.js":[function(require,module,exports) {
+},{"./cjs/react-dom.development.js":"node_modules/react-dom/cjs/react-dom.development.js"}],"node_modules/@babel/runtime/helpers/defineProperty.js":[function(require,module,exports) {
+function _defineProperty(obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
+  }
+
+  return obj;
+}
+
+module.exports = _defineProperty;
+},{}],"node_modules/@babel/runtime/helpers/arrayWithHoles.js":[function(require,module,exports) {
 function _arrayWithHoles(arr) {
   if (Array.isArray(arr)) return arr;
 }
@@ -57481,7 +57498,7 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
 
   (0, _createClass2.default)(ChartCircular, [{
     key: "fetchData",
-    value: function fetchData(request_params, optType, majMinSel) {
+    value: function fetchData(request_params) {
       var _this2 = this;
 
       var r_url = "";
@@ -57492,12 +57509,12 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
         r_url = "http://127.0.0.1:5000/circular?";
       }
 
-      if (optType) {
-        r_url = r_url + "&order_opt=" + optType;
+      if (request_params.optType) {
+        r_url = r_url + "&order_opt=" + request_params.optType;
       }
 
-      if (majMinSel) {
-        r_url = r_url + "&majmin_agg=" + majMinSel;
+      if (request_params.majMinSel) {
+        r_url = r_url + "&majmin_agg=" + request_params.majMinSel;
       }
 
       fetch(r_url, {
@@ -57516,29 +57533,19 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "componentDidMount",
     value: function componentDidMount() {
-      this.fetchData(this.props.request_params, this.props.optType, this.props.majMinSel);
+      this.fetchData(this.props.request_params);
     }
   }, {
     key: "componentDidUpdate",
     value: function componentDidUpdate(prevProps) {
       if (prevProps.request_params !== this.props.request_params) {
-        this.fetchData(this.props.request_params, this.props.optType, this.props.majMinSel);
-      }
-
-      if (prevProps.support !== this.props.support) {
-        this.createChart();
-      }
-
-      if (prevProps.focus !== this.props.focus) {
-        this.updateFocus();
-      }
-
-      if (prevProps.optType !== this.props.optType) {
-        this.fetchData(this.props.request_params, this.props.optType, this.props.majMinSel);
-      }
-
-      if (prevProps.majMinSel !== this.props.majMinSel) {
-        this.fetchData(this.props.request_params, this.props.optType, this.props.majMinSel);
+        if (prevProps.request_params.support !== this.props.request_params.support) {
+          this.createChart();
+        } else if (prevProps.request_params.focus !== this.props.request_params.focus) {
+          this.updateFocus();
+        } else {
+          this.fetchData(this.props.request_params);
+        }
       }
     }
   }, {
@@ -57554,7 +57561,7 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
       var sets = this.state.data.sets; // Filter based on slider support val
 
       sets = sets.filter(function (x) {
-        return x.values > _this3.props.support / 100;
+        return x.values > _this3.props.request_params.support / 100;
       });
       var r = this.props.height / 2 - 50; // Filter out nodes from order that all not in filtered sets
 
@@ -57583,7 +57590,7 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
         y: width / 2
       }; // If no opt type selected (i.e. root node order)
 
-      if (!this.props.optType) {
+      if (!this.props.request_params.optType) {
         // Get groups of root nodes based on current order
         var root_ix = [0];
 
@@ -57663,7 +57670,7 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
       }).attr("fill", "none").attr("stroke-width", 1).attr("stroke-opacity", function (d) {
         return Math.pow(d.values / d3.max(sets.map(function (x) {
           return x.values;
-        })), _this3.props.focus);
+        })), _this3.props.request_params.focus);
       });
       nodes_group.on("mouseenter", function (sel) {
         d3.selectAll(".link").filter(function (d) {
@@ -57683,12 +57690,12 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
         }).attr("stroke-width", 1).attr("stroke-opacity", function (d) {
           return Math.pow(d.values / d3.max(sets.map(function (x) {
             return x.values;
-          })), _this3.props.focus);
+          })), _this3.props.request_params.focus);
         });
         nodes_group.raise();
       }); // Remove spacing nodes
 
-      if (!this.props.optType) {
+      if (!this.props.request_params.optType) {
         nodes_group.filter(function (x) {
           return x.label.includes("sep");
         }).remove();
@@ -57712,7 +57719,7 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
       svg.selectAll(".link").attr("stroke-opacity", function (d) {
         return Math.pow(d.values / d3.max(_this4.state.sets.map(function (x) {
           return x.values;
-        })), _this4.props.focus);
+        })), _this4.props.request_params.focus);
       });
     }
   }, {
@@ -57801,8 +57808,12 @@ var ChartParallel = /*#__PURE__*/function (_React$Component) {
         r_url = "http://127.0.0.1:5000/parallel";
       }
 
-      if (majMinSel) {
-        r_url = r_url + "&majmin_agg=" + majMinSel;
+      if (request_params.optType) {
+        r_url = r_url + "&order_opt=" + request_params.optType;
+      }
+
+      if (request_params.majMinSel) {
+        r_url = r_url + "&majmin_agg=" + request_params.majMinSel;
       }
 
       fetch(r_url, {
@@ -57821,29 +57832,19 @@ var ChartParallel = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "componentDidMount",
     value: function componentDidMount() {
-      this.fetchData(this.props.request_params, this.props.majMinSel);
+      this.fetchData(this.props.request_params);
     }
   }, {
     key: "componentDidUpdate",
     value: function componentDidUpdate(prevProps) {
       if (prevProps.request_params !== this.props.request_params) {
-        this.fetchData(this.props.request_params, this.props.majMinSel);
-      }
-
-      if (prevProps.support !== this.props.support) {
-        this.createChart();
-      }
-
-      if (prevProps.focus !== this.props.focus) {
-        this.updateFocus();
-      }
-
-      if (prevProps.cPath !== this.props.cPath) {
-        this.createChart();
-      }
-
-      if (prevProps.majMinSel !== this.props.majMinSel) {
-        this.fetchData(this.props.request_params, this.props.majMinSel);
+        if (prevProps.request_params.support !== this.props.request_params.support) {
+          this.createChart();
+        } else if (prevProps.request_params.focus !== this.props.request_params.focus) {
+          this.updateFocus();
+        } else {
+          this.fetchData(this.props.request_params);
+        }
       }
     }
   }, {
@@ -57858,7 +57859,7 @@ var ChartParallel = /*#__PURE__*/function (_React$Component) {
       var node_list = this.state.data.order;
       var data = this.state.data.sets;
       data = data.filter(function (x) {
-        return x.values > _this3.props.support / 100;
+        return x.values > _this3.props.request_params.support / 100;
       });
       var margin = {
         top: 20,
@@ -57968,11 +57969,11 @@ var ChartParallel = /*#__PURE__*/function (_React$Component) {
       var links = svg.selectAll("path").data(data_filt).enter().append("path").attr("class", "link").attr("d", function (d) {
         return lineGen(create_points(d, d.ax));
       }).attr("fill", "none").attr("stroke", function (d) {
-        return _this3.props.cPath ? d3.interpolateTurbo(node_cmap_sc(d.labels[d.ax].node)) : cmap[d.tag];
+        return _this3.props.request_params.cPath ? d3.interpolateTurbo(node_cmap_sc(d.labels[d.ax].node)) : cmap[d.tag];
       }).attr("fill", "none").attr("stroke-width", 1).attr("stroke-opacity", function (d) {
         return Math.pow(d.values / d3.max(data.map(function (x) {
           return x.values;
-        })), _this3.props.focus);
+        })), _this3.props.request_params.focus);
       }); // Highlight paths when hovering on node
 
       label_bg.on("mouseenter", function (sel) {
@@ -57995,11 +57996,11 @@ var ChartParallel = /*#__PURE__*/function (_React$Component) {
         d3.selectAll(".link").filter(function (d) {
           return d.labels[sel.ax] ? d.labels[sel.ax].node === sel.node : null;
         }).transition(0.1).attr("stroke", function (d) {
-          return _this3.props.cPath ? d3.interpolateTurbo(node_cmap_sc(d.labels[d.ax].node)) : cmap[d.tag];
+          return _this3.props.request_params.cPath ? d3.interpolateTurbo(node_cmap_sc(d.labels[d.ax].node)) : cmap[d.tag];
         }).attr("stroke-width", 1).attr("stroke-opacity", function (d) {
           return Math.pow(d.values / d3.max(data.map(function (x) {
             return x.values;
-          })), _this3.props.focus);
+          })), _this3.props.request_params.focus);
         }); // Raise label groups above paths
 
         nodes_group.raise();
@@ -58025,7 +58026,7 @@ var ChartParallel = /*#__PURE__*/function (_React$Component) {
       svg.selectAll(".link").attr("stroke-opacity", function (d) {
         return Math.pow(d.values / d3.max(_this4.state.sets.map(function (x) {
           return x.values;
-        })), _this4.props.focus);
+        })), _this4.props.request_params.focus);
       });
     }
   }, {
@@ -58116,8 +58117,12 @@ var ChartHier = /*#__PURE__*/function (_React$Component) {
         r_url = "http://127.0.0.1:5000/circHier?";
       }
 
-      if (majMinSel) {
-        r_url = r_url + "&majmin_agg=" + majMinSel;
+      if (request_params.optType) {
+        r_url = r_url + "&order_opt=" + request_params.optType;
+      }
+
+      if (request_params.majMinSel) {
+        r_url = r_url + "&majmin_agg=" + request_params.majMinSel;
       }
 
       fetch(r_url, {
@@ -58136,25 +58141,19 @@ var ChartHier = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "componentDidMount",
     value: function componentDidMount() {
-      this.fetchData(this.props.request_params, this.props.majMinSel);
+      this.fetchData(this.props.request_params);
     }
   }, {
     key: "componentDidUpdate",
     value: function componentDidUpdate(prevProps) {
       if (prevProps.request_params !== this.props.request_params) {
-        this.fetchData(this.props.request_params, this.props.majMinSel);
-      }
-
-      if (prevProps.support !== this.props.support) {
-        this.createChart();
-      }
-
-      if (prevProps.focus !== this.props.focus) {
-        this.updateFocus();
-      }
-
-      if (prevProps.majMinSel !== this.props.majMinSel) {
-        this.fetchData(this.props.request_params, this.props.majMinSel);
+        if (prevProps.request_params.support !== this.props.request_params.support) {
+          this.createChart();
+        } else if (prevProps.request_params.focus !== this.props.request_params.focus) {
+          this.updateFocus();
+        } else {
+          this.fetchData(this.props.request_params);
+        }
       }
     }
   }, {
@@ -58170,7 +58169,7 @@ var ChartHier = /*#__PURE__*/function (_React$Component) {
       var sets = this.state.data.sets; // Filter based on slider support val
 
       sets = sets.filter(function (x) {
-        return x.values > _this3.props.support / 100;
+        return x.values > _this3.props.request_params.support / 100;
       });
       var r = this.props.height / 2 - 50; // Filter out nodes from order that all not in filtered sets
 
@@ -58198,7 +58197,7 @@ var ChartHier = /*#__PURE__*/function (_React$Component) {
         y: width / 2
       }; // If no opt type selected (i.e. root node order)
 
-      if (!this.props.optType) {
+      if (!this.props.request_params.optType) {
         // Get groups of root nodes based on current order
         var root_ix = [0];
 
@@ -58293,7 +58292,7 @@ var ChartHier = /*#__PURE__*/function (_React$Component) {
       }).attr("dy", function (d) {
         return -d.coords.y * labelOffset;
       }).attr("text-anchor", "middle").attr("font-size", 10);
-      var beta = this.props.beta;
+      var beta = this.props.request_params.beta;
       var lineGen = d3.line().x(function (d) {
         return d.x + centre.x;
       }).y(function (d) {
@@ -58313,7 +58312,7 @@ var ChartHier = /*#__PURE__*/function (_React$Component) {
       }).attr("fill", "none").attr("stroke-width", 1).attr("stroke-opacity", function (d) {
         return Math.pow(d.values / d3.max(sets.map(function (x) {
           return x.values;
-        })), _this3.props.focus);
+        })), _this3.props.request_params.focus);
       });
       nodes_group.on("mouseenter", function (sel) {
         d3.selectAll(".link").filter(function (d) {
@@ -58333,7 +58332,7 @@ var ChartHier = /*#__PURE__*/function (_React$Component) {
         }).attr("stroke-width", 1).attr("stroke-opacity", function (d) {
           return Math.pow(d.values / d3.max(sets.map(function (x) {
             return x.values;
-          })), _this3.props.focus);
+          })), _this3.props.request_params.focus);
         });
         nodes_group.raise();
       });
@@ -58351,7 +58350,7 @@ var ChartHier = /*#__PURE__*/function (_React$Component) {
       svg.selectAll(".link").attr("stroke-opacity", function (d) {
         return Math.pow(d.values / d3.max(_this4.state.sets.map(function (x) {
           return x.values;
-        })), _this4.props.focus);
+        })), _this4.props.request_params.focus);
       });
     }
   }, {
@@ -74223,6 +74222,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Options = void 0;
 
+var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
+
 var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
 var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
@@ -74238,6 +74239,10 @@ var _react = _interopRequireDefault(require("react"));
 var _reactBootstrap = require("react-bootstrap");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { (0, _defineProperty2.default)(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = (0, _getPrototypeOf2.default)(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2.default)(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2.default)(this, result); }; }
 
@@ -74266,10 +74271,12 @@ var Options = /*#__PURE__*/function (_React$Component) {
       }, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Popover.Title, {
         as: "h3"
       }, "Filter Options"), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Popover.Content, null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form, null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Control, {
-        defaultValue: this.props.chartType,
+        defaultValue: this.props.requestParams.chartType,
         as: "select",
         onChange: function onChange(e) {
-          return _this.props.handleChartType(e.target.value);
+          return _this.props.setRequestParams(_objectSpread(_objectSpread({}, _this.props.requestParams), {}, {
+            chartType: e.target.value
+          }));
         }
       }, /*#__PURE__*/_react.default.createElement("option", null, "Circular"), /*#__PURE__*/_react.default.createElement("option", null, "Parallel"), /*#__PURE__*/_react.default.createElement("option", null, "Circular Hierarchical"), /*#__PURE__*/_react.default.createElement("option", null, "Circular Hierarchical - Single Hue"), /*#__PURE__*/_react.default.createElement("option", null, "Circular Clustered"), /*#__PURE__*/_react.default.createElement("option", null, "Parallel Clustered")), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Label, null, "Genre"), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Group, null, genres.map(function (genre, index) {
         return /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Check, {
@@ -74310,13 +74317,15 @@ var Options = /*#__PURE__*/function (_React$Component) {
 }(_react.default.Component);
 
 exports.Options = Options;
-},{"@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js","@babel/runtime/helpers/inherits":"node_modules/@babel/runtime/helpers/inherits.js","@babel/runtime/helpers/possibleConstructorReturn":"node_modules/@babel/runtime/helpers/possibleConstructorReturn.js","@babel/runtime/helpers/getPrototypeOf":"node_modules/@babel/runtime/helpers/getPrototypeOf.js","react":"node_modules/react/index.js","react-bootstrap":"node_modules/react-bootstrap/esm/index.js"}],"src/visparams.js":[function(require,module,exports) {
+},{"@babel/runtime/helpers/defineProperty":"node_modules/@babel/runtime/helpers/defineProperty.js","@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js","@babel/runtime/helpers/inherits":"node_modules/@babel/runtime/helpers/inherits.js","@babel/runtime/helpers/possibleConstructorReturn":"node_modules/@babel/runtime/helpers/possibleConstructorReturn.js","@babel/runtime/helpers/getPrototypeOf":"node_modules/@babel/runtime/helpers/getPrototypeOf.js","react":"node_modules/react/index.js","react-bootstrap":"node_modules/react-bootstrap/esm/index.js"}],"src/visparams.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.VisParams = VisParams;
+
+var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
 
 var _react = _interopRequireWildcard(require("react"));
 
@@ -74325,6 +74334,12 @@ var _reactBootstrap = require("react-bootstrap");
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { (0, _defineProperty2.default)(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function VisParams(props) {
   var majminSel = /*#__PURE__*/_react.default.createElement("div", {
@@ -74335,9 +74350,11 @@ function VisParams(props) {
   }, /*#__PURE__*/_react.default.createElement("input", {
     type: "checkbox",
     id: "cPaths",
-    defaultChecked: props.majMinSel,
+    defaultChecked: props.requestParams.majMinSel,
     onChange: function onChange(e) {
-      return props.handleMajMinSel(e.target.checked);
+      return props.setRequestParams(_objectSpread(_objectSpread({}, props.requestParams), {}, {
+        majMinSel: e.target.checked
+      }));
     }
   }), /*#__PURE__*/_react.default.createElement("label", {
     style: {
@@ -74347,7 +74364,7 @@ function VisParams(props) {
 
   var controls = "";
 
-  if (props.chartType.includes("Hierarchical")) {
+  if (props.requestParams.chartType.includes("Hierarchical")) {
     controls = /*#__PURE__*/_react.default.createElement("div", {
       style: {
         display: "grid",
@@ -74373,10 +74390,12 @@ function VisParams(props) {
       min: "0.1",
       max: "5",
       step: "0.1",
-      defaultValue: props.focus,
+      defaultValue: props.requestParams.focus,
       id: "focus",
       onChange: function onChange(e) {
-        return props.handleFocus(e.target.value);
+        return props.setRequestParams(_objectSpread(_objectSpread({}, props.requestParams), {}, {
+          focus: e.target.value
+        }));
       }
     }), /*#__PURE__*/_react.default.createElement("p", {
       style: {
@@ -74385,7 +74404,7 @@ function VisParams(props) {
         gridRow: 1,
         gridColumn: 3
       }
-    }, props.focus), /*#__PURE__*/_react.default.createElement("p", {
+    }, props.requestParams.focus), /*#__PURE__*/_react.default.createElement("p", {
       style: {
         float: "left",
         paddingRight: 10,
@@ -74403,10 +74422,12 @@ function VisParams(props) {
       type: "range",
       min: "1",
       max: "20",
-      defaultValue: props.support,
+      defaultValue: props.requestParams.support,
       id: "support",
       onChange: function onChange(e) {
-        return props.handleSupport(e.target.value);
+        return props.setRequestParams(_objectSpread(_objectSpread({}, props.requestParams), {}, {
+          support: e.target.value
+        }));
       }
     }), /*#__PURE__*/_react.default.createElement("p", {
       style: {
@@ -74415,8 +74436,8 @@ function VisParams(props) {
         gridRow: 2,
         gridColumn: 3
       }
-    }, props.support));
-  } else if (props.chartType.includes("Parallel")) {
+    }, props.requestParams.support));
+  } else if (props.requestParams.chartType.includes("Parallel")) {
     controls = /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("div", {
       style: {
         paddingLeft: 20,
@@ -74425,9 +74446,11 @@ function VisParams(props) {
     }, /*#__PURE__*/_react.default.createElement("input", {
       type: "checkbox",
       id: "cPaths",
-      defaultChecked: props.cPaths,
+      defaultChecked: props.requestParams.cPaths,
       onChange: function onChange(e) {
-        return props.handleCPath(e.target.checked);
+        return props.setRequestParams(_objectSpread(_objectSpread({}, props.requestParams), {}, {
+          cPath: e.target.checked
+        }));
       }
     }), /*#__PURE__*/_react.default.createElement("label", {
       style: {
@@ -74458,10 +74481,12 @@ function VisParams(props) {
       min: "0.1",
       max: "5",
       step: "0.1",
-      defaultValue: props.focus,
+      defaultValue: props.requestParams.focus,
       id: "focus",
       onChange: function onChange(e) {
-        return props.handleFocus(e.target.value);
+        return props.setRequestParams(_objectSpread(_objectSpread({}, props.requestParams), {}, {
+          focus: e.target.value
+        }));
       }
     }), /*#__PURE__*/_react.default.createElement("p", {
       style: {
@@ -74470,7 +74495,7 @@ function VisParams(props) {
         gridRow: 1,
         gridColumn: 3
       }
-    }, props.focus), /*#__PURE__*/_react.default.createElement("p", {
+    }, props.requestParams.focus), /*#__PURE__*/_react.default.createElement("p", {
       style: {
         float: "left",
         paddingRight: 10,
@@ -74488,10 +74513,12 @@ function VisParams(props) {
       type: "range",
       min: "1",
       max: "20",
-      defaultValue: props.support,
+      defaultValue: props.requestParams.support,
       id: "support",
       onChange: function onChange(e) {
-        return props.handleSupport(e.target.value);
+        return props.setRequestParams(_objectSpread(_objectSpread({}, props.requestParams), {}, {
+          support: e.target.value
+        }));
       }
     }), /*#__PURE__*/_react.default.createElement("p", {
       style: {
@@ -74500,7 +74527,7 @@ function VisParams(props) {
         gridRow: 2,
         gridColumn: 3
       }
-    }, props.support)));
+    }, props.requestParams.support)));
   } else {
     controls = /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("div", {
       style: {
@@ -74540,10 +74567,12 @@ function VisParams(props) {
       min: "0.1",
       max: "5",
       step: "0.1",
-      defaultValue: props.focus,
+      defaultValue: props.requestParams.focus,
       id: "focus",
       onChange: function onChange(e) {
-        return props.handleFocus(e.target.value);
+        return props.setRequestParams(_objectSpread(_objectSpread({}, props.requestParams), {}, {
+          focus: e.target.value
+        }));
       }
     }), /*#__PURE__*/_react.default.createElement("p", {
       style: {
@@ -74552,7 +74581,7 @@ function VisParams(props) {
         gridRow: 1,
         gridColumn: 3
       }
-    }, props.focus), /*#__PURE__*/_react.default.createElement("p", {
+    }, props.requestParams.focus), /*#__PURE__*/_react.default.createElement("p", {
       style: {
         float: "left",
         paddingRight: 10,
@@ -74570,10 +74599,12 @@ function VisParams(props) {
       type: "range",
       min: "1",
       max: "20",
-      defaultValue: props.support,
+      defaultValue: props.requestParams.support,
       id: "support",
       onChange: function onChange(e) {
-        return props.handleSupport(e.target.value);
+        return props.setRequestParams(_objectSpread(_objectSpread({}, props.requestParams), {}, {
+          support: e.target.value
+        }));
       }
     }), /*#__PURE__*/_react.default.createElement("p", {
       style: {
@@ -74582,12 +74613,12 @@ function VisParams(props) {
         gridRow: 2,
         gridColumn: 3
       }
-    }, props.support)));
+    }, props.requestParams.support)));
   }
 
   return /*#__PURE__*/_react.default.createElement("div", null, majminSel, controls);
 }
-},{"react":"node_modules/react/index.js","react-bootstrap":"node_modules/react-bootstrap/esm/index.js"}],"src/legend.js":[function(require,module,exports) {
+},{"@babel/runtime/helpers/defineProperty":"node_modules/@babel/runtime/helpers/defineProperty.js","react":"node_modules/react/index.js","react-bootstrap":"node_modules/react-bootstrap/esm/index.js"}],"src/legend.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -74653,7 +74684,7 @@ var Legend = /*#__PURE__*/function (_React$Component) {
       var svg = d3.select(this.refs["legend"]);
       svg.selectAll("*").remove(); // If single hue chart selected create gradient colour legend else create categorical legend
 
-      if (!this.props.chartType.includes("Single Hue")) {
+      if (!this.props.requestParams.chartType.includes("Single Hue")) {
         svg.attr("height", "100%");
         var labels = svg.selectAll("g").data(this.props.requestParams.tag_val).enter().append("g").attr("transform", function (d, i) {
           return "translate(20," + String(i * 40 + 20) + ")";
@@ -74763,8 +74794,12 @@ var ChartHierSingleHue = /*#__PURE__*/function (_React$Component) {
         r_url = "http://127.0.0.1:5000/circHier?";
       }
 
-      if (majMinSel) {
-        r_url = r_url + "&majmin_agg=" + majMinSel;
+      if (request_params.optType) {
+        r_url = r_url + "&order_opt=" + request_params.optType;
+      }
+
+      if (request_params.majMinSel) {
+        r_url = r_url + "&majmin_agg=" + request_params.majMinSel;
       }
 
       fetch(r_url, {
@@ -74783,25 +74818,19 @@ var ChartHierSingleHue = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "componentDidMount",
     value: function componentDidMount() {
-      this.fetchData(this.props.request_params, this.props.majMinSel);
+      this.fetchData(this.props.request_params);
     }
   }, {
     key: "componentDidUpdate",
     value: function componentDidUpdate(prevProps) {
       if (prevProps.request_params !== this.props.request_params) {
-        this.fetchData(this.props.request_params, this.props.majMinSel);
-      }
-
-      if (prevProps.support !== this.props.support) {
-        this.createChart();
-      }
-
-      if (prevProps.focus !== this.props.focus) {
-        this.updateFocus();
-      }
-
-      if (prevProps.majMinSel !== this.props.majMinSel) {
-        this.fetchData(this.props.request_params, this.props.majMinSel);
+        if (prevProps.request_params.support !== this.props.request_params.support) {
+          this.createChart();
+        } else if (prevProps.request_params.focus !== this.props.request_params.focus) {
+          this.updateFocus();
+        } else {
+          this.fetchData(this.props.request_params);
+        }
       }
     }
   }, {
@@ -74817,7 +74846,7 @@ var ChartHierSingleHue = /*#__PURE__*/function (_React$Component) {
       var sets = this.state.data.sets; // Filter based on slider support val
 
       sets = sets.filter(function (x) {
-        return x.values > _this3.props.support / 100;
+        return x.values > _this3.props.request_params.support / 100;
       });
       var r = this.props.height / 2 - 50; // Filter out nodes from order that all not in filtered sets
 
@@ -74846,7 +74875,7 @@ var ChartHierSingleHue = /*#__PURE__*/function (_React$Component) {
         y: width / 2
       }; // If no opt type selected (i.e. root node order)
 
-      if (!this.props.optType) {
+      if (!this.props.request_params.optType) {
         // Get groups of root nodes based on current order
         var root_ix = [0];
 
@@ -74941,7 +74970,7 @@ var ChartHierSingleHue = /*#__PURE__*/function (_React$Component) {
       }).attr("dy", function (d) {
         return -d.coords.y * labelOffset;
       }).attr("text-anchor", "middle").attr("font-size", 10);
-      var beta = this.props.beta;
+      var beta = this.props.request_params.beta;
       var lineGen = d3.line().x(function (d) {
         return d.x + centre.x;
       }).y(function (d) {
@@ -74961,7 +74990,7 @@ var ChartHierSingleHue = /*#__PURE__*/function (_React$Component) {
       }).attr("fill", "none").attr("stroke-width", 1).attr("stroke-opacity", function (d) {
         return Math.pow(d.values / d3.max(sets.map(function (x) {
           return x.values;
-        })), _this3.props.focus);
+        })), _this3.props.request_params.focus);
       });
       nodes_group.on("mouseenter", function (sel) {
         d3.selectAll(".link").filter(function (d) {
@@ -74981,7 +75010,7 @@ var ChartHierSingleHue = /*#__PURE__*/function (_React$Component) {
         }).attr("stroke-width", 1).attr("stroke-opacity", function (d) {
           return Math.pow(d.values / d3.max(sets.map(function (x) {
             return x.values;
-          })), _this3.props.focus);
+          })), _this3.props.request_params.focus);
         });
         nodes_group.raise();
       });
@@ -74999,7 +75028,7 @@ var ChartHierSingleHue = /*#__PURE__*/function (_React$Component) {
       svg.selectAll(".link").attr("stroke-opacity", function (d) {
         return Math.pow(d.values / d3.max(_this4.state.sets.map(function (x) {
           return x.values;
-        })), _this4.props.focus);
+        })), _this4.props.request_params.focus);
       });
     }
   }, {
@@ -75081,7 +75110,7 @@ var ChartClust = /*#__PURE__*/function (_React$Component) {
 
   (0, _createClass2.default)(ChartClust, [{
     key: "fetchData",
-    value: function fetchData(request_params, optType, majMinSel) {
+    value: function fetchData(request_params) {
       var _this2 = this;
 
       var r_url = "";
@@ -75092,12 +75121,12 @@ var ChartClust = /*#__PURE__*/function (_React$Component) {
         r_url = "http://127.0.0.1:5000/circClust?";
       }
 
-      if (optType) {
-        r_url = r_url + "&order_opt=" + optType;
+      if (request_params.optType) {
+        r_url = r_url + "&order_opt=" + request_params.optType;
       }
 
-      if (majMinSel) {
-        r_url = r_url + "&majmin_agg=" + majMinSel;
+      if (request_params.majMinSel) {
+        r_url = r_url + "&majmin_agg=" + request_params.majMinSel;
       }
 
       fetch(r_url, {
@@ -75116,29 +75145,19 @@ var ChartClust = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "componentDidMount",
     value: function componentDidMount() {
-      this.fetchData(this.props.request_params, this.props.optType, this.props.majMinSel);
+      this.fetchData(this.props.request_params);
     }
   }, {
     key: "componentDidUpdate",
     value: function componentDidUpdate(prevProps) {
       if (prevProps.request_params !== this.props.request_params) {
-        this.fetchData(this.props.request_params, this.props.optType, this.props.majMinSel);
-      }
-
-      if (prevProps.support !== this.props.support) {
-        this.createChart();
-      }
-
-      if (prevProps.focus !== this.props.focus) {
-        this.updateFocus();
-      }
-
-      if (prevProps.optType !== this.props.optType) {
-        this.fetchData(this.props.request_params, this.props.optType, this.props.majMinSel);
-      }
-
-      if (prevProps.majMinSel !== this.props.majMinSel) {
-        this.fetchData(this.props.request_params, this.props.optType, this.props.majMinSel);
+        if (prevProps.request_params.support !== this.props.request_params.support) {
+          this.createChart();
+        } else if (prevProps.request_params.focus !== this.props.request_params.focus) {
+          this.updateFocus();
+        } else {
+          this.fetchData(this.props.request_params);
+        }
       }
     }
   }, {
@@ -75154,7 +75173,7 @@ var ChartClust = /*#__PURE__*/function (_React$Component) {
       var sets = this.state.data.sets; // Filter based on slider support val
 
       sets = sets.filter(function (x) {
-        return x.values > _this3.props.support / 100;
+        return x.values > _this3.props.request_params.support / 100;
       });
       var r = this.props.height / 2 - 50; // Filter out nodes from order that all not in filtered sets
 
@@ -75182,7 +75201,7 @@ var ChartClust = /*#__PURE__*/function (_React$Component) {
         y: width / 2
       }; // If no opt type selected (i.e. root node order)
 
-      if (!this.props.optType) {
+      if (!this.props.request_params.optType) {
         // Get groups of root nodes based on current order
         var root_ix = [0];
 
@@ -75511,7 +75530,7 @@ var ChartClust = /*#__PURE__*/function (_React$Component) {
       .attr("fill", "none").attr("stroke-width", 1).attr("stroke-opacity", function (d) {
         return Math.pow(d.values / d3.max(sets.map(function (x) {
           return x.values;
-        })), _this3.props.focus);
+        })), _this3.props.request_params.focus);
       });
       link_groups.append("path").attr("class", "link").attr("d", function (d) {
         return lineGenCatmul(create_points_source(d));
@@ -75521,7 +75540,7 @@ var ChartClust = /*#__PURE__*/function (_React$Component) {
       .attr("fill", "none").attr("stroke-width", 1).attr("stroke-opacity", function (d) {
         return Math.pow(d.values / d3.max(sets.map(function (x) {
           return x.values;
-        })), _this3.props.focus);
+        })), _this3.props.request_params.focus);
       });
       link_groups.append("path").attr("class", "link").attr("d", function (d) {
         return lineGenCatmul(create_points_target(d));
@@ -75531,7 +75550,7 @@ var ChartClust = /*#__PURE__*/function (_React$Component) {
       .attr("fill", "none").attr("stroke-width", 1).attr("stroke-opacity", function (d) {
         return Math.pow(d.values / d3.max(sets.map(function (x) {
           return x.values;
-        })), _this3.props.focus);
+        })), _this3.props.request_params.focus);
       });
       nodes_group.on("mouseenter", function (sel) {
         d3.selectAll(".link").filter(function (d) {
@@ -75551,7 +75570,7 @@ var ChartClust = /*#__PURE__*/function (_React$Component) {
         }).attr("stroke-width", 1).attr("stroke-opacity", function (d) {
           return Math.pow(d.values / d3.max(sets.map(function (x) {
             return x.values;
-          })), _this3.props.focus);
+          })), _this3.props.request_params.focus);
         });
         nodes_group.raise();
       });
@@ -75582,7 +75601,7 @@ var ChartClust = /*#__PURE__*/function (_React$Component) {
       svg.selectAll(".link").attr("stroke-opacity", function (d) {
         return Math.pow(d.values / d3.max(_this4.state.sets.map(function (x) {
           return x.values;
-        })), _this4.props.focus);
+        })), _this4.props.request_params.focus);
       });
     }
   }, {
@@ -75673,8 +75692,12 @@ var ChartParallelClust = /*#__PURE__*/function (_React$Component) {
         r_url = "http://127.0.0.1:5000/parallelClust";
       }
 
-      if (majMinSel) {
-        r_url = r_url + "&majmin_agg=" + majMinSel;
+      if (request_params.optType) {
+        r_url = r_url + "&order_opt=" + request_params.optType;
+      }
+
+      if (request_params.majMinSel) {
+        r_url = r_url + "&majmin_agg=" + request_params.majMinSel;
       }
 
       fetch(r_url, {
@@ -75693,29 +75716,19 @@ var ChartParallelClust = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "componentDidMount",
     value: function componentDidMount() {
-      this.fetchData(this.props.request_params, this.props.majMinSel);
+      this.fetchData(this.props.request_params);
     }
   }, {
     key: "componentDidUpdate",
     value: function componentDidUpdate(prevProps) {
       if (prevProps.request_params !== this.props.request_params) {
-        this.fetchData(this.props.request_params, this.props.majMinSel);
-      }
-
-      if (prevProps.support !== this.props.support) {
-        this.createChart();
-      }
-
-      if (prevProps.focus !== this.props.focus) {
-        this.updateFocus();
-      }
-
-      if (prevProps.cPath !== this.props.cPath) {
-        this.createChart();
-      }
-
-      if (prevProps.majMinSel !== this.props.majMinSel) {
-        this.fetchData(this.props.request_params, this.props.majMinSel);
+        if (prevProps.request_params.support !== this.props.request_params.support) {
+          this.createChart();
+        } else if (prevProps.request_params.focus !== this.props.request_params.focus) {
+          this.updateFocus();
+        } else {
+          this.fetchData(this.props.request_params);
+        }
       }
     }
   }, {
@@ -75730,7 +75743,7 @@ var ChartParallelClust = /*#__PURE__*/function (_React$Component) {
       var node_list = this.state.data.order;
       var data = this.state.data.sets;
       data = data.filter(function (x) {
-        return x.values > _this3.props.support / 100;
+        return x.values > _this3.props.request_params.support / 100;
       });
       var margin = {
         top: 20,
@@ -75941,11 +75954,11 @@ var ChartParallelClust = /*#__PURE__*/function (_React$Component) {
       var links = svg.selectAll("path").data(data_filt).enter().append("path").attr("class", "link").attr("d", function (d) {
         return lineGen(create_points(d, d.ax));
       }).attr("fill", "none").attr("stroke", function (d) {
-        return _this3.props.cPath ? d3.interpolateTurbo(node_cmap_sc(d.labels[d.ax].node)) : cmap[d.tag];
+        return _this3.props.request_params.cPath ? d3.interpolateTurbo(node_cmap_sc(d.labels[d.ax].node)) : cmap[d.tag];
       }).attr("fill", "none").attr("stroke-width", 1).attr("stroke-opacity", function (d) {
         return Math.pow(d.values / d3.max(data.map(function (x) {
           return x.values;
-        })), _this3.props.focus);
+        })), _this3.props.request_params.focus);
       }); // Highlight paths when hovering on node
 
       label_bg.on("mouseenter", function (sel) {
@@ -75968,11 +75981,11 @@ var ChartParallelClust = /*#__PURE__*/function (_React$Component) {
         d3.selectAll(".link").filter(function (d) {
           return d.labels[sel.ax] ? d.labels[sel.ax].node === sel.node : null;
         }).transition(0.1).attr("stroke", function (d) {
-          return _this3.props.cPath ? d3.interpolateTurbo(node_cmap_sc(d.labels[d.ax].node)) : cmap[d.tag];
+          return _this3.props.request_params.cPath ? d3.interpolateTurbo(node_cmap_sc(d.labels[d.ax].node)) : cmap[d.tag];
         }).attr("stroke-width", 1).attr("stroke-opacity", function (d) {
           return Math.pow(d.values / d3.max(data.map(function (x) {
             return x.values;
-          })), _this3.props.focus);
+          })), _this3.props.request_params.focus);
         });
       }); // Raise label groups above paths
 
@@ -75991,7 +76004,7 @@ var ChartParallelClust = /*#__PURE__*/function (_React$Component) {
       svg.selectAll(".link").attr("stroke-opacity", function (d) {
         return Math.pow(d.values / d3.max(_this4.state.sets.map(function (x) {
           return x.values;
-        })), _this4.props.focus);
+        })), _this4.props.request_params.focus);
       });
     }
   }, {
@@ -76019,6 +76032,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
+
+var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
 
 var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
 
@@ -76050,164 +76065,121 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { (0, _defineProperty2.default)(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
 // <Chart width={600} height={600} request_params={{tag_val:"jazz", tag_name:"genres"}}/>
 var _default = function _default() {
   var _useState = (0, _react.useState)({
     tag_val: ["jazz"],
-    tag_name: "genres"
+    tag_name: "genres",
+    chartType: "Circular",
+    focus: 1,
+    support: 1,
+    beta: 1,
+    optType: null,
+    cPath: false,
+    majMinSel: false
   }),
       _useState2 = (0, _slicedToArray2.default)(_useState, 2),
       requestParams = _useState2[0],
       setRequestParams = _useState2[1];
 
-  var _useState3 = (0, _react.useState)("Circular"),
-      _useState4 = (0, _slicedToArray2.default)(_useState3, 2),
-      chartType = _useState4[0],
-      setChartType = _useState4[1];
-
-  var _useState5 = (0, _react.useState)(1),
-      _useState6 = (0, _slicedToArray2.default)(_useState5, 2),
-      focus = _useState6[0],
-      setFocus = _useState6[1];
-
-  var _useState7 = (0, _react.useState)(1),
-      _useState8 = (0, _slicedToArray2.default)(_useState7, 2),
-      support = _useState8[0],
-      setSupport = _useState8[1];
-
-  var _useState9 = (0, _react.useState)(1),
-      _useState10 = (0, _slicedToArray2.default)(_useState9, 2),
-      beta = _useState10[0],
-      setBeta = _useState10[1];
-
-  var _useState11 = (0, _react.useState)(null),
-      _useState12 = (0, _slicedToArray2.default)(_useState11, 2),
-      optType = _useState12[0],
-      setOptType = _useState12[1];
-
-  var _useState13 = (0, _react.useState)(false),
-      _useState14 = (0, _slicedToArray2.default)(_useState13, 2),
-      cPath = _useState14[0],
-      setCPath = _useState14[1];
-
-  var _useState15 = (0, _react.useState)(false),
-      _useState16 = (0, _slicedToArray2.default)(_useState15, 2),
-      majMinSel = _useState16[0],
-      setMajMinSel = _useState16[1];
-
   var handleFilter = function handleFilter(e) {
     if (e.target.checked == true) {
       requestParams.tag_val.push(e.target.value);
-      setRequestParams({
+      setRequestParams(_objectSpread(_objectSpread({}, requestParams), {}, {
         "tag_name": "genres",
         "tag_val": requestParams.tag_val
-      });
+      }));
     } else {
       requestParams.tag_val = requestParams.tag_val.filter(function (x) {
         return x != e.target.value;
       });
-      setRequestParams({
+      setRequestParams(_objectSpread(_objectSpread({}, requestParams), {}, {
         "tag_name": "genres",
         "tag_val": requestParams.tag_val
-      });
+      }));
     }
   };
 
   var handleChartType = function handleChartType(e) {
-    setChartType(e);
+    setRequestParams(_objectSpread(_objectSpread({}, requestParams), {}, {
+      chartType: e
+    }));
   };
 
   var handleOptType = function handleOptType(e) {
     if (e == "AVSDF") {
-      setOptType("avsdf");
+      setRequestParams(_objectSpread(_objectSpread({}, requestParams), {}, {
+        optType: "avsdf"
+      }));
     }
 
     if (e == "Baur Brandes") {
-      setOptType("bb");
+      setRequestParams(_objectSpread(_objectSpread({}, requestParams), {}, {
+        optType: "bb"
+      }));
     }
 
     if (e == "Root Node Order") {
-      setOptType(null);
+      setRequestParams(_objectSpread(_objectSpread({}, requestParams), {}, {
+        optType: null
+      }));
     }
   };
 
   var chart = "";
 
-  if (chartType === "Circular") {
+  if (requestParams.chartType === "Circular") {
     chart = /*#__PURE__*/_react.default.createElement(_chartCircular.ChartCircular, {
       id: 1,
       width: 800,
       height: 800,
-      request_params: requestParams,
-      focus: focus,
-      support: support,
-      optType: optType,
-      majMinSel: majMinSel
+      request_params: requestParams
     });
-  } else if (chartType === "Parallel") {
+  } else if (requestParams.chartType === "Parallel") {
     chart = /*#__PURE__*/_react.default.createElement(_chartParallel.ChartParallel, {
       id: 1,
       width: 800,
       height: 800,
-      request_params: requestParams,
-      focus: focus,
-      support: support,
-      cPath: cPath,
-      majMinSel: majMinSel
+      request_params: requestParams
     });
-  } else if (chartType === "Circular Hierarchical") {
+  } else if (requestParams.chartType === "Circular Hierarchical") {
     chart = /*#__PURE__*/_react.default.createElement(_chartHier.ChartHier, {
-      beta: beta,
       id: 1,
       width: 800,
       height: 800,
-      request_params: requestParams,
-      focus: focus,
-      support: support,
-      majMinSel: majMinSel
+      request_params: requestParams
     });
-  } else if (chartType === "Circular Hierarchical - Single Hue") {
+  } else if (requestParams.chartType === "Circular Hierarchical - Single Hue") {
     chart = /*#__PURE__*/_react.default.createElement(_chartHierSingleHue.ChartHierSingleHue, {
-      beta: beta,
       id: 1,
       width: 800,
       height: 800,
-      request_params: requestParams,
-      focus: focus,
-      support: support,
-      majMinSel: majMinSel
+      request_params: requestParams
     });
-  } else if (chartType === "Circular Clustered") {
+  } else if (requestParams.chartType === "Circular Clustered") {
     chart = /*#__PURE__*/_react.default.createElement(_chartClust.ChartClust, {
-      beta: beta,
       id: 1,
       width: 800,
       height: 800,
-      request_params: requestParams,
-      focus: focus,
-      support: support,
-      optType: optType,
-      majMinSel: majMinSel
+      request_params: requestParams
     });
-  } else if (chartType === "Parallel Clustered") {
+  } else if (requestParams.chartType === "Parallel Clustered") {
     chart = /*#__PURE__*/_react.default.createElement(_chartParallelClust.ChartParallelClust, {
-      beta: beta,
       id: 1,
       width: 800,
       height: 800,
-      request_params: requestParams,
-      focus: focus,
-      support: support,
-      cPath: cPath,
-      majMinSel: majMinSel
+      request_params: requestParams
     });
   }
 
   var legend = "";
 
-  if (requestParams.tag_val.length > 0 || chartType == "Circular Hierarchical - Single Hue") {
+  if (requestParams.tag_val.length > 0 || requestParams.chartType == "Circular Hierarchical - Single Hue") {
     legend = /*#__PURE__*/_react.default.createElement(_legend.Legend, {
-      chartType: chartType,
       requestParams: requestParams
     });
   }
@@ -76215,8 +76187,8 @@ var _default = function _default() {
   return /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Container, {
     fluid: true
   }, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Row, null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Col, null, /*#__PURE__*/_react.default.createElement(_options.Options, {
-    chartType: chartType,
     requestParams: requestParams,
+    setRequestParams: setRequestParams,
     handleFilter: handleFilter,
     handleChartType: handleChartType
   }))), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Row, null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Col, {
@@ -76224,23 +76196,14 @@ var _default = function _default() {
   }), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Col, null, chart), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Col, {
     sm: 2
   }, legend)), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Row, null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Col, null, /*#__PURE__*/_react.default.createElement(_visparams.VisParams, {
-    chartType: chartType,
-    support: support,
-    focus: focus,
-    handleSupport: setSupport,
-    beta: beta,
-    handleBeta: setBeta,
-    handleFocus: setFocus,
-    handleOptType: handleOptType,
-    cPath: cPath,
-    handleCPath: setCPath,
-    majMinSel: majMinSel,
-    handleMajMinSel: setMajMinSel
+    requestParams: requestParams,
+    setRequestParams: setRequestParams,
+    handleOptType: handleOptType
   })))));
 };
 
 exports.default = _default;
-},{"@babel/runtime/helpers/slicedToArray":"node_modules/@babel/runtime/helpers/slicedToArray.js","react":"node_modules/react/index.js","./chartCircular":"src/chartCircular.js","./chartParallel":"src/chartParallel.js","./chartHier":"src/chartHier.js","./options":"src/options.js","./visparams":"src/visparams.js","./legend":"src/legend.js","react-bootstrap":"node_modules/react-bootstrap/esm/index.js","./chartHierSingleHue":"src/chartHierSingleHue.js","./chartClust":"src/chartClust.js","./chartParallelClust":"src/chartParallelClust.js"}],"src/index.js":[function(require,module,exports) {
+},{"@babel/runtime/helpers/defineProperty":"node_modules/@babel/runtime/helpers/defineProperty.js","@babel/runtime/helpers/slicedToArray":"node_modules/@babel/runtime/helpers/slicedToArray.js","react":"node_modules/react/index.js","./chartCircular":"src/chartCircular.js","./chartParallel":"src/chartParallel.js","./chartHier":"src/chartHier.js","./options":"src/options.js","./visparams":"src/visparams.js","./legend":"src/legend.js","react-bootstrap":"node_modules/react-bootstrap/esm/index.js","./chartHierSingleHue":"src/chartHierSingleHue.js","./chartClust":"src/chartClust.js","./chartParallelClust":"src/chartParallelClust.js"}],"src/index.js":[function(require,module,exports) {
 "use strict";
 
 var _react = _interopRequireDefault(require("react"));

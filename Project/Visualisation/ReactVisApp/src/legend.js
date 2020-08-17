@@ -21,7 +21,7 @@ export class Legend extends React.Component {
         svg.selectAll("*").remove()
 
         // If single hue chart selected create gradient colour legend else create categorical legend
-        if (!this.props.chartType.includes("Single Hue")) {
+        if (!this.props.requestParams.chartType.includes("Single Hue")) {
             svg.attr("height", "100%")
             const labels = svg.selectAll("g")
                 .data(this.props.requestParams.tag_val)

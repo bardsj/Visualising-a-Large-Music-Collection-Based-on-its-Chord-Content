@@ -101,9 +101,9 @@ def getData(request):
                     agg = True
                 else:
                     agg = False
-                data = col.find_one({"tag_params.tag_name":tag_name,"tag_params.tag_val":{"$in":tag_val},"majmin_agg":agg})
+                data = col.find_one({"tag_params":None,"majmin_agg":agg})
             else:
-                data = col.find_one({"tag_params.tag_name":tag_name,"tag_params.tag_val":{"$in":tag_val},"majmin_agg":False})
+                data = col.find_one({"tag_params":None,"majmin_agg":False})
             sets = [{"labels":l,"values":v,"tag":None} for l,v in zip(data['itemsets']['items'].values(),data['itemsets']['supportPc'].values())]
         except errors.PyMongoError as e:
             abort(500,description="Could not connect to the database - " + str(e))

@@ -16,7 +16,7 @@ export class Options extends React.Component {
                 <Popover.Title as="h3">Filter Options</Popover.Title>
                 <Popover.Content>
                 <Form>
-                            <Form.Control defaultValue={this.props.chartType} as="select" onChange={(e) => this.props.handleChartType(e.target.value)}>
+                            <Form.Control defaultValue={this.props.requestParams.chartType} as="select" onChange={(e) => this.props.setRequestParams({...this.props.requestParams,chartType:e.target.value})}>
                                 <option>Circular</option>
                                 <option>Parallel</option>
                                 <option>Circular Hierarchical</option>
