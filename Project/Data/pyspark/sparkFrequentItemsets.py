@@ -84,7 +84,7 @@ class ChordLoader:
                         "Bmaj":"Bmaj","Bmaj7":"Bmaj","Bmin":"Bmin","Bmin7":"Bmin","B7":"Bmaj"
                         }
             # User defined function to get key values (chords) from nested structure in dataframe, map to chord agg
-            getKeysUDF = F.udf(lambda x: list(set({chord_map[k] for k,v in x.asDict().items() if type(v) is float})),ArrayType(StringType()))
+            getKeysUDF = F.udf(lambda x: list(set({chord_map[k] for k,v in x.asDict().items() if (v != None) and (v > f_ratio)})),ArrayType(StringType()))
             # Apply UDF and select only chord and id cols
             df = df.withColumn("chordItems",getKeysUDF(df['chordRatio'])).select("_id","chordItems")
         else:
