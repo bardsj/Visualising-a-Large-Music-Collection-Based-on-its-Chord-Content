@@ -7,13 +7,16 @@ export class ChartHierSingleHue extends React.Component {
         this.state = { data: null, request_params: null }
     }
 
-    fetchData(request_params) {
+    fetchData(request_params,majMinSel) {
         let r_url = ""
         if (request_params.tag_val.length > 0) {
             r_url = "http://127.0.0.1:5000/circHier?tag_val=" + request_params.tag_val.join() + "&tag_name=" + request_params.tag_name
         }
         else {
             r_url = "http://127.0.0.1:5000/circHier?"
+        }
+        if (majMinSel) {
+            r_url = r_url + "&majmin_agg=" + majMinSel
         }
         fetch(r_url, { mode: 'cors' })
             .then(r => r.json())
@@ -22,18 +25,21 @@ export class ChartHierSingleHue extends React.Component {
     }
 
     componentDidMount() {
-        this.fetchData(this.props.request_params);
+        this.fetchData(this.props.request_params,this.props.majMinSel);
     }
 
     componentDidUpdate(prevProps) {
         if (prevProps.request_params !== this.props.request_params) {
-            this.fetchData(this.props.request_params)
+            this.fetchData(this.props.request_params,this.props.majMinSel)
         }
         if (prevProps.support !== this.props.support) {
             this.createChart()
         }
         if (prevProps.focus !== this.props.focus) {
             this.updateFocus()
+        }
+        if (prevProps.majMinSel !== this.props.majMinSel) {
+            this.fetchData(this.props.request_params, this.props.majMinSel)
         }
     }
 

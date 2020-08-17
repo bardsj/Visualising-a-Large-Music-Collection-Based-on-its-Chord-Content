@@ -9,7 +9,7 @@ export class ChartCircular extends React.Component {
         this.state = { data: null, request_params: null }
     }
 
-    fetchData(request_params, optType) {
+    fetchData(request_params, optType, majMinSel) {
         let r_url = ""
         if (request_params.tag_val.length > 0) {
             r_url = "http://127.0.0.1:5000/circular?tag_val=" + request_params.tag_val.join() + "&tag_name=" + request_params.tag_name
@@ -20,6 +20,9 @@ export class ChartCircular extends React.Component {
         if (optType) {
             r_url = r_url + "&order_opt=" + optType
         }
+        if (majMinSel) {
+            r_url = r_url + "&majmin_agg=" + majMinSel
+        }
         fetch(r_url, { mode: 'cors' })
             .then(r => r.json())
             .then(r => this.setState({ data: r, request_params: request_params }, () => { this.createChart() }))
@@ -27,12 +30,12 @@ export class ChartCircular extends React.Component {
     }
 
     componentDidMount() {
-        this.fetchData(this.props.request_params, this.props.optType)
+        this.fetchData(this.props.request_params, this.props.optType, this.props.majMinSel)
     }
 
     componentDidUpdate(prevProps) {
         if (prevProps.request_params !== this.props.request_params) {
-            this.fetchData(this.props.request_params, this.props.optType)
+            this.fetchData(this.props.request_params, this.props.optType, this.props.majMinSel)
         }
         if (prevProps.support !== this.props.support) {
             this.createChart()
@@ -41,7 +44,10 @@ export class ChartCircular extends React.Component {
             this.updateFocus()
         }
         if (prevProps.optType !== this.props.optType) {
-            this.fetchData(this.props.request_params, this.props.optType)
+            this.fetchData(this.props.request_params, this.props.optType, this.props.majMinSel)
+        }
+        if (prevProps.majMinSel !== this.props.majMinSel) {
+            this.fetchData(this.props.request_params, this.props.optType, this.props.majMinSel)
         }
     }
 

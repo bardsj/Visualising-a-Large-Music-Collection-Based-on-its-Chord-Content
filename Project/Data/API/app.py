@@ -33,6 +33,20 @@ default_order = ["Cmaj","Cmaj7","Cmin","Cmin7","C7", \
         "Bmaj","Bmaj7","Bmin","Bmin7","B7"
         ]
 
+default_order_agg = ["Cmaj","Cmin", \
+        "Dbmaj","Dbmin",
+        "Dmaj","Dmin",
+        "Ebmaj","Ebmin",
+        "Emaj","Emin",
+        "Fmaj","Fmin",
+        "Gbmaj","Gbmin",
+        "Gmaj","Gmin",
+        "Abmaj","Abmin",
+        "Amaj","Amin",
+        "Bbmaj","Bbmin",
+        "Bmaj","Bmin"
+        ]
+
 
 def getData(request):
     """
@@ -59,7 +73,15 @@ def getData(request):
         tag_name = request.args['tag_name']
         try:
             # MongoDB query
-            data_mult = col.find({"tag_params.tag_name":tag_name,"tag_params.tag_val":{"$in":tag_val}})
+            # Check if aggregation specified in request
+            if 'majmin_agg' in request.args:
+                if request.args['majmin_agg'] == "true":
+                    agg = True
+                else:
+                    agg = False
+                data_mult = col.find({"tag_params.tag_name":tag_name,"tag_params.tag_val":{"$in":tag_val},"majmin_agg":agg})
+            else:
+                data_mult = col.find({"tag_params.tag_name":tag_name,"tag_params.tag_val":{"$in":tag_val},"majmin_agg":False})
             # Parse into suitable format/data structure
             sets = []
             for d in data_mult:
@@ -73,7 +95,15 @@ def getData(request):
     else:
         # If no tags return data for all tracks
         try:
-            data = col.find_one({"tag_params":None})
+            # Check if aggregation specified in request
+            if 'majmin_agg' in request.args:
+                if request.args['majmin_agg'] == "true":
+                    agg = True
+                else:
+                    agg = False
+                data = col.find_one({"tag_params.tag_name":tag_name,"tag_params.tag_val":{"$in":tag_val},"majmin_agg":agg})
+            else:
+                data = col.find_one({"tag_params.tag_name":tag_name,"tag_params.tag_val":{"$in":tag_val},"majmin_agg":False})
             sets = [{"labels":l,"values":v,"tag":None} for l,v in zip(data['itemsets']['items'].values(),data['itemsets']['supportPc'].values())]
         except errors.PyMongoError as e:
             abort(500,description="Could not connect to the database - " + str(e))
@@ -103,7 +133,13 @@ def returnDataCirc():
         else:
             abort(500,description="Optimisation type not recognised")
     else:
-        order = default_order
+        if 'majmin_agg' in request.args:
+            if request.args['majmin_agg']:
+                order = default_order_agg
+            else:
+                order = default_order
+        else:
+            order = default_order
 
     return jsonify({"sets":sets,"order":order})
 
@@ -152,7 +188,13 @@ def returnDataHier():
     sets = getData(request)
     # Select only doubletons
     sets = [s for s in sets if len(s['labels']) == 2]
-    order = default_order
+    if 'majmin_agg' in request.args:
+        if request.args['majmin_agg']:
+            order = default_order_agg
+        else:
+            order = default_order
+    else:
+        order = default_order
 
     return jsonify({"sets":sets,"order":order})
 
@@ -179,7 +221,13 @@ def returnCircClust():
         else:
             abort(500,description="Optimisation type not recognised")
     else:
-        order = default_order
+        if 'majmin_agg' in request.args:
+            if request.args['majmin_agg']:
+                order = default_order_agg
+            else:
+                order = default_order
+        else:
+            order = default_order
 
     # Leave only maj/min chords to see what it looks like clutter wise
     #sets = [s for s in sets if "7" not in "".join(s['labels'])]
@@ -224,7 +272,13 @@ def returnPrallelClust():
     sets = getData(request)
     # Filter for doubletons
     sets = [s for s in sets if len(s['labels']) > 1]
-    order = default_order
+    if 'majmin_agg' in request.args:
+        if request.args['majmin_agg']:
+            order = default_order_agg
+        else:
+            order = default_order
+    else:
+        order = default_order
 
     # Map vertex labels to order index
     order_map = {k:i for i,k in enumerate(order)}

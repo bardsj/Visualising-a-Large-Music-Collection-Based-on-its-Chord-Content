@@ -57481,7 +57481,7 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
 
   (0, _createClass2.default)(ChartCircular, [{
     key: "fetchData",
-    value: function fetchData(request_params, optType) {
+    value: function fetchData(request_params, optType, majMinSel) {
       var _this2 = this;
 
       var r_url = "";
@@ -57494,6 +57494,10 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
 
       if (optType) {
         r_url = r_url + "&order_opt=" + optType;
+      }
+
+      if (majMinSel) {
+        r_url = r_url + "&majmin_agg=" + majMinSel;
       }
 
       fetch(r_url, {
@@ -57512,13 +57516,13 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "componentDidMount",
     value: function componentDidMount() {
-      this.fetchData(this.props.request_params, this.props.optType);
+      this.fetchData(this.props.request_params, this.props.optType, this.props.majMinSel);
     }
   }, {
     key: "componentDidUpdate",
     value: function componentDidUpdate(prevProps) {
       if (prevProps.request_params !== this.props.request_params) {
-        this.fetchData(this.props.request_params, this.props.optType);
+        this.fetchData(this.props.request_params, this.props.optType, this.props.majMinSel);
       }
 
       if (prevProps.support !== this.props.support) {
@@ -57530,7 +57534,11 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
       }
 
       if (prevProps.optType !== this.props.optType) {
-        this.fetchData(this.props.request_params, this.props.optType);
+        this.fetchData(this.props.request_params, this.props.optType, this.props.majMinSel);
+      }
+
+      if (prevProps.majMinSel !== this.props.majMinSel) {
+        this.fetchData(this.props.request_params, this.props.optType, this.props.majMinSel);
       }
     }
   }, {
@@ -57782,7 +57790,7 @@ var ChartParallel = /*#__PURE__*/function (_React$Component) {
 
   (0, _createClass2.default)(ChartParallel, [{
     key: "fetchData",
-    value: function fetchData(request_params) {
+    value: function fetchData(request_params, majMinSel) {
       var _this2 = this;
 
       var r_url = "";
@@ -57791,6 +57799,10 @@ var ChartParallel = /*#__PURE__*/function (_React$Component) {
         r_url = "http://127.0.0.1:5000/parallel?tag_val=" + request_params.tag_val.join() + "&tag_name=" + request_params.tag_name;
       } else {
         r_url = "http://127.0.0.1:5000/parallel";
+      }
+
+      if (majMinSel) {
+        r_url = r_url + "&majmin_agg=" + majMinSel;
       }
 
       fetch(r_url, {
@@ -57809,13 +57821,13 @@ var ChartParallel = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "componentDidMount",
     value: function componentDidMount() {
-      this.fetchData(this.props.request_params);
+      this.fetchData(this.props.request_params, this.props.majMinSel);
     }
   }, {
     key: "componentDidUpdate",
     value: function componentDidUpdate(prevProps) {
       if (prevProps.request_params !== this.props.request_params) {
-        this.fetchData(this.props.request_params);
+        this.fetchData(this.props.request_params, this.props.majMinSel);
       }
 
       if (prevProps.support !== this.props.support) {
@@ -57828,6 +57840,10 @@ var ChartParallel = /*#__PURE__*/function (_React$Component) {
 
       if (prevProps.cPath !== this.props.cPath) {
         this.createChart();
+      }
+
+      if (prevProps.majMinSel !== this.props.majMinSel) {
+        this.fetchData(this.props.request_params, this.props.majMinSel);
       }
     }
   }, {
@@ -58089,7 +58105,7 @@ var ChartHier = /*#__PURE__*/function (_React$Component) {
 
   (0, _createClass2.default)(ChartHier, [{
     key: "fetchData",
-    value: function fetchData(request_params) {
+    value: function fetchData(request_params, majMinSel) {
       var _this2 = this;
 
       var r_url = "";
@@ -58098,6 +58114,10 @@ var ChartHier = /*#__PURE__*/function (_React$Component) {
         r_url = "http://127.0.0.1:5000/circHier?tag_val=" + request_params.tag_val.join() + "&tag_name=" + request_params.tag_name;
       } else {
         r_url = "http://127.0.0.1:5000/circHier?";
+      }
+
+      if (majMinSel) {
+        r_url = r_url + "&majmin_agg=" + majMinSel;
       }
 
       fetch(r_url, {
@@ -58116,13 +58136,13 @@ var ChartHier = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "componentDidMount",
     value: function componentDidMount() {
-      this.fetchData(this.props.request_params);
+      this.fetchData(this.props.request_params, this.props.majMinSel);
     }
   }, {
     key: "componentDidUpdate",
     value: function componentDidUpdate(prevProps) {
       if (prevProps.request_params !== this.props.request_params) {
-        this.fetchData(this.props.request_params);
+        this.fetchData(this.props.request_params, this.props.majMinSel);
       }
 
       if (prevProps.support !== this.props.support) {
@@ -58131,6 +58151,10 @@ var ChartHier = /*#__PURE__*/function (_React$Component) {
 
       if (prevProps.focus !== this.props.focus) {
         this.updateFocus();
+      }
+
+      if (prevProps.majMinSel !== this.props.majMinSel) {
+        this.fetchData(this.props.request_params, this.props.majMinSel);
       }
     }
   }, {
@@ -74234,7 +74258,8 @@ var Options = /*#__PURE__*/function (_React$Component) {
     value: function render() {
       var _this = this;
 
-      var genres = ['pop', 'rock', 'electronic', 'hiphop', 'jazz', 'indie', 'filmscore', 'classical', 'chillout', 'ambient', 'folk', 'metal', 'latin', 'rnb', 'reggae', 'punk', 'country', 'house', 'blues'];
+      //const genres = ['pop','rock','electronic','hiphop','jazz','indie','filmscore','classical','chillout','ambient','folk','metal','latin','rnb','reggae','punk','country','house','blues']
+      var genres = ['pop', 'rock', 'electronic', 'hiphop', 'jazz', 'classical', 'ambient', 'folk', 'metal', 'latin', 'rnb', 'reggae', 'house', 'blues'];
 
       var popover = /*#__PURE__*/_react.default.createElement(_reactBootstrap.Popover, {
         id: "popover-basic"
@@ -74302,6 +74327,24 @@ function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 function VisParams(props) {
+  var majminSel = /*#__PURE__*/_react.default.createElement("div", {
+    style: {
+      paddingLeft: 20,
+      paddingBottom: 10
+    }
+  }, /*#__PURE__*/_react.default.createElement("input", {
+    type: "checkbox",
+    id: "cPaths",
+    defaultChecked: props.majMinSel,
+    onChange: function onChange(e) {
+      return props.handleMajMinSel(e.target.checked);
+    }
+  }), /*#__PURE__*/_react.default.createElement("label", {
+    style: {
+      paddingLeft: 20
+    }
+  }, "Major/Minor Aggregation"));
+
   var controls = "";
 
   if (props.chartType.includes("Hierarchical")) {
@@ -74542,7 +74585,7 @@ function VisParams(props) {
     }, props.support)));
   }
 
-  return /*#__PURE__*/_react.default.createElement("div", null, controls);
+  return /*#__PURE__*/_react.default.createElement("div", null, majminSel, controls);
 }
 },{"react":"node_modules/react/index.js","react-bootstrap":"node_modules/react-bootstrap/esm/index.js"}],"src/legend.js":[function(require,module,exports) {
 "use strict";
@@ -74709,7 +74752,7 @@ var ChartHierSingleHue = /*#__PURE__*/function (_React$Component) {
 
   (0, _createClass2.default)(ChartHierSingleHue, [{
     key: "fetchData",
-    value: function fetchData(request_params) {
+    value: function fetchData(request_params, majMinSel) {
       var _this2 = this;
 
       var r_url = "";
@@ -74718,6 +74761,10 @@ var ChartHierSingleHue = /*#__PURE__*/function (_React$Component) {
         r_url = "http://127.0.0.1:5000/circHier?tag_val=" + request_params.tag_val.join() + "&tag_name=" + request_params.tag_name;
       } else {
         r_url = "http://127.0.0.1:5000/circHier?";
+      }
+
+      if (majMinSel) {
+        r_url = r_url + "&majmin_agg=" + majMinSel;
       }
 
       fetch(r_url, {
@@ -74736,13 +74783,13 @@ var ChartHierSingleHue = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "componentDidMount",
     value: function componentDidMount() {
-      this.fetchData(this.props.request_params);
+      this.fetchData(this.props.request_params, this.props.majMinSel);
     }
   }, {
     key: "componentDidUpdate",
     value: function componentDidUpdate(prevProps) {
       if (prevProps.request_params !== this.props.request_params) {
-        this.fetchData(this.props.request_params);
+        this.fetchData(this.props.request_params, this.props.majMinSel);
       }
 
       if (prevProps.support !== this.props.support) {
@@ -74751,6 +74798,10 @@ var ChartHierSingleHue = /*#__PURE__*/function (_React$Component) {
 
       if (prevProps.focus !== this.props.focus) {
         this.updateFocus();
+      }
+
+      if (prevProps.majMinSel !== this.props.majMinSel) {
+        this.fetchData(this.props.request_params, this.props.majMinSel);
       }
     }
   }, {
@@ -75030,7 +75081,7 @@ var ChartClust = /*#__PURE__*/function (_React$Component) {
 
   (0, _createClass2.default)(ChartClust, [{
     key: "fetchData",
-    value: function fetchData(request_params, optType) {
+    value: function fetchData(request_params, optType, majMinSel) {
       var _this2 = this;
 
       var r_url = "";
@@ -75043,6 +75094,10 @@ var ChartClust = /*#__PURE__*/function (_React$Component) {
 
       if (optType) {
         r_url = r_url + "&order_opt=" + optType;
+      }
+
+      if (majMinSel) {
+        r_url = r_url + "&majmin_agg=" + majMinSel;
       }
 
       fetch(r_url, {
@@ -75061,13 +75116,13 @@ var ChartClust = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "componentDidMount",
     value: function componentDidMount() {
-      this.fetchData(this.props.request_params, this.props.optType);
+      this.fetchData(this.props.request_params, this.props.optType, this.props.majMinSel);
     }
   }, {
     key: "componentDidUpdate",
     value: function componentDidUpdate(prevProps) {
       if (prevProps.request_params !== this.props.request_params) {
-        this.fetchData(this.props.request_params, this.props.optType);
+        this.fetchData(this.props.request_params, this.props.optType, this.props.majMinSel);
       }
 
       if (prevProps.support !== this.props.support) {
@@ -75079,7 +75134,11 @@ var ChartClust = /*#__PURE__*/function (_React$Component) {
       }
 
       if (prevProps.optType !== this.props.optType) {
-        this.fetchData(this.props.request_params, this.props.optType);
+        this.fetchData(this.props.request_params, this.props.optType, this.props.majMinSel);
+      }
+
+      if (prevProps.majMinSel !== this.props.majMinSel) {
+        this.fetchData(this.props.request_params, this.props.optType, this.props.majMinSel);
       }
     }
   }, {
@@ -75603,7 +75662,7 @@ var ChartParallelClust = /*#__PURE__*/function (_React$Component) {
 
   (0, _createClass2.default)(ChartParallelClust, [{
     key: "fetchData",
-    value: function fetchData(request_params) {
+    value: function fetchData(request_params, majMinSel) {
       var _this2 = this;
 
       var r_url = "";
@@ -75612,6 +75671,10 @@ var ChartParallelClust = /*#__PURE__*/function (_React$Component) {
         r_url = "http://127.0.0.1:5000/parallelClust?tag_val=" + request_params.tag_val.join() + "&tag_name=" + request_params.tag_name;
       } else {
         r_url = "http://127.0.0.1:5000/parallelClust";
+      }
+
+      if (majMinSel) {
+        r_url = r_url + "&majmin_agg=" + majMinSel;
       }
 
       fetch(r_url, {
@@ -75630,13 +75693,13 @@ var ChartParallelClust = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "componentDidMount",
     value: function componentDidMount() {
-      this.fetchData(this.props.request_params);
+      this.fetchData(this.props.request_params, this.props.majMinSel);
     }
   }, {
     key: "componentDidUpdate",
     value: function componentDidUpdate(prevProps) {
       if (prevProps.request_params !== this.props.request_params) {
-        this.fetchData(this.props.request_params);
+        this.fetchData(this.props.request_params, this.props.majMinSel);
       }
 
       if (prevProps.support !== this.props.support) {
@@ -75649,6 +75712,10 @@ var ChartParallelClust = /*#__PURE__*/function (_React$Component) {
 
       if (prevProps.cPath !== this.props.cPath) {
         this.createChart();
+      }
+
+      if (prevProps.majMinSel !== this.props.majMinSel) {
+        this.fetchData(this.props.request_params, this.props.majMinSel);
       }
     }
   }, {
@@ -76023,6 +76090,11 @@ var _default = function _default() {
       cPath = _useState14[0],
       setCPath = _useState14[1];
 
+  var _useState15 = (0, _react.useState)(false),
+      _useState16 = (0, _slicedToArray2.default)(_useState15, 2),
+      majMinSel = _useState16[0],
+      setMajMinSel = _useState16[1];
+
   var handleFilter = function handleFilter(e) {
     if (e.target.checked == true) {
       requestParams.tag_val.push(e.target.value);
@@ -76069,7 +76141,8 @@ var _default = function _default() {
       request_params: requestParams,
       focus: focus,
       support: support,
-      optType: optType
+      optType: optType,
+      majMinSel: majMinSel
     });
   } else if (chartType === "Parallel") {
     chart = /*#__PURE__*/_react.default.createElement(_chartParallel.ChartParallel, {
@@ -76079,7 +76152,8 @@ var _default = function _default() {
       request_params: requestParams,
       focus: focus,
       support: support,
-      cPath: cPath
+      cPath: cPath,
+      majMinSel: majMinSel
     });
   } else if (chartType === "Circular Hierarchical") {
     chart = /*#__PURE__*/_react.default.createElement(_chartHier.ChartHier, {
@@ -76089,7 +76163,8 @@ var _default = function _default() {
       height: 800,
       request_params: requestParams,
       focus: focus,
-      support: support
+      support: support,
+      majMinSel: majMinSel
     });
   } else if (chartType === "Circular Hierarchical - Single Hue") {
     chart = /*#__PURE__*/_react.default.createElement(_chartHierSingleHue.ChartHierSingleHue, {
@@ -76099,7 +76174,8 @@ var _default = function _default() {
       height: 800,
       request_params: requestParams,
       focus: focus,
-      support: support
+      support: support,
+      majMinSel: majMinSel
     });
   } else if (chartType === "Circular Clustered") {
     chart = /*#__PURE__*/_react.default.createElement(_chartClust.ChartClust, {
@@ -76110,7 +76186,8 @@ var _default = function _default() {
       request_params: requestParams,
       focus: focus,
       support: support,
-      optType: optType
+      optType: optType,
+      majMinSel: majMinSel
     });
   } else if (chartType === "Parallel Clustered") {
     chart = /*#__PURE__*/_react.default.createElement(_chartParallelClust.ChartParallelClust, {
@@ -76121,7 +76198,8 @@ var _default = function _default() {
       request_params: requestParams,
       focus: focus,
       support: support,
-      cPath: cPath
+      cPath: cPath,
+      majMinSel: majMinSel
     });
   }
 
@@ -76155,7 +76233,9 @@ var _default = function _default() {
     handleFocus: setFocus,
     handleOptType: handleOptType,
     cPath: cPath,
-    handleCPath: setCPath
+    handleCPath: setCPath,
+    majMinSel: majMinSel,
+    handleMajMinSel: setMajMinSel
   })))));
 };
 
@@ -76200,7 +76280,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49465" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50883" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

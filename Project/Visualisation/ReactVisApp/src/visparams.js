@@ -3,6 +3,13 @@ import {Form} from 'react-bootstrap';
 
 export function VisParams(props) {
 
+    const majminSel = (
+        <div style={{paddingLeft: 20,paddingBottom:10}}>
+                <input type="checkbox" id="cPaths" defaultChecked={props.majMinSel} onChange={(e)=>props.handleMajMinSel(e.target.checked)} />
+                <label style={{paddingLeft: 20}} >Major/Minor Aggregation</label>
+        </div>
+    )
+
     let controls = ""
 
     if (props.chartType.includes("Hierarchical")) {
@@ -61,6 +68,7 @@ export function VisParams(props) {
 
     return (
         <div>
+        {majminSel}
         {controls}
         </div>
     )
