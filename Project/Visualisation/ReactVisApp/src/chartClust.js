@@ -338,7 +338,7 @@ export class ChartClust extends React.Component {
             .attr("stroke", d => cmap[d.tag])
             //.attr("stroke", d => d.km_label == 2 ? "red" : cmap[d.tag])
             .attr("fill", "none")
-            .attr("stroke-width", 1)
+            .attr("stroke-width", d=>d.values**1.5*50)
             .attr("stroke-opacity", d => (d.values / d3.max(sets.map(x => x.values))) ** this.props.request_params.focus)
 
         link_groups.append("path")
@@ -347,7 +347,7 @@ export class ChartClust extends React.Component {
             .attr("stroke", d => cmap[d.tag])
             //.attr("stroke", d => d.km_label == 2 ? "red" : cmap[d.tag])
             .attr("fill", "none")
-            .attr("stroke-width", 1)
+            .attr("stroke-width", d=>d.values**1.5*50)
             .attr("stroke-opacity", d => (d.values / d3.max(sets.map(x => x.values))) ** this.props.request_params.focus)
 
         link_groups.append("path")
@@ -356,7 +356,7 @@ export class ChartClust extends React.Component {
             .attr("stroke", d => cmap[d.tag])
             //.attr("stroke", d => d.km_label == 2 ? "red" : cmap[d.tag])
             .attr("fill", "none")
-            .attr("stroke-width", 1)
+            .attr("stroke-width", d=>d.values**1.5*50)
             .attr("stroke-opacity", d => (d.values / d3.max(sets.map(x => x.values))) ** this.props.request_params.focus)
 
         nodes_group.on("mouseenter", (sel) => {
@@ -375,7 +375,7 @@ export class ChartClust extends React.Component {
                 .filter(d => d.labels.includes(sel.label))
                 .transition(0.1)
                 .attr("stroke", d => cmap[d.tag])
-                .attr("stroke-width", 1)
+                .attr("stroke-width", d=>d.values**1.5*50)
                 .attr("stroke-opacity", d => (d.values / d3.max(sets.map(x => x.values))) ** this.props.request_params.focus)
                 nodes_group.raise()
         })

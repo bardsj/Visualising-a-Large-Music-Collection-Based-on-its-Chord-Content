@@ -199,7 +199,7 @@ export class ChartHierSingleHue extends React.Component {
             node2point(d.labels[1])]))
             .attr("stroke", d => scColor(d.values))
             .attr("fill", "none")
-            .attr("stroke-width", 1)
+            .attr("stroke-width", d=>d.values**1.5*50)
             .attr("stroke-opacity", d => (d.values / d3.max(sets.map(x => x.values))) ** this.props.request_params.focus)
 
         nodes_group.on("mouseenter", (sel) => {
@@ -218,7 +218,7 @@ export class ChartHierSingleHue extends React.Component {
                 .filter(d => d.labels.includes(sel.label))
                 .transition(0.1)
                 .attr("stroke", d => scColor(d.values))
-                .attr("stroke-width", 1)
+                .attr("stroke-width", d=>d.values**1.5*50)
                 .attr("stroke-opacity", d => (d.values / d3.max(sets.map(x => x.values))) ** this.props.request_params.focus)
                 nodes_group.raise()
         })

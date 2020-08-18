@@ -171,7 +171,7 @@ export class ChartCircular extends React.Component {
             .attr("d", (d) => lineGen([node2point(d.labels[0]), node2point(d.labels[1])]))
             .attr("stroke", d => cmap[d.tag])
             .attr("fill", "none")
-            .attr("stroke-width", 1)
+            .attr("stroke-width", d=>d.values**1.5*50)
             .attr("stroke-opacity", d => (d.values / d3.max(sets.map(x => x.values))) ** this.props.request_params.focus)
 
         nodes_group.on("mouseenter", (sel) => {
@@ -190,7 +190,7 @@ export class ChartCircular extends React.Component {
                 .filter(d => d.labels.includes(sel.label))
                 .transition(0.1)
                 .attr("stroke", d => cmap[d.tag])
-                .attr("stroke-width", 1)
+                .attr("stroke-width", d=>d.values**1.5*50)
                 .attr("stroke-opacity", d => (d.values / d3.max(sets.map(x => x.values))) ** this.props.request_params.focus)
             nodes_group.raise()
         })

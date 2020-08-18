@@ -57667,7 +57667,9 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
         return lineGen([node2point(d.labels[0]), node2point(d.labels[1])]);
       }).attr("stroke", function (d) {
         return cmap[d.tag];
-      }).attr("fill", "none").attr("stroke-width", 1).attr("stroke-opacity", function (d) {
+      }).attr("fill", "none").attr("stroke-width", function (d) {
+        return Math.pow(d.values, 1.5) * 50;
+      }).attr("stroke-opacity", function (d) {
         return Math.pow(d.values / d3.max(sets.map(function (x) {
           return x.values;
         })), _this3.props.request_params.focus);
@@ -57687,7 +57689,9 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
           return d.labels.includes(sel.label);
         }).transition(0.1).attr("stroke", function (d) {
           return cmap[d.tag];
-        }).attr("stroke-width", 1).attr("stroke-opacity", function (d) {
+        }).attr("stroke-width", function (d) {
+          return Math.pow(d.values, 1.5) * 50;
+        }).attr("stroke-opacity", function (d) {
           return Math.pow(d.values / d3.max(sets.map(function (x) {
             return x.values;
           })), _this3.props.request_params.focus);
@@ -57970,7 +57974,9 @@ var ChartParallel = /*#__PURE__*/function (_React$Component) {
         return lineGen(create_points(d, d.ax));
       }).attr("fill", "none").attr("stroke", function (d) {
         return _this3.props.request_params.cPath ? d3.interpolateTurbo(node_cmap_sc(d.labels[d.ax].node)) : cmap[d.tag];
-      }).attr("fill", "none").attr("stroke-width", 1).attr("stroke-opacity", function (d) {
+      }).attr("fill", "none").attr("stroke-width", function (d) {
+        return Math.pow(d.values, 1.5) * 50;
+      }).attr("stroke-opacity", function (d) {
         return Math.pow(d.values / d3.max(data.map(function (x) {
           return x.values;
         })), _this3.props.request_params.focus);
@@ -57997,7 +58003,9 @@ var ChartParallel = /*#__PURE__*/function (_React$Component) {
           return d.labels[sel.ax] ? d.labels[sel.ax].node === sel.node : null;
         }).transition(0.1).attr("stroke", function (d) {
           return _this3.props.request_params.cPath ? d3.interpolateTurbo(node_cmap_sc(d.labels[d.ax].node)) : cmap[d.tag];
-        }).attr("stroke-width", 1).attr("stroke-opacity", function (d) {
+        }).attr("stroke-width", function (d) {
+          return Math.pow(d.values, 1.5) * 50;
+        }).attr("stroke-opacity", function (d) {
           return Math.pow(d.values / d3.max(data.map(function (x) {
             return x.values;
           })), _this3.props.request_params.focus);
@@ -58309,7 +58317,9 @@ var ChartHier = /*#__PURE__*/function (_React$Component) {
         }, node2point(d.labels[1])]);
       }).attr("stroke", function (d) {
         return cmap[d.tag];
-      }).attr("fill", "none").attr("stroke-width", 1).attr("stroke-opacity", function (d) {
+      }).attr("fill", "none").attr("stroke-width", function (d) {
+        return Math.pow(d.values, 1.5) * 50;
+      }).attr("stroke-opacity", function (d) {
         return Math.pow(d.values / d3.max(sets.map(function (x) {
           return x.values;
         })), _this3.props.request_params.focus);
@@ -58329,7 +58339,9 @@ var ChartHier = /*#__PURE__*/function (_React$Component) {
           return d.labels.includes(sel.label);
         }).transition(0.1).attr("stroke", function (d) {
           return cmap[d.tag];
-        }).attr("stroke-width", 1).attr("stroke-opacity", function (d) {
+        }).attr("stroke-width", function (d) {
+          return Math.pow(d.values, 1.5) * 50;
+        }).attr("stroke-opacity", function (d) {
           return Math.pow(d.values / d3.max(sets.map(function (x) {
             return x.values;
           })), _this3.props.request_params.focus);
@@ -74987,7 +74999,9 @@ var ChartHierSingleHue = /*#__PURE__*/function (_React$Component) {
         }, node2point(d.labels[1])]);
       }).attr("stroke", function (d) {
         return scColor(d.values);
-      }).attr("fill", "none").attr("stroke-width", 1).attr("stroke-opacity", function (d) {
+      }).attr("fill", "none").attr("stroke-width", function (d) {
+        return Math.pow(d.values, 1.5) * 50;
+      }).attr("stroke-opacity", function (d) {
         return Math.pow(d.values / d3.max(sets.map(function (x) {
           return x.values;
         })), _this3.props.request_params.focus);
@@ -75007,7 +75021,9 @@ var ChartHierSingleHue = /*#__PURE__*/function (_React$Component) {
           return d.labels.includes(sel.label);
         }).transition(0.1).attr("stroke", function (d) {
           return scColor(d.values);
-        }).attr("stroke-width", 1).attr("stroke-opacity", function (d) {
+        }).attr("stroke-width", function (d) {
+          return Math.pow(d.values, 1.5) * 50;
+        }).attr("stroke-opacity", function (d) {
           return Math.pow(d.values / d3.max(sets.map(function (x) {
             return x.values;
           })), _this3.props.request_params.focus);
@@ -75527,7 +75543,9 @@ var ChartClust = /*#__PURE__*/function (_React$Component) {
       }).attr("stroke", function (d) {
         return cmap[d.tag];
       }) //.attr("stroke", d => d.km_label == 2 ? "red" : cmap[d.tag])
-      .attr("fill", "none").attr("stroke-width", 1).attr("stroke-opacity", function (d) {
+      .attr("fill", "none").attr("stroke-width", function (d) {
+        return Math.pow(d.values, 1.5) * 50;
+      }).attr("stroke-opacity", function (d) {
         return Math.pow(d.values / d3.max(sets.map(function (x) {
           return x.values;
         })), _this3.props.request_params.focus);
@@ -75537,7 +75555,9 @@ var ChartClust = /*#__PURE__*/function (_React$Component) {
       }).attr("stroke", function (d) {
         return cmap[d.tag];
       }) //.attr("stroke", d => d.km_label == 2 ? "red" : cmap[d.tag])
-      .attr("fill", "none").attr("stroke-width", 1).attr("stroke-opacity", function (d) {
+      .attr("fill", "none").attr("stroke-width", function (d) {
+        return Math.pow(d.values, 1.5) * 50;
+      }).attr("stroke-opacity", function (d) {
         return Math.pow(d.values / d3.max(sets.map(function (x) {
           return x.values;
         })), _this3.props.request_params.focus);
@@ -75547,7 +75567,9 @@ var ChartClust = /*#__PURE__*/function (_React$Component) {
       }).attr("stroke", function (d) {
         return cmap[d.tag];
       }) //.attr("stroke", d => d.km_label == 2 ? "red" : cmap[d.tag])
-      .attr("fill", "none").attr("stroke-width", 1).attr("stroke-opacity", function (d) {
+      .attr("fill", "none").attr("stroke-width", function (d) {
+        return Math.pow(d.values, 1.5) * 50;
+      }).attr("stroke-opacity", function (d) {
         return Math.pow(d.values / d3.max(sets.map(function (x) {
           return x.values;
         })), _this3.props.request_params.focus);
@@ -75567,7 +75589,9 @@ var ChartClust = /*#__PURE__*/function (_React$Component) {
           return d.labels.includes(sel.label);
         }).transition(0.1).attr("stroke", function (d) {
           return cmap[d.tag];
-        }).attr("stroke-width", 1).attr("stroke-opacity", function (d) {
+        }).attr("stroke-width", function (d) {
+          return Math.pow(d.values, 1.5) * 50;
+        }).attr("stroke-opacity", function (d) {
           return Math.pow(d.values / d3.max(sets.map(function (x) {
             return x.values;
           })), _this3.props.request_params.focus);
@@ -75955,7 +75979,9 @@ var ChartParallelClust = /*#__PURE__*/function (_React$Component) {
         return lineGen(create_points(d, d.ax));
       }).attr("fill", "none").attr("stroke", function (d) {
         return _this3.props.request_params.cPath ? d3.interpolateTurbo(node_cmap_sc(d.labels[d.ax].node)) : cmap[d.tag];
-      }).attr("fill", "none").attr("stroke-width", 1).attr("stroke-opacity", function (d) {
+      }).attr("fill", "none").attr("stroke-width", function (d) {
+        return Math.pow(d.values, 1.5) * 50;
+      }).attr("stroke-opacity", function (d) {
         return Math.pow(d.values / d3.max(data.map(function (x) {
           return x.values;
         })), _this3.props.request_params.focus);
@@ -75982,7 +76008,9 @@ var ChartParallelClust = /*#__PURE__*/function (_React$Component) {
           return d.labels[sel.ax] ? d.labels[sel.ax].node === sel.node : null;
         }).transition(0.1).attr("stroke", function (d) {
           return _this3.props.request_params.cPath ? d3.interpolateTurbo(node_cmap_sc(d.labels[d.ax].node)) : cmap[d.tag];
-        }).attr("stroke-width", 1).attr("stroke-opacity", function (d) {
+        }).attr("stroke-width", function (d) {
+          return Math.pow(d.values, 1.5) * 50;
+        }).attr("stroke-opacity", function (d) {
           return Math.pow(d.values / d3.max(data.map(function (x) {
             return x.values;
           })), _this3.props.request_params.focus);
@@ -76243,7 +76271,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50883" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62523" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
