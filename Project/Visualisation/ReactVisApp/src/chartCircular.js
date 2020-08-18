@@ -163,7 +163,7 @@ export class ChartCircular extends React.Component {
         const beta = 0
         const lineGen = d3.line().x(d => d.x + centre.x).y(d => centre.y - d.y).curve(d3.curveBundle.beta(beta / 1000))
 
-        const links = svg.selectAll("path")
+        const links = svg.selectAll("path").select(".link")
             .data(sets)
             .enter()
             .append("path")
@@ -202,6 +202,9 @@ export class ChartCircular extends React.Component {
 
         // Remove seps from order before writing to state
         order = order.filter(x => !x.includes("sep"))
+
+        console.log(sets)
+        console.log(links)
 
         nodes_group.raise()
         this.setState({ sets: sets })

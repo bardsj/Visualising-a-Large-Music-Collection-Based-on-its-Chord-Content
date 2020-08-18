@@ -182,7 +182,7 @@ export class ChartHier extends React.Component {
 
         let path_factor = 1.4
 
-        const links = svg.selectAll("path")
+        const links = svg.selectAll("path").select(".link")
             .data(sets)
             .enter()
             .append("path")

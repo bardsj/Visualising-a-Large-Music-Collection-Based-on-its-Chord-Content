@@ -112,7 +112,7 @@ export class ChartParallel extends React.Component {
         const lineGen = d3.line().y(d => scY[d.ax](d.node)).x(d => scX(d.ax)).curve(d3.curveCardinal)
 
         // Append paths
-        const links = svg.selectAll("path")
+        const links = svg.selectAll("path").select(".link")
             .data(data_ax)
             .enter()
             .append("path")

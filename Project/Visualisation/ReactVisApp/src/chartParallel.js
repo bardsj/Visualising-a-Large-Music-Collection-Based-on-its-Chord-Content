@@ -127,7 +127,7 @@ export class ChartParallel extends React.Component {
             data_filt.push(... data_ax.filter(x=>x.labels.length > i+1).map(d=>Object.assign(d,{ax:i})))
         }
         // Append paths
-        let links = svg.selectAll("path")
+        let links = svg.selectAll("path").select(".link")
             .data(data_filt)
             .enter()
             .append("path")

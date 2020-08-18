@@ -57663,7 +57663,7 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
       }).y(function (d) {
         return centre.y - d.y;
       }).curve(d3.curveBundle.beta(beta / 1000));
-      var links = svg.selectAll("path").data(sets).enter().append("path").attr("class", "link").attr("d", function (d) {
+      var links = svg.selectAll("path").select(".link").data(sets).enter().append("path").attr("class", "link").attr("d", function (d) {
         return lineGen([node2point(d.labels[0]), node2point(d.labels[1])]);
       }).attr("stroke", function (d) {
         return cmap[d.tag];
@@ -57709,6 +57709,8 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
       order = order.filter(function (x) {
         return !x.includes("sep");
       });
+      console.log(sets);
+      console.log(links);
       nodes_group.raise();
       this.setState({
         sets: sets
@@ -57970,7 +57972,7 @@ var ChartParallel = /*#__PURE__*/function (_React$Component) {
       } // Append paths
 
 
-      var links = svg.selectAll("path").data(data_filt).enter().append("path").attr("class", "link").attr("d", function (d) {
+      var links = svg.selectAll("path").select(".link").data(data_filt).enter().append("path").attr("class", "link").attr("d", function (d) {
         return lineGen(create_points(d, d.ax));
       }).attr("fill", "none").attr("stroke", function (d) {
         return _this3.props.request_params.cPath ? d3.interpolateTurbo(node_cmap_sc(d.labels[d.ax].node)) : cmap[d.tag];
@@ -58307,7 +58309,7 @@ var ChartHier = /*#__PURE__*/function (_React$Component) {
         return centre.y - d.y;
       }).curve(d3.curveBundle.beta(beta));
       var path_factor = 1.4;
-      var links = svg.selectAll("path").data(sets).enter().append("path").attr("class", "link").attr("d", function (d) {
+      var links = svg.selectAll("path").select(".link").data(sets).enter().append("path").attr("class", "link").attr("d", function (d) {
         return lineGen([node2point(d.labels[0]), {
           x: root_nodes[d.labels[0][1] === "b" ? d.labels[0].slice(0, 2) : d.labels[0][0]].x / path_factor,
           y: root_nodes[d.labels[0][1] === "b" ? d.labels[0].slice(0, 2) : d.labels[0][0]].y / path_factor
@@ -74989,7 +74991,7 @@ var ChartHierSingleHue = /*#__PURE__*/function (_React$Component) {
         return centre.y - d.y;
       }).curve(d3.curveBundle.beta(beta));
       var path_factor = 1.4;
-      var links = svg.selectAll("path").data(sets).enter().append("path").attr("class", "link").attr("d", function (d) {
+      var links = svg.selectAll("path").select(".link").data(sets).enter().append("path").attr("class", "link").attr("d", function (d) {
         return lineGen([node2point(d.labels[0]), {
           x: root_nodes[d.labels[0][1] === "b" ? d.labels[0].slice(0, 2) : d.labels[0][0]].x / path_factor,
           y: root_nodes[d.labels[0][1] === "b" ? d.labels[0].slice(0, 2) : d.labels[0][0]].y / path_factor
@@ -75975,7 +75977,7 @@ var ChartParallelClust = /*#__PURE__*/function (_React$Component) {
       } // Append paths
 
 
-      var links = svg.selectAll("path").data(data_filt).enter().append("path").attr("class", "link").attr("d", function (d) {
+      var links = svg.selectAll("path").select(".link").data(data_filt).enter().append("path").attr("class", "link").attr("d", function (d) {
         return lineGen(create_points(d, d.ax));
       }).attr("fill", "none").attr("stroke", function (d) {
         return _this3.props.request_params.cPath ? d3.interpolateTurbo(node_cmap_sc(d.labels[d.ax].node)) : cmap[d.tag];
