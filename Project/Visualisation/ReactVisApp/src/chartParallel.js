@@ -14,7 +14,7 @@ export class ChartParallel extends React.Component {
             r_url = "http://127.0.0.1:5000/parallel?tag_val=" + request_params.tag_val.join() + "&tag_name=" + request_params.tag_name
         }
         else {
-            r_url = "http://127.0.0.1:5000/parallel"
+            r_url = "http://127.0.0.1:5000/parallel?"
         }
         if (request_params.optType) {
             r_url = r_url + "&order_opt=" + request_params.optType

@@ -203,9 +203,6 @@ export class ChartCircular extends React.Component {
         // Remove seps from order before writing to state
         order = order.filter(x => !x.includes("sep"))
 
-        console.log(sets)
-        console.log(links)
-
         nodes_group.raise()
         this.setState({ sets: sets })
     }

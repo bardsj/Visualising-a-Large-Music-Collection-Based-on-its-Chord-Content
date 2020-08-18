@@ -57709,8 +57709,6 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
       order = order.filter(function (x) {
         return !x.includes("sep");
       });
-      console.log(sets);
-      console.log(links);
       nodes_group.raise();
       this.setState({
         sets: sets
@@ -57811,7 +57809,7 @@ var ChartParallel = /*#__PURE__*/function (_React$Component) {
       if (request_params.tag_val.length > 0) {
         r_url = "http://127.0.0.1:5000/parallel?tag_val=" + request_params.tag_val.join() + "&tag_name=" + request_params.tag_name;
       } else {
-        r_url = "http://127.0.0.1:5000/parallel";
+        r_url = "http://127.0.0.1:5000/parallel?";
       }
 
       if (request_params.optType) {
@@ -75715,7 +75713,7 @@ var ChartParallelClust = /*#__PURE__*/function (_React$Component) {
       if (request_params.tag_val.length > 0) {
         r_url = "http://127.0.0.1:5000/parallelClust?tag_val=" + request_params.tag_val.join() + "&tag_name=" + request_params.tag_name;
       } else {
-        r_url = "http://127.0.0.1:5000/parallelClust";
+        r_url = "http://127.0.0.1:5000/parallelClust?";
       }
 
       if (request_params.optType) {
