@@ -5,7 +5,7 @@ Load and filter data for different genre tags,
 from pprint import pprint
 import findspark
 import pyspark
-from sparkFrequentItemsets import SparkFrequentItemsetsFPG
+from sparkFrequentItemsets import SparkFrequentItemsetsFPG,SparkFrequentItemsetsPrefixSpan
 import os
 import pickle
 import time
@@ -13,6 +13,7 @@ import sys
 sys.path.append(os.getcwd())
 from Project.Data.Optimisation.CircularGraphLogic import AVSDF
 import json
+from itertools import chain
 
 os.environ['PYSPARK_SUBMIT_ARGS'] = '"--packages" "org.mongodb.spark:mongo-spark-connector_2.11:2.4.1" "--driver-memory" "4g" "pyspark-shell"'
 findspark.init()
@@ -20,6 +21,7 @@ findspark.init()
 sc = pyspark.SparkContext.getOrCreate()
 spark = pyspark.sql.SparkSession.builder \
     .config("spark.mongodb.input.uri", os.environ['MSC_CHORD_DB_URI'])\
+    .config("spark.executor.heartbeatInterval","3600s")\
     .getOrCreate()
 
 params = {"minSupport": 0.01, "minConfidence": 1,"filterRatio":0.05,"filterConfidence":0.6}
@@ -35,22 +37,40 @@ for i,genre in enumerate(['pop','rock','electronic','hiphop','jazz','classical',
     else:
         tag_filt = None
 
+    items = SparkFrequentItemsetsPrefixSpan(spark,limit=None,params=params,tag_filter=tag_filt,majmin_agg=False)
+    itemsets = items.get_itemsets()
+    count = items.getDataframeCount()
+    # Convert to dict for storage
+    itemsets['sequence'] = itemsets['sequence'].apply(lambda x: list(chain(*x)))
+    itemsets = itemsets.to_dict()
+
+    write_results.append({
+        "_id":str(i).zfill(4)+"-"+str(params['minSupport'])+"-"+str(params['filterRatio'])+"-"+str(params['filterConfidence'])+"-"+str(majmin_agg)+"s",
+        "filter_params":params,
+        "tag_params":tag_filt,
+        "itemsets":itemsets,
+        "majmin_agg":majmin_agg,
+        "dfCount":count,
+        "fi_type":'sequential'
+    })
+
+
+
     for majmin_agg in [False,True]:
-        items = SparkFrequentItemsetsFPG(spark, None, params,tag_filter=tag_filt,majmin_agg=majmin_agg)
+        items = SparkFrequentItemsetsFPG(spark,limit=None,params=params,tag_filter=tag_filt,majmin_agg=majmin_agg)
         itemsets = items.get_itemsets()
         count = items.getDataframeCount()
-        # Get k = 2 length itemsets to calculate circular order
-        ksets_circ = itemsets[itemsets['items'].str.len()==2]
         # Convert to dict for storage
         itemsets = itemsets.to_dict()
 
         write_results.append({
-            "_id":str(i).zfill(4)+"-"+str(params['minSupport'])+"-"+str(params['filterRatio'])+"-"+str(params['filterConfidence'])+"-"+str(majmin_agg),
+            "_id":str(i).zfill(4)+"-"+str(params['minSupport'])+"-"+str(params['filterRatio'])+"-"+str(params['filterConfidence'])+"-"+str(majmin_agg)+"f",
             "filter_params":params,
             "tag_params":tag_filt,
             "itemsets":itemsets,
             "majmin_agg":majmin_agg,
-            "dfCount":count
+            "dfCount":count,
+            "fi_type":'frequent'
         })
 
 

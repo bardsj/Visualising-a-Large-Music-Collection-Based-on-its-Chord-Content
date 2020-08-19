@@ -1,6 +1,6 @@
 import pyspark.sql.functions as F
 from pyspark.sql.types import ArrayType,StringType
-from pyspark.ml.fpm import FPGrowth
+from pyspark.ml.fpm import FPGrowth, PrefixSpan
 from collections import Counter
 from itertools import combinations,chain
 from operator import add
@@ -23,12 +23,13 @@ class ChordLoader:
         Aggregate by maj/min chords
 
     """
-    def __init__(self,spark,params,limit=None,tag_filter=None,majmin_agg=False):
+    def __init__(self,spark,params,limit,tag_filter,majmin_agg=False,type_fi='frequent'):
         self.limit = limit
         self.spark = spark
         self.params = params
         self.tag_filter = tag_filter
         self.majmin_agg = majmin_agg
+        self.type_fi = type_fi
         self.df = self._load_data()
 
     def getDataframeCount(self):
@@ -88,11 +89,21 @@ class ChordLoader:
             # Apply UDF and select only chord and id cols
             df = df.withColumn("chordItems",getKeysUDF(df['chordRatio'])).select("_id","chordItems")
         else:
-            # User defined function to get key values (chords) from nested structure in dataframe and filter below value
-            getKeysUDF = F.udf(lambda x: list({k for k,v in x.asDict().items() if (v != None) and (v > f_ratio)}),ArrayType(StringType()))
-            # Apply UDF and select only chord and id cols
-            df = df.withColumn("chordItems",getKeysUDF(df['chordRatio'])).select("_id","chordItems")
+            if self.type_fi == 'frequent':
+                # User defined function to get key values (chords) from nested structure in dataframe and filter below value
+                getKeysUDF = F.udf(lambda x: list({k for k,v in x.asDict().items() if (v != None) and (v > f_ratio)}),ArrayType(StringType()))
+                # Apply UDF and select only chord and id cols
+                df = df.withColumn("chordItems",getKeysUDF(df['chordRatio'])).select("_id","chordItems")
+            if self.type_fi == 'sequential':
+                # Chunk data into individual pieces
+                def getSeq(items):
+                    return [[i['label'] for i in items[n:n+1]] for n in range(len(items))]
 
+                getKeysUDF = F.udf(getSeq,ArrayType(ArrayType(StringType())))
+                # Apply UDF and select only chord and id cols
+                df = df.withColumn("chordSequence",getKeysUDF(df['chordSequence'])).select("_id","chordSequence")
+
+        # Join metadata
         def getMeta(_id,tag_res):
             """
                 Grab metadata from db for particular track id
@@ -150,7 +161,7 @@ class SparkFrequentItemsetsFPG(ChordLoader):
     """
 
     def __init__(self,spark,limit=None,params={"minSupport":0.2, "minConfidence":0.5,"filterRatio":None,"filterConfidence":None},tag_filter=None,majmin_agg=False):
-        ChordLoader.__init__(self,spark,params,limit,tag_filter,majmin_agg)
+        ChordLoader.__init__(self,spark,params=params,limit=limit,tag_filter=tag_filter,majmin_agg=majmin_agg,type_fi='frequent')
 
     def _run_FPGrowth(self,df):
         # Apply spark ml libs FP-growth algorithm for frequent itemset mining
@@ -191,7 +202,7 @@ class SparkFrequentItemsetsSON(ChordLoader):
 
     """
     def __init__(self,spark,params={"minSupport":0.2,"filterRatio":None,"filterConfidence":None},limit=None,tag_filter=None,majmin_agg=False):
-        ChordLoader.__init__(self,spark,params,limit,tag_filter,majmin_agg)
+        ChordLoader.__init__(self,spark,params=params,limit=limit,tag_filter=tag_filter,majmin_agg=majmin_agg,type_fi='frequent')
 
 
     def get_itemsets(self):
@@ -260,3 +271,20 @@ class SparkFrequentItemsetsSON(ChordLoader):
         frequent_itemsets = frequent_itemsets.filter(lambda x: x[1]>s)
 
         return frequent_itemsets.collect()
+
+
+class SparkFrequentItemsetsPrefixSpan(ChordLoader):
+    """
+        Run spark implementation of PrefixSpan algorithm to generate frequent sequences
+    """
+
+    def __init__(self,spark,params={"minSupport":0.2,"filterRatio":None,"filterConfidence":None},limit=None,tag_filter=None,majmin_agg=False):
+        ChordLoader.__init__(self,spark,params=params,limit=limit,tag_filter=tag_filter,majmin_agg=majmin_agg,type_fi='sequential')
+
+    def get_itemsets(self):
+        n_items = self.df.count()
+        prefixSpan = PrefixSpan(minSupport=self.params["minSupport"],maxPatternLength=5,maxLocalProjDBSize=32000000,sequenceCol="chordSequence")
+        freq_sequence = prefixSpan.findFrequentSequentialPatterns(self.df)
+        # Add support % val
+        itemsets = freq_sequence.withColumn("supportPc",freq_sequence['freq']/n_items)
+        return itemsets.toPandas()
