@@ -9,6 +9,7 @@ import { Container, Row, Col } from 'react-bootstrap'
 import { ChartHierSingleHue } from "./chartHierSingleHue";
 import { ChartClust } from "./chartClust";
 import { ChartParallelClust } from "./chartParallelClust";
+import { ChartParallelSeq } from "./chartParallelSeq";
 
 // <Chart width={600} height={600} request_params={{tag_val:"jazz", tag_name:"genres"}}/>
 
@@ -62,6 +63,9 @@ export default () => {
   }
   else if (requestParams.chartType === "Parallel Clustered") {
     chart = <ChartParallelClust id={1} width={800} height={800} request_params={requestParams}/>
+  }
+  else if (requestParams.chartType === "Parallel Sequence") {
+    chart = <ChartParallelSeq id={1} width={800} height={800} request_params={requestParams}/>
   }
 
   let legend = ""

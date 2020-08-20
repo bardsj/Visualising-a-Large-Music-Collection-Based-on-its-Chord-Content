@@ -310,6 +310,23 @@ def returnPrallelClust():
 
     return jsonify({"sets":sets_w_lab,"order":order})
 
+import json
+
+with open('Project\Data\API\itemsets_seq.json') as filename:
+    data_seq = json.load(filename)[0]
+
+@app.route('/parallelSeq',methods=['GET'])
+def returnDataParallelSeq():
+    """
+        API route - data for the parallel coordinates layout
+    """
+
+    sets = [{"labels":l,"values":v,"tag":None} for l,v in zip(data_seq['itemsets']['sequence'].values(),data_seq['itemsets']['supportPc'].values())]
+    # Get singletons
+    single_sets = [s for s in sets if len(s['labels']) == 1]
+    # Remove duplicates and keep the highest support val (duplicates occur when more than one genre is selected)
+
+    return jsonify({"sets":sets,"order":default_order})
 
 # Error handlers
 @app.errorhandler(404)

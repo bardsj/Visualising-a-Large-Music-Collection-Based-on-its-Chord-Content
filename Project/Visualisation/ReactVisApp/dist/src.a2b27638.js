@@ -74290,7 +74290,7 @@ var Options = /*#__PURE__*/function (_React$Component) {
             chartType: e.target.value
           }));
         }
-      }, /*#__PURE__*/_react.default.createElement("option", null, "Circular"), /*#__PURE__*/_react.default.createElement("option", null, "Parallel"), /*#__PURE__*/_react.default.createElement("option", null, "Circular Hierarchical"), /*#__PURE__*/_react.default.createElement("option", null, "Circular Hierarchical - Single Hue"), /*#__PURE__*/_react.default.createElement("option", null, "Circular Clustered"), /*#__PURE__*/_react.default.createElement("option", null, "Parallel Clustered")), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Label, null, "Genre"), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Group, null, genres.map(function (genre, index) {
+      }, /*#__PURE__*/_react.default.createElement("option", null, "Circular"), /*#__PURE__*/_react.default.createElement("option", null, "Parallel"), /*#__PURE__*/_react.default.createElement("option", null, "Circular Hierarchical"), /*#__PURE__*/_react.default.createElement("option", null, "Circular Hierarchical - Single Hue"), /*#__PURE__*/_react.default.createElement("option", null, "Circular Clustered"), /*#__PURE__*/_react.default.createElement("option", null, "Parallel Clustered"), /*#__PURE__*/_react.default.createElement("option", null, "Parallel Sequence")), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Label, null, "Genre"), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Group, null, genres.map(function (genre, index) {
         return /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Check, {
           onChange: function onChange(e) {
             return _this.props.handleFilter(e);
@@ -76053,7 +76053,318 @@ var ChartParallelClust = /*#__PURE__*/function (_React$Component) {
 }(_react.default.Component);
 
 exports.ChartParallelClust = ChartParallelClust;
-},{"@babel/runtime/helpers/slicedToArray":"node_modules/@babel/runtime/helpers/slicedToArray.js","@babel/runtime/helpers/construct":"node_modules/@babel/runtime/helpers/construct.js","@babel/runtime/helpers/toConsumableArray":"node_modules/@babel/runtime/helpers/toConsumableArray.js","@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js","@babel/runtime/helpers/inherits":"node_modules/@babel/runtime/helpers/inherits.js","@babel/runtime/helpers/possibleConstructorReturn":"node_modules/@babel/runtime/helpers/possibleConstructorReturn.js","@babel/runtime/helpers/getPrototypeOf":"node_modules/@babel/runtime/helpers/getPrototypeOf.js","react":"node_modules/react/index.js","d3":"node_modules/d3/index.js","./colorMap":"src/colorMap.js"}],"src/App.js":[function(require,module,exports) {
+},{"@babel/runtime/helpers/slicedToArray":"node_modules/@babel/runtime/helpers/slicedToArray.js","@babel/runtime/helpers/construct":"node_modules/@babel/runtime/helpers/construct.js","@babel/runtime/helpers/toConsumableArray":"node_modules/@babel/runtime/helpers/toConsumableArray.js","@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js","@babel/runtime/helpers/inherits":"node_modules/@babel/runtime/helpers/inherits.js","@babel/runtime/helpers/possibleConstructorReturn":"node_modules/@babel/runtime/helpers/possibleConstructorReturn.js","@babel/runtime/helpers/getPrototypeOf":"node_modules/@babel/runtime/helpers/getPrototypeOf.js","react":"node_modules/react/index.js","d3":"node_modules/d3/index.js","./colorMap":"src/colorMap.js"}],"src/chartParallelSeq.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.ChartParallelSeq = void 0;
+
+var _construct2 = _interopRequireDefault(require("@babel/runtime/helpers/construct"));
+
+var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toConsumableArray"));
+
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
+
+var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
+
+var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits"));
+
+var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
+
+var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
+
+var _react = _interopRequireDefault(require("react"));
+
+var d3 = _interopRequireWildcard(require("d3"));
+
+var _colorMap = require("./colorMap");
+
+function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = (0, _getPrototypeOf2.default)(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2.default)(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2.default)(this, result); }; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+var ChartParallelSeq = /*#__PURE__*/function (_React$Component) {
+  (0, _inherits2.default)(ChartParallelSeq, _React$Component);
+
+  var _super = _createSuper(ChartParallelSeq);
+
+  function ChartParallelSeq(props) {
+    var _this;
+
+    (0, _classCallCheck2.default)(this, ChartParallelSeq);
+    _this = _super.call(this, props);
+    _this.state = {
+      data: null,
+      request_params: null
+    };
+    return _this;
+  }
+
+  (0, _createClass2.default)(ChartParallelSeq, [{
+    key: "fetchData",
+    value: function fetchData(request_params, majMinSel) {
+      var _this2 = this;
+
+      var r_url = "";
+
+      if (request_params.tag_val.length > 0) {
+        r_url = "http://127.0.0.1:5000/parallelSeq?tag_val=" + request_params.tag_val.join() + "&tag_name=" + request_params.tag_name;
+      } else {
+        r_url = "http://127.0.0.1:5000/parallelSeq?";
+      }
+
+      if (request_params.optType) {
+        r_url = r_url + "&order_opt=" + request_params.optType;
+      }
+
+      if (request_params.majMinSel) {
+        r_url = r_url + "&majmin_agg=" + request_params.majMinSel;
+      }
+
+      fetch(r_url, {
+        mode: 'cors'
+      }).then(function (r) {
+        return r.json();
+      }).then(function (r) {
+        return _this2.setState({
+          data: r,
+          request_params: request_params
+        }, function () {
+          _this2.createChart();
+        });
+      });
+    }
+  }, {
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      this.fetchData(this.props.request_params);
+    }
+  }, {
+    key: "componentDidUpdate",
+    value: function componentDidUpdate(prevProps) {
+      if (prevProps.request_params !== this.props.request_params) {
+        if (prevProps.request_params.support !== this.props.request_params.support) {
+          this.createChart();
+        } else if (prevProps.request_params.focus !== this.props.request_params.focus) {
+          this.updateFocus();
+        } else {
+          this.fetchData(this.props.request_params);
+        }
+      }
+    }
+  }, {
+    key: "createChart",
+    value: function createChart() {
+      var _this3 = this;
+
+      var svg = d3.select(this.refs[this.props.id + 'chartsvg']);
+      svg.selectAll("*").remove();
+      var width = this.props.width;
+      var height = this.props.height;
+      var node_list = this.state.data.order;
+      var data = this.state.data.sets;
+      data = data.filter(function (x) {
+        return x.values > _this3.props.request_params.support / 100;
+      });
+      var margin = {
+        top: 20,
+        bottom: 20,
+        left: 60,
+        right: 10
+      }; // Number of parallel axes from max itemset length
+
+      var n_ax = d3.max(data.map(function (x) {
+        return x.labels.length;
+      })); // Filter out nodes from order that all not in filtered sets
+
+      var filtered_set = (0, _construct2.default)(Array, (0, _toConsumableArray2.default)(new Set(data.flatMap(function (x) {
+        return x['labels'];
+      }))));
+      node_list = node_list.filter(function (x) {
+        return filtered_set.includes(x);
+      }); // Colour map
+
+      var cmap = (0, _colorMap.genreColormap)(this.state.request_params.tag_val); // Add axes field to data by taking index of node in data node lists
+
+      var data_ax = data.map(function (d) {
+        return {
+          labels: d.labels.map(function (l, i) {
+            return {
+              node: l,
+              ax: i
+            };
+          }),
+          values: d.values,
+          tag: d.tag,
+          km_label: d.km_label
+        };
+      });
+      var scY = []; // Add axis field for n axes from node list
+
+      var node_list_ax = []; // Categorical y scale
+
+      var _loop = function _loop(i) {
+        //const ax_nodes = new Array(... new Set(data_ax.filter(x => x.labels[i]).map(x => x.labels[i].node)))
+        //scY.push(d3.scalePoint().domain(node_list.filter(x=>ax_nodes.includes(x))).range([margin.top, height - margin.bottom]))
+        var ax_nodes = node_list;
+        scY.push(d3.scalePoint().domain(node_list).range([margin.top, height - margin.bottom]));
+        node_list_ax.push.apply(node_list_ax, (0, _toConsumableArray2.default)(ax_nodes.map(function (x) {
+          return {
+            ax: i,
+            node: x
+          };
+        })));
+      };
+
+      for (var i = 0; i < n_ax; i++) {
+        _loop(i);
+      } // Linear x scale for parallel axes
+
+
+      var scX = d3.scaleLinear().domain([0, n_ax - 1]).range([margin.left, width - margin.right]); // Add node groups to create parallel axes
+
+      var nodes_group = svg.selectAll("g").data(node_list_ax).enter().append("g").attr("transform", function (d) {
+        return "translate(" + scX(d.ax) + "," + scY[d.ax](d.node) + ")";
+      }); // Append circle to node groups
+
+      var nodes = nodes_group.append("circle").attr("r", 2); // Append labels to node groups
+
+      var labels = nodes_group.append("text").text(function (d) {
+        return d.node;
+      }).attr("class", "label").attr("font-size", 10).attr("dx", -4).attr("dy", 2).attr("text-anchor", "end"); // Add transparent rectangle to labels for easier hover selection
+
+      var label_bg = nodes_group.append("rect").attr("width", 30).attr("height", 20).attr("fill", "transparent").attr("transform", "translate(-34,-6)"); // Path generator
+
+      var lineGen = d3.line().y(function (d) {
+        return d.y;
+      }).x(function (d) {
+        return d.x;
+      });
+
+      var create_points = function create_points(d, i) {
+        var line = [{
+          "x": scX(d.labels[i].ax),
+          "y": scY[d.labels[i].ax](d.labels[i].node)
+        }, {
+          "x": scX(d.labels[i + 1].ax),
+          "y": scY[d.labels[i + 1].ax](d.labels[i + 1].node)
+        }];
+        return line;
+      };
+
+      var node_cmap_sc = d3.scalePoint().range([0, 1]).domain(node_list); // Append lines for each axes seperately to allow each to be coloured based on start node
+
+      var data_filt = [];
+
+      var _loop2 = function _loop2(_i) {
+        data_filt.push.apply(data_filt, (0, _toConsumableArray2.default)(data_ax.filter(function (x) {
+          return x.labels.length > _i + 1;
+        }).map(function (d) {
+          return Object.assign(d, {
+            ax: _i
+          });
+        })));
+      };
+
+      for (var _i = 0; _i < n_ax; _i++) {
+        _loop2(_i);
+      } // Append paths
+
+
+      var links = svg.selectAll("path").select(".link").data(data_filt).enter().append("path").attr("class", "link").attr("d", function (d) {
+        return lineGen(create_points(d, d.ax));
+      }).attr("fill", "none").attr("stroke", function (d) {
+        return _this3.props.request_params.cPath ? d3.interpolateTurbo(node_cmap_sc(d.labels[d.ax].node)) : cmap[d.tag];
+      }).attr("fill", "none").attr("stroke-width", function (d) {
+        return Math.pow(d.values, 1.5) * 5;
+      }).attr("stroke-opacity", function (d) {
+        return Math.pow(d.values / d3.max(data.map(function (x) {
+          return x.values;
+        })), _this3.props.request_params.focus);
+      }); // Highlight paths when hovering on node
+
+      label_bg.on("mouseenter", function (sel) {
+        d3.selectAll(".label").filter(function (l) {
+          return l == sel;
+        }).transition(0.1).attr("font-size", 15);
+        d3.selectAll(".link") //.filter(d=>d.labels.includes(sel.label))
+        .filter(function (d) {
+          return d.labels[sel.ax] ? d.labels[sel.ax].node === sel.node : null;
+        }).transition(0.1).attr("stroke", "red").attr("stroke-width", 3).attr("stroke-opacity", function (d) {
+          return Math.pow(d.values / d3.max(data.map(function (x) {
+            return x.values;
+          })), 1);
+        });
+      });
+      label_bg.on("mouseleave", function (sel) {
+        d3.selectAll(".label").filter(function (l) {
+          return l == sel;
+        }).transition(0.1).attr("font-size", 10);
+        d3.selectAll(".link").filter(function (d) {
+          return d.labels[sel.ax] ? d.labels[sel.ax].node === sel.node : null;
+        }).transition(0.1).attr("stroke", function (d) {
+          return _this3.props.request_params.cPath ? d3.interpolateTurbo(node_cmap_sc(d.labels[d.ax].node)) : cmap[d.tag];
+        }).attr("stroke-width", function (d) {
+          return Math.pow(d.values, 1.5) * 5;
+        }).attr("stroke-opacity", function (d) {
+          return Math.pow(d.values / d3.max(data.map(function (x) {
+            return x.values;
+          })), _this3.props.request_params.focus);
+        }); // Raise label groups above paths
+
+        nodes_group.raise();
+        label_bg.raise();
+
+        _this3.setState({
+          sets: data
+        });
+      }); // Raise label groups above paths
+
+      nodes_group.raise();
+      label_bg.raise();
+      this.setState({
+        sets: data
+      });
+    }
+  }, {
+    key: "updateFocus",
+    value: function updateFocus() {
+      var _this4 = this;
+
+      var svg = d3.select(this.refs[this.props.id + 'chartsvg']);
+      svg.selectAll(".link").attr("stroke-opacity", function (d) {
+        return Math.pow(d.values / d3.max(_this4.state.sets.map(function (x) {
+          return x.values;
+        })), _this4.props.request_params.focus);
+      });
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      return /*#__PURE__*/_react.default.createElement("svg", {
+        ref: this.props.id + 'chartsvg',
+        width: this.props.width,
+        height: this.props.height,
+        style: {
+          display: "block",
+          margin: "auto"
+        }
+      });
+    }
+  }]);
+  return ChartParallelSeq;
+}(_react.default.Component);
+
+exports.ChartParallelSeq = ChartParallelSeq;
+},{"@babel/runtime/helpers/construct":"node_modules/@babel/runtime/helpers/construct.js","@babel/runtime/helpers/toConsumableArray":"node_modules/@babel/runtime/helpers/toConsumableArray.js","@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js","@babel/runtime/helpers/inherits":"node_modules/@babel/runtime/helpers/inherits.js","@babel/runtime/helpers/possibleConstructorReturn":"node_modules/@babel/runtime/helpers/possibleConstructorReturn.js","@babel/runtime/helpers/getPrototypeOf":"node_modules/@babel/runtime/helpers/getPrototypeOf.js","react":"node_modules/react/index.js","d3":"node_modules/d3/index.js","./colorMap":"src/colorMap.js"}],"src/App.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -76086,6 +76397,8 @@ var _chartHierSingleHue = require("./chartHierSingleHue");
 var _chartClust = require("./chartClust");
 
 var _chartParallelClust = require("./chartParallelClust");
+
+var _chartParallelSeq = require("./chartParallelSeq");
 
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
 
@@ -76202,6 +76515,13 @@ var _default = function _default() {
       height: 800,
       request_params: requestParams
     });
+  } else if (requestParams.chartType === "Parallel Sequence") {
+    chart = /*#__PURE__*/_react.default.createElement(_chartParallelSeq.ChartParallelSeq, {
+      id: 1,
+      width: 800,
+      height: 800,
+      request_params: requestParams
+    });
   }
 
   var legend = "";
@@ -76231,7 +76551,7 @@ var _default = function _default() {
 };
 
 exports.default = _default;
-},{"@babel/runtime/helpers/defineProperty":"node_modules/@babel/runtime/helpers/defineProperty.js","@babel/runtime/helpers/slicedToArray":"node_modules/@babel/runtime/helpers/slicedToArray.js","react":"node_modules/react/index.js","./chartCircular":"src/chartCircular.js","./chartParallel":"src/chartParallel.js","./chartHier":"src/chartHier.js","./options":"src/options.js","./visparams":"src/visparams.js","./legend":"src/legend.js","react-bootstrap":"node_modules/react-bootstrap/esm/index.js","./chartHierSingleHue":"src/chartHierSingleHue.js","./chartClust":"src/chartClust.js","./chartParallelClust":"src/chartParallelClust.js"}],"src/index.js":[function(require,module,exports) {
+},{"@babel/runtime/helpers/defineProperty":"node_modules/@babel/runtime/helpers/defineProperty.js","@babel/runtime/helpers/slicedToArray":"node_modules/@babel/runtime/helpers/slicedToArray.js","react":"node_modules/react/index.js","./chartCircular":"src/chartCircular.js","./chartParallel":"src/chartParallel.js","./chartHier":"src/chartHier.js","./options":"src/options.js","./visparams":"src/visparams.js","./legend":"src/legend.js","react-bootstrap":"node_modules/react-bootstrap/esm/index.js","./chartHierSingleHue":"src/chartHierSingleHue.js","./chartClust":"src/chartClust.js","./chartParallelClust":"src/chartParallelClust.js","./chartParallelSeq":"src/chartParallelSeq.js"}],"src/index.js":[function(require,module,exports) {
 "use strict";
 
 var _react = _interopRequireDefault(require("react"));
@@ -76271,7 +76591,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62523" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64620" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
