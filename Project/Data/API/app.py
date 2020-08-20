@@ -18,6 +18,12 @@ CORS(app)
 client = MongoClient("mongodb+srv://publicUser:jdACcF7TyiU2Vshj@msc.5jje5.gcp.mongodb.net/jamendo?retryWrites=false&w=majority")
 col = client.jamendo.itemsetData
 
+client_meta = MongoClient(os.environ['MSC_MONGO_PERSONAL_URI'])
+col_meta = client_meta.jamendo.songMetadata
+
+client_chord = MongoClient(os.environ['MSC_CHORD_DB_URI'])
+col_chord = client_chord.jamendo.chords
+
 # Default ordering based on root nodes - used in heirarchical bundling
 default_order = ["Cmaj","Cmaj7","Cmin","Cmin7","C7", \
         "Dbmaj","Dbmaj7","Dbmin","Dbmin7","Db7",
@@ -318,7 +324,7 @@ with open('Project\Data\API\itemsets_seq.json') as filename:
 @app.route('/parallelSeq',methods=['GET'])
 def returnDataParallelSeq():
     """
-        API route - data for the parallel coordinates layout
+        API route - data for the parallel coordinates layout with sequential data
     """
 
     sets = [{"labels":l,"values":v,"tag":None} for l,v in zip(data_seq['itemsets']['sequence'].values(),data_seq['itemsets']['supportPc'].values())]
@@ -327,6 +333,40 @@ def returnDataParallelSeq():
     # Remove duplicates and keep the highest support val (duplicates occur when more than one genre is selected)
 
     return jsonify({"sets":sets,"order":default_order})
+
+@app.route('/queryData',methods=['GET'])
+def queryData():
+    """
+        API route - get sample of data from metadata db based on query params
+    """
+    # Build query
+    qparams = {}
+    # Get valid tracks based on chord content
+    if 'chordSel' in request.args:
+        rch = request.args['chordSel'].split(",")
+        #exprs = [{"$and":[{'chordRatio.'+ch:{"$exists":True}},{'chordRatio.'+ch:{"$gt":0.2}}]} for ch in rch]
+        exprs = [{'chordRatio.'+ch:{"$exists":True}} for ch in rch]
+        # Get tracks with chords
+        valid_ids = [str(x['_id']) for x in col_chord.find({"$and":exprs})]
+        # Query metadata db
+        qparams["_id"] = {"$in":valid_ids}
+
+    if 'genre' in request.args:
+        qparams['musicinfo.tags.genres'] = request.args['genre'].split(",")
+
+    n_docs = col_meta.count_documents(qparams)
+    q_docs = col_meta.find(qparams)
+    # Sample random 5 tracks
+    if n_docs > 5:
+        results = [q_docs[int(i)] for i in np.random.randint(0,n_docs,5)]
+    else:
+        results = [d for d in q_docs]
+    
+    for r in results:
+        r['chords'] = col_chord.find_one({"_id":str(r['_id'])})
+
+    return jsonify(results)
+
 
 # Error handlers
 @app.errorhandler(404)

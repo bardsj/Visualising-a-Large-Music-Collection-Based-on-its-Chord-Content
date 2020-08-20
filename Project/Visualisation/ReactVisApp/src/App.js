@@ -10,6 +10,7 @@ import { ChartHierSingleHue } from "./chartHierSingleHue";
 import { ChartClust } from "./chartClust";
 import { ChartParallelClust } from "./chartParallelClust";
 import { ChartParallelSeq } from "./chartParallelSeq";
+import { QueryTable } from "./queryTable";
 
 // <Chart width={600} height={600} request_params={{tag_val:"jazz", tag_name:"genres"}}/>
 
@@ -94,7 +95,7 @@ export default () => {
         </Col>
       </Row>
       <Row>
-
+        <QueryTable queryParams={queryParams} requestParams={requestParams}/>
       </Row>
     </Container>
   </>)

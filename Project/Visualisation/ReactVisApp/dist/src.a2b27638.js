@@ -76412,7 +76412,140 @@ var ChartParallelSeq = /*#__PURE__*/function (_React$Component) {
 }(_react.default.Component);
 
 exports.ChartParallelSeq = ChartParallelSeq;
-},{"@babel/runtime/helpers/construct":"node_modules/@babel/runtime/helpers/construct.js","@babel/runtime/helpers/toConsumableArray":"node_modules/@babel/runtime/helpers/toConsumableArray.js","@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js","@babel/runtime/helpers/inherits":"node_modules/@babel/runtime/helpers/inherits.js","@babel/runtime/helpers/possibleConstructorReturn":"node_modules/@babel/runtime/helpers/possibleConstructorReturn.js","@babel/runtime/helpers/getPrototypeOf":"node_modules/@babel/runtime/helpers/getPrototypeOf.js","react":"node_modules/react/index.js","d3":"node_modules/d3/index.js","./colorMap":"src/colorMap.js"}],"src/App.js":[function(require,module,exports) {
+},{"@babel/runtime/helpers/construct":"node_modules/@babel/runtime/helpers/construct.js","@babel/runtime/helpers/toConsumableArray":"node_modules/@babel/runtime/helpers/toConsumableArray.js","@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js","@babel/runtime/helpers/inherits":"node_modules/@babel/runtime/helpers/inherits.js","@babel/runtime/helpers/possibleConstructorReturn":"node_modules/@babel/runtime/helpers/possibleConstructorReturn.js","@babel/runtime/helpers/getPrototypeOf":"node_modules/@babel/runtime/helpers/getPrototypeOf.js","react":"node_modules/react/index.js","d3":"node_modules/d3/index.js","./colorMap":"src/colorMap.js"}],"src/queryTable.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.QueryTable = void 0;
+
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
+
+var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
+
+var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits"));
+
+var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
+
+var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
+
+var _react = _interopRequireDefault(require("react"));
+
+var _reactBootstrap = require("react-bootstrap");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = (0, _getPrototypeOf2.default)(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2.default)(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2.default)(this, result); }; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+var QueryTable = /*#__PURE__*/function (_React$Component) {
+  (0, _inherits2.default)(QueryTable, _React$Component);
+
+  var _super = _createSuper(QueryTable);
+
+  function QueryTable(props) {
+    var _this;
+
+    (0, _classCallCheck2.default)(this, QueryTable);
+    _this = _super.call(this, props);
+    _this.state = {
+      tableData: null,
+      loading: true
+    };
+    return _this;
+  }
+
+  (0, _createClass2.default)(QueryTable, [{
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      this.fetchData();
+    }
+  }, {
+    key: "componentDidUpdate",
+    value: function componentDidUpdate(prevProps) {
+      if (prevProps.queryParams !== this.props.queryParams || prevProps.requestParams.tag_val !== this.props.requestParams.tag_val) {
+        this.fetchData();
+      }
+    }
+  }, {
+    key: "fetchData",
+    value: function fetchData() {
+      var _this2 = this;
+
+      this.setState({
+        tableData: null,
+        loading: true
+      });
+      var url = "http://127.0.0.1:5000/queryData?";
+
+      if ('chordSel' in this.props.queryParams) {
+        if (this.props.queryParams.chordSel.length > 0) {
+          url = url + "&chordSel=" + this.props.queryParams.chordSel.join(",");
+        }
+      }
+
+      if (this.props.requestParams.tag_name == 'genres' && this.props.requestParams.tag_val.length > 0) {
+        url = url + "&genre=" + this.props.requestParams.tag_val.join(",");
+      }
+
+      fetch(url).then(function (r) {
+        return r.json();
+      }).then(function (r) {
+        return _this2.setState({
+          tableData: r,
+          loading: false
+        });
+      });
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      var tableRows = "";
+
+      var spinner = /*#__PURE__*/_react.default.createElement("div", {
+        style: {
+          textAlign: "center",
+          width: "100%"
+        }
+      }, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Spinner, {
+        animation: "border",
+        role: "status"
+      }, /*#__PURE__*/_react.default.createElement("span", {
+        className: "sr-only"
+      }, "Loading...")));
+
+      if (this.state.tableData) {
+        tableRows = this.state.tableData.map(function (x, i) {
+          return /*#__PURE__*/_react.default.createElement("tr", {
+            key: i
+          }, /*#__PURE__*/_react.default.createElement("td", null, x['name']), /*#__PURE__*/_react.default.createElement("td", null, x['artist_name']), /*#__PURE__*/_react.default.createElement("td", null, "TBC"), /*#__PURE__*/_react.default.createElement("td", null, x.musicinfo.tags.genres.join(", ")), /*#__PURE__*/_react.default.createElement("td", null, /*#__PURE__*/_react.default.createElement("audio", {
+            controls: true
+          }, /*#__PURE__*/_react.default.createElement("source", {
+            src: x['audio'],
+            type: "audio/mpeg"
+          }))));
+        });
+      }
+
+      if (!this.state.tableData && !this.state.loading) {
+        tableRows = "No Results";
+      }
+
+      return /*#__PURE__*/_react.default.createElement("div", {
+        style: {
+          width: "100%",
+          padding: "40px"
+        }
+      }, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Table, null, /*#__PURE__*/_react.default.createElement("thead", null, /*#__PURE__*/_react.default.createElement("tr", null, /*#__PURE__*/_react.default.createElement("th", null, "Track Name"), /*#__PURE__*/_react.default.createElement("th", null, "Artist"), /*#__PURE__*/_react.default.createElement("th", null, "Chords"), /*#__PURE__*/_react.default.createElement("th", null, "Genre Tags"), /*#__PURE__*/_react.default.createElement("th", null, "Audio"))), /*#__PURE__*/_react.default.createElement("tbody", null, tableRows)), this.state.loading ? spinner : null);
+    }
+  }]);
+  return QueryTable;
+}(_react.default.Component);
+
+exports.QueryTable = QueryTable;
+},{"@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js","@babel/runtime/helpers/inherits":"node_modules/@babel/runtime/helpers/inherits.js","@babel/runtime/helpers/possibleConstructorReturn":"node_modules/@babel/runtime/helpers/possibleConstructorReturn.js","@babel/runtime/helpers/getPrototypeOf":"node_modules/@babel/runtime/helpers/getPrototypeOf.js","react":"node_modules/react/index.js","react-bootstrap":"node_modules/react-bootstrap/esm/index.js"}],"src/App.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -76447,6 +76580,8 @@ var _chartClust = require("./chartClust");
 var _chartParallelClust = require("./chartParallelClust");
 
 var _chartParallelSeq = require("./chartParallelSeq");
+
+var _queryTable = require("./queryTable");
 
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
 
@@ -76604,11 +76739,14 @@ var _default = function _default() {
     handleOptType: handleOptType
   })), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Col, null, chart), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Col, {
     sm: 2
-  }, legend)), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Row, null)));
+  }, legend)), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Row, null, /*#__PURE__*/_react.default.createElement(_queryTable.QueryTable, {
+    queryParams: queryParams,
+    requestParams: requestParams
+  }))));
 };
 
 exports.default = _default;
-},{"@babel/runtime/helpers/defineProperty":"node_modules/@babel/runtime/helpers/defineProperty.js","@babel/runtime/helpers/slicedToArray":"node_modules/@babel/runtime/helpers/slicedToArray.js","react":"node_modules/react/index.js","./chartCircular":"src/chartCircular.js","./chartParallel":"src/chartParallel.js","./chartHier":"src/chartHier.js","./options":"src/options.js","./visparams":"src/visparams.js","./legend":"src/legend.js","react-bootstrap":"node_modules/react-bootstrap/esm/index.js","./chartHierSingleHue":"src/chartHierSingleHue.js","./chartClust":"src/chartClust.js","./chartParallelClust":"src/chartParallelClust.js","./chartParallelSeq":"src/chartParallelSeq.js"}],"src/index.js":[function(require,module,exports) {
+},{"@babel/runtime/helpers/defineProperty":"node_modules/@babel/runtime/helpers/defineProperty.js","@babel/runtime/helpers/slicedToArray":"node_modules/@babel/runtime/helpers/slicedToArray.js","react":"node_modules/react/index.js","./chartCircular":"src/chartCircular.js","./chartParallel":"src/chartParallel.js","./chartHier":"src/chartHier.js","./options":"src/options.js","./visparams":"src/visparams.js","./legend":"src/legend.js","react-bootstrap":"node_modules/react-bootstrap/esm/index.js","./chartHierSingleHue":"src/chartHierSingleHue.js","./chartClust":"src/chartClust.js","./chartParallelClust":"src/chartParallelClust.js","./chartParallelSeq":"src/chartParallelSeq.js","./queryTable":"src/queryTable.js"}],"src/index.js":[function(require,module,exports) {
 "use strict";
 
 var _react = _interopRequireDefault(require("react"));
@@ -76648,7 +76786,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51733" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55839" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
