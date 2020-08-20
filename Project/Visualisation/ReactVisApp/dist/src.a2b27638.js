@@ -74390,7 +74390,8 @@ function VisParams(props) {
   var majminSel = /*#__PURE__*/_react.default.createElement("div", {
     style: {
       paddingLeft: 20,
-      paddingBottom: 10
+      paddingBottom: 5,
+      paddingTop: 10
     }
   }, /*#__PURE__*/_react.default.createElement("input", {
     type: "checkbox",
@@ -74403,7 +74404,8 @@ function VisParams(props) {
     }
   }), /*#__PURE__*/_react.default.createElement("label", {
     style: {
-      paddingLeft: 20
+      paddingLeft: 10,
+      fontSize: 12
     }
   }, "Major/Minor Aggregation"));
 
@@ -74414,15 +74416,16 @@ function VisParams(props) {
       style: {
         display: "grid",
         paddingLeft: 20,
-        gridTemplateColumns: "60px 150px 50px"
+        gridTemplateColumns: "60px 120px 50px"
       }
     }, /*#__PURE__*/_react.default.createElement("p", {
       style: {
         float: "left",
         paddingRight: 10,
-        paddingBottom: 10,
+        paddingBottom: 5,
         gridRow: 1,
-        gridColumn: 1
+        gridColumn: 1,
+        fontSize: 12
       }
     }, "Focus"), /*#__PURE__*/_react.default.createElement("input", {
       style: {
@@ -74447,15 +74450,17 @@ function VisParams(props) {
         float: "right",
         paddingLeft: 10,
         gridRow: 1,
-        gridColumn: 3
+        gridColumn: 3,
+        fontSize: 12
       }
     }, props.requestParams.focus), /*#__PURE__*/_react.default.createElement("p", {
       style: {
         float: "left",
         paddingRight: 10,
-        paddingBottom: 10,
+        paddingBottom: 5,
         gridRow: 2,
-        gridColumn: 1
+        gridColumn: 1,
+        fontSize: 12
       }
     }, "Support"), /*#__PURE__*/_react.default.createElement("input", {
       style: {
@@ -74479,14 +74484,15 @@ function VisParams(props) {
         float: "right",
         paddingLeft: 10,
         gridRow: 2,
-        gridColumn: 3
+        gridColumn: 3,
+        fontSize: 12
       }
     }, props.requestParams.support));
   } else if (props.requestParams.chartType.includes("Parallel")) {
     controls = /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("div", {
       style: {
         paddingLeft: 20,
-        paddingBottom: 10
+        paddingBottom: 5
       }
     }, /*#__PURE__*/_react.default.createElement("input", {
       type: "checkbox",
@@ -74499,21 +74505,23 @@ function VisParams(props) {
       }
     }), /*#__PURE__*/_react.default.createElement("label", {
       style: {
-        paddingLeft: 20
+        paddingLeft: 10,
+        fontSize: 12
       }
     }, "Colour paths by node start")), /*#__PURE__*/_react.default.createElement("div", {
       style: {
         display: "grid",
         paddingLeft: 20,
-        gridTemplateColumns: "60px 150px 50px"
+        gridTemplateColumns: "60px 120px 50px"
       }
     }, /*#__PURE__*/_react.default.createElement("p", {
       style: {
         float: "left",
         paddingRight: 10,
-        paddingBottom: 10,
+        paddingBottom: 5,
         gridRow: 1,
-        gridColumn: 1
+        gridColumn: 1,
+        fontSize: 12
       }
     }, "Focus"), /*#__PURE__*/_react.default.createElement("input", {
       style: {
@@ -74538,15 +74546,17 @@ function VisParams(props) {
         float: "right",
         paddingLeft: 10,
         gridRow: 1,
-        gridColumn: 3
+        gridColumn: 3,
+        fontSize: 12
       }
     }, props.requestParams.focus), /*#__PURE__*/_react.default.createElement("p", {
       style: {
         float: "left",
         paddingRight: 10,
-        paddingBottom: 10,
+        paddingBottom: 5,
         gridRow: 2,
-        gridColumn: 1
+        gridColumn: 1,
+        fontSize: 12
       }
     }, "Support"), /*#__PURE__*/_react.default.createElement("input", {
       style: {
@@ -74570,14 +74580,15 @@ function VisParams(props) {
         float: "right",
         paddingLeft: 10,
         gridRow: 2,
-        gridColumn: 3
+        gridColumn: 3,
+        fontSize: 12
       }
     }, props.requestParams.support)));
   } else {
     controls = /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("div", {
       style: {
         paddingLeft: 20,
-        paddingBottom: 10,
+        paddingBottom: 5,
         width: "200px"
       }
     }, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Group, {
@@ -74591,15 +74602,16 @@ function VisParams(props) {
       style: {
         display: "grid",
         paddingLeft: 20,
-        gridTemplateColumns: "60px 150px 50px"
+        gridTemplateColumns: "60px 120px 50px"
       }
     }, /*#__PURE__*/_react.default.createElement("p", {
       style: {
         float: "left",
         paddingRight: 10,
-        paddingBottom: 10,
+        paddingBottom: 5,
         gridRow: 1,
-        gridColumn: 1
+        gridColumn: 1,
+        fontSize: 12
       }
     }, "Focus"), /*#__PURE__*/_react.default.createElement("input", {
       style: {
@@ -74624,15 +74636,17 @@ function VisParams(props) {
         float: "right",
         paddingLeft: 10,
         gridRow: 1,
-        gridColumn: 3
+        gridColumn: 3,
+        fontSize: 12
       }
     }, props.requestParams.focus), /*#__PURE__*/_react.default.createElement("p", {
       style: {
         float: "left",
         paddingRight: 10,
-        paddingBottom: 10,
+        paddingBottom: 5,
         gridRow: 2,
-        gridColumn: 1
+        gridColumn: 1,
+        fontSize: 12
       }
     }, "Support"), /*#__PURE__*/_react.default.createElement("input", {
       style: {
@@ -74656,7 +74670,8 @@ function VisParams(props) {
         float: "right",
         paddingLeft: 10,
         gridRow: 2,
-        gridColumn: 3
+        gridColumn: 3,
+        fontSize: 12
       }
     }, props.requestParams.support)));
   }
@@ -76583,13 +76598,13 @@ var _default = function _default() {
     handleChartType: handleChartType
   }))), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Row, null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Col, {
     sm: 2
-  }), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Col, null, chart), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Col, {
-    sm: 2
-  }, legend)), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Row, null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Col, null, /*#__PURE__*/_react.default.createElement(_visparams.VisParams, {
+  }, /*#__PURE__*/_react.default.createElement(_visparams.VisParams, {
     requestParams: requestParams,
     setRequestParams: setRequestParams,
     handleOptType: handleOptType
-  })))));
+  })), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Col, null, chart), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Col, {
+    sm: 2
+  }, legend)), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Row, null)));
 };
 
 exports.default = _default;

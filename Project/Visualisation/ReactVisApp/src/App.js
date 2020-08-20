@@ -83,7 +83,8 @@ export default () => {
         </Col>
       </Row>
       <Row>
-        <Col sm={2}>
+      <Col sm={2}>
+          <VisParams requestParams={requestParams} setRequestParams={setRequestParams} handleOptType={handleOptType}/>
         </Col>
         <Col>
           {chart}
@@ -93,9 +94,7 @@ export default () => {
         </Col>
       </Row>
       <Row>
-        <Col>
-          <VisParams requestParams={requestParams} setRequestParams={setRequestParams} handleOptType={handleOptType}/>
-        </Col>
+
       </Row>
     </Container>
   </>)
