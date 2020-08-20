@@ -16,6 +16,7 @@ import { ChartParallelSeq } from "./chartParallelSeq";
 export default () => {
 
   const [requestParams, setRequestParams] = useState({tag_val:["jazz"], tag_name:"genres",chartType:"Circular",focus:1,support:1,beta:1,optType:null,cPath:false,majMinSel:false})
+  const [queryParams, setQueryParams] = useState({"chordSel":[]})
 
   const handleFilter = (e) => {
     if (e.target.checked == true) {
@@ -47,7 +48,7 @@ export default () => {
   let chart = ""
 
   if (requestParams.chartType === "Circular") {
-    chart =  <ChartCircular id={1} width={800} height={800} request_params={requestParams}/>
+    chart =  <ChartCircular id={1} width={800} height={800} request_params={requestParams} queryParams={queryParams} setQueryParams={setQueryParams}/>
   }
   else if (requestParams.chartType === "Parallel")  {
       chart = <ChartParallel id={1} width={800} height={800} request_params={requestParams}/>

@@ -57547,6 +57547,10 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
           this.fetchData(this.props.request_params);
         }
       }
+
+      if (prevProps.queryParams !== this.props.queryParams) {
+        this.createChart();
+      }
     }
   }, {
     key: "createChart",
@@ -57562,7 +57566,17 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
 
       sets = sets.filter(function (x) {
         return x.values > _this3.props.request_params.support / 100;
-      });
+      }); // Filter sets based on query params
+      //sets = sets.filter(x => x.labels.some(i=>i.includes(this.props.queryParams['chordSel'])))
+
+      if (this.props.queryParams['chordSel'].length > 0) {
+        sets = sets.filter(function (x) {
+          return x.labels.some(function (r) {
+            return _this3.props.queryParams['chordSel'].includes(r);
+          });
+        });
+      }
+
       var r = this.props.height / 2 - 50; // Filter out nodes from order that all not in filtered sets
 
       var filtered_set = (0, _construct2.default)(Array, (0, _toConsumableArray2.default)(new Set(sets.flatMap(function (x) {
@@ -57652,11 +57666,17 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
 
       var labels = nodes_group.append("text").text(function (d) {
         return d.label;
-      }).attr("fill", "black").attr("dx", function (d) {
+      }).attr("id", function (d) {
+        return d.label;
+      }).attr("fill", function (d) {
+        return _this3.props.queryParams['chordSel'].includes(d.label) ? "red" : "black";
+      }).attr("dx", function (d) {
         return d.coords.x * labelOffset;
       }).attr("dy", function (d) {
         return -d.coords.y * labelOffset;
-      }).attr("text-anchor", "middle").attr("font-size", 10);
+      }).attr("text-anchor", "middle").attr("font-size", 10).attr("font-weight", function (d) {
+        return _this3.props.queryParams['chordSel'].includes(d.label) ? 700 : 400;
+      });
       var beta = 0;
       var lineGen = d3.line().x(function (d) {
         return d.x + centre.x;
@@ -57697,6 +57717,19 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
           })), _this3.props.request_params.focus);
         });
         nodes_group.raise();
+      });
+      nodes_group.on("click", function (sel) {
+        var currentQState = _this3.props.queryParams['chordSel'];
+
+        if (currentQState.includes(sel.label)) {
+          currentQState.splice(currentQState.indexOf(sel.label), 1);
+        } else {
+          currentQState.push(sel.label);
+        }
+
+        _this3.props.setQueryParams({
+          "chordSel": currentQState
+        });
       }); // Remove spacing nodes
 
       if (!this.props.request_params.optType) {
@@ -76427,6 +76460,13 @@ var _default = function _default() {
       requestParams = _useState2[0],
       setRequestParams = _useState2[1];
 
+  var _useState3 = (0, _react.useState)({
+    "chordSel": []
+  }),
+      _useState4 = (0, _slicedToArray2.default)(_useState3, 2),
+      queryParams = _useState4[0],
+      setQueryParams = _useState4[1];
+
   var handleFilter = function handleFilter(e) {
     if (e.target.checked == true) {
       requestParams.tag_val.push(e.target.value);
@@ -76478,7 +76518,9 @@ var _default = function _default() {
       id: 1,
       width: 800,
       height: 800,
-      request_params: requestParams
+      request_params: requestParams,
+      queryParams: queryParams,
+      setQueryParams: setQueryParams
     });
   } else if (requestParams.chartType === "Parallel") {
     chart = /*#__PURE__*/_react.default.createElement(_chartParallel.ChartParallel, {
@@ -76591,7 +76633,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64620" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51733" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
