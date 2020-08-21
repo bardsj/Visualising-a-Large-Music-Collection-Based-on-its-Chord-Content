@@ -76490,7 +76490,7 @@ var QueryTable = /*#__PURE__*/function (_React$Component) {
         url = url + "&genre=" + this.props.requestParams.tag_val.join(",");
       }
 
-      fetch(url).then(function (r) {
+      fetch(url, this.signal).then(function (r) {
         return r.json();
       }).then(function (r) {
         return _this2.setState({
@@ -76521,7 +76521,10 @@ var QueryTable = /*#__PURE__*/function (_React$Component) {
           return /*#__PURE__*/_react.default.createElement("tr", {
             key: i
           }, /*#__PURE__*/_react.default.createElement("td", null, x['name']), /*#__PURE__*/_react.default.createElement("td", null, x['artist_name']), /*#__PURE__*/_react.default.createElement("td", null, "TBC"), /*#__PURE__*/_react.default.createElement("td", null, x.musicinfo.tags.genres.join(", ")), /*#__PURE__*/_react.default.createElement("td", null, /*#__PURE__*/_react.default.createElement("audio", {
-            controls: true
+            controls: true,
+            style: {
+              "height": 30
+            }
           }, /*#__PURE__*/_react.default.createElement("source", {
             src: x['audio'],
             type: "audio/mpeg"
@@ -76538,7 +76541,10 @@ var QueryTable = /*#__PURE__*/function (_React$Component) {
           width: "100%",
           padding: "40px"
         }
-      }, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Table, null, /*#__PURE__*/_react.default.createElement("thead", null, /*#__PURE__*/_react.default.createElement("tr", null, /*#__PURE__*/_react.default.createElement("th", null, "Track Name"), /*#__PURE__*/_react.default.createElement("th", null, "Artist"), /*#__PURE__*/_react.default.createElement("th", null, "Chords"), /*#__PURE__*/_react.default.createElement("th", null, "Genre Tags"), /*#__PURE__*/_react.default.createElement("th", null, "Audio"))), /*#__PURE__*/_react.default.createElement("tbody", null, tableRows)), this.state.loading ? spinner : null);
+      }, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Table, {
+        bordered: true,
+        size: "sm"
+      }, /*#__PURE__*/_react.default.createElement("thead", null, /*#__PURE__*/_react.default.createElement("tr", null, /*#__PURE__*/_react.default.createElement("th", null, "Track Name"), /*#__PURE__*/_react.default.createElement("th", null, "Artist"), /*#__PURE__*/_react.default.createElement("th", null, "Chords"), /*#__PURE__*/_react.default.createElement("th", null, "Genre Tags"), /*#__PURE__*/_react.default.createElement("th", null, "Audio"))), /*#__PURE__*/_react.default.createElement("tbody", null, tableRows)), this.state.loading ? spinner : null);
     }
   }]);
   return QueryTable;
@@ -76786,7 +76792,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55839" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "58576" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

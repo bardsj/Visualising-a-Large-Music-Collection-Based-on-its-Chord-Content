@@ -318,7 +318,7 @@ def returnPrallelClust():
 
 import json
 
-with open('Project\Data\API\itemsets_seq.json') as filename:
+with open('Project\Data\API\itemsets_seq_20pc.json') as filename:
     data_seq = json.load(filename)[0]
 
 @app.route('/parallelSeq',methods=['GET'])

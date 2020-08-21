@@ -28,7 +28,7 @@ export class QueryTable extends React.Component {
         if (this.props.requestParams.tag_name == 'genres' && this.props.requestParams.tag_val.length > 0) {
             url = url + "&genre=" + this.props.requestParams.tag_val.join(",")
         }
-        fetch(url).then(r=>r.json()).then(r=>this.setState({tableData:r,loading:false}))
+        fetch(url,this.signal).then(r=>r.json()).then(r=>this.setState({tableData:r,loading:false}))
     }
 
     render() {
@@ -53,7 +53,7 @@ export class QueryTable extends React.Component {
                         <td>{"TBC"}</td>
                         <td>{x.musicinfo.tags.genres.join(", ")}</td>
                         <td>
-                            <audio controls>
+                            <audio controls style={{"height":30}}>
                             <source src={x['audio']} type="audio/mpeg"/>
                             </audio>
                         </td>
@@ -69,7 +69,7 @@ export class QueryTable extends React.Component {
 
         return (
             <div style={{width:"100%",padding:"40px"}}>
-                <Table>
+                <Table bordered size='sm'>
                     <thead>
                         <tr>
                             <th>{"Track Name"}</th>
