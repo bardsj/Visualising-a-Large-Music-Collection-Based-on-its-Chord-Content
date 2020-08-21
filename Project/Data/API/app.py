@@ -9,6 +9,7 @@ import numpy as np
 from itertools import chain
 import pandas as pd
 from sklearn.cluster import KMeans, AgglomerativeClustering
+from collections import OrderedDict
 
 # Create instance of Flask app with
 app = Flask(__name__)
@@ -341,29 +342,38 @@ def queryData():
     """
     # Build query
     qparams = {}
-    # Get valid tracks based on chord content
-    if 'chordSel' in request.args:
-        rch = request.args['chordSel'].split(",")
-        #exprs = [{"$and":[{'chordRatio.'+ch:{"$exists":True}},{'chordRatio.'+ch:{"$gt":0.2}}]} for ch in rch]
-        exprs = [{'chordRatio.'+ch:{"$exists":True}} for ch in rch]
-        # Get tracks with chords
-        valid_ids = [str(x['_id']) for x in col_chord.find({"$and":exprs})]
-        # Query metadata db
-        qparams["_id"] = {"$in":valid_ids}
 
     if 'genre' in request.args:
         qparams['musicinfo.tags.genres'] = {"$all":request.args['genre'].split(",")}
 
-    n_docs = col_meta.count_documents(qparams)
-    q_docs = col_meta.find(qparams)
+    q_docs = [d for d in col_meta.find(qparams)]
+    valid_ids = [int(d['_id']) for d in q_docs]
+
+    if 'chordSel' in request.args:
+        rch = request.args['chordSel'].split(",")
+        #exprs = [{"$and":[{'chordRatio.'+ch:{"$exists":True}},{'chordRatio.'+ch:{"$gt":0.2}}]} for ch in rch]
+        # Generate filter based on selected chords
+        exprs = [{'chordRatio.'+ch:{"$exists":True}} for ch in rch]
+        # Include valid id based on genre selection
+        exprs.append({'_id':{'$in':valid_ids}})
+        # Get tracks ids from chord database
+        chord_ids = [str(x['_id']) for x in col_chord.find({"$and":exprs})]
+        # Filter original query based on new chord info
+        q_docs = [d for d in q_docs if d['_id'] in chord_ids]
+
+    n_docs = len(q_docs)
     # Sample random 5 tracks
     if n_docs > 5:
         results = [q_docs[int(i)] for i in np.random.randint(0,n_docs,5)]
     else:
         results = [d for d in q_docs]
-    
+
+    # Get chord data for selected tracks
     for r in results:
-        r['chords'] = col_chord.find_one({"_id":str(r['_id'])})
+        chord_vals = col_chord.find_one({"_id":int(r['_id'])})['chordRatio']
+        chord_vals = OrderedDict(sorted(chord_vals.items(), key=lambda kv: kv[1],reverse=True)).items()
+        r['chords'] = [c[0] for c in chord_vals]
+        r['chordRVal'] = [c[1] for c in chord_vals]
 
     return jsonify(results)
 

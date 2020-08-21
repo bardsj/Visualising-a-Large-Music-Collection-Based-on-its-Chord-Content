@@ -76518,9 +76518,21 @@ var QueryTable = /*#__PURE__*/function (_React$Component) {
 
       if (this.state.tableData) {
         tableRows = this.state.tableData.map(function (x, i) {
+          var popover = /*#__PURE__*/_react.default.createElement(_reactBootstrap.Popover, {
+            id: "popover-basic"
+          }, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Popover.Title, {
+            as: "h3"
+          }, "Chords"), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Popover.Content, null, x['chords'].join(", ")));
+
           return /*#__PURE__*/_react.default.createElement("tr", {
             key: i
-          }, /*#__PURE__*/_react.default.createElement("td", null, x['name']), /*#__PURE__*/_react.default.createElement("td", null, x['artist_name']), /*#__PURE__*/_react.default.createElement("td", null, "TBC"), /*#__PURE__*/_react.default.createElement("td", null, x.musicinfo.tags.genres.join(", ")), /*#__PURE__*/_react.default.createElement("td", null, /*#__PURE__*/_react.default.createElement("audio", {
+          }, /*#__PURE__*/_react.default.createElement("td", null, x['name']), /*#__PURE__*/_react.default.createElement("td", null, x['artist_name']), /*#__PURE__*/_react.default.createElement("td", null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.OverlayTrigger, {
+            trigger: "click",
+            placement: "right",
+            overlay: popover
+          }, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Button, {
+            variant: "success"
+          }, "Chords"))), /*#__PURE__*/_react.default.createElement("td", null, x.musicinfo.tags.genres.join(", ")), /*#__PURE__*/_react.default.createElement("td", null, /*#__PURE__*/_react.default.createElement("audio", {
             controls: true,
             style: {
               "height": 30
