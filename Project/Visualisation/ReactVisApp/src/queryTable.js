@@ -58,7 +58,7 @@ export class QueryTable extends React.Component {
                     <tr key={i}>
                         <td>{x['name']}</td>
                         <td>{x['artist_name']}</td>
-                        <td>{<OverlayTrigger trigger="click" placement="right" overlay={popover}>
+                        <td>{<OverlayTrigger trigger="click" placement="right" overlay={popover} rootClose>
                             <Button variant="success">Chords</Button>
                             </OverlayTrigger>}</td>
                         <td>{x.musicinfo.tags.genres.join(", ")}</td>

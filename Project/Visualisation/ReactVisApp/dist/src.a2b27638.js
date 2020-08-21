@@ -76529,7 +76529,8 @@ var QueryTable = /*#__PURE__*/function (_React$Component) {
           }, /*#__PURE__*/_react.default.createElement("td", null, x['name']), /*#__PURE__*/_react.default.createElement("td", null, x['artist_name']), /*#__PURE__*/_react.default.createElement("td", null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.OverlayTrigger, {
             trigger: "click",
             placement: "right",
-            overlay: popover
+            overlay: popover,
+            rootClose: true
           }, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Button, {
             variant: "success"
           }, "Chords"))), /*#__PURE__*/_react.default.createElement("td", null, x.musicinfo.tags.genres.join(", ")), /*#__PURE__*/_react.default.createElement("td", null, /*#__PURE__*/_react.default.createElement("audio", {
@@ -76809,7 +76810,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56709" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57411" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
