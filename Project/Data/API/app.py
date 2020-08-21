@@ -346,10 +346,9 @@ def queryData():
     if 'genre' in request.args:
         qparams['musicinfo.tags.genres'] = {"$all":request.args['genre'].split(",")}
 
-    q_docs = [d for d in col_meta.find(qparams)]
-    valid_ids = [int(d['_id']) for d in q_docs]
-
     if 'chordSel' in request.args:
+        q_docs = [d for d in col_meta.find(qparams)]
+        valid_ids = [int(d['_id']) for d in q_docs]
         rch = request.args['chordSel'].split(",")
         #exprs = [{"$and":[{'chordRatio.'+ch:{"$exists":True}},{'chordRatio.'+ch:{"$gt":0.2}}]} for ch in rch]
         # Generate filter based on selected chords
@@ -360,8 +359,11 @@ def queryData():
         chord_ids = [str(x['_id']) for x in col_chord.find({"$and":exprs})]
         # Filter original query based on new chord info
         q_docs = [d for d in q_docs if d['_id'] in chord_ids]
+        n_docs = len(q_docs)
+    else:
+        q_docs = col_meta.find()
+        n_docs = q_docs.count()
 
-    n_docs = len(q_docs)
     # Sample random 5 tracks
     if n_docs > 5:
         results = [q_docs[int(i)] for i in np.random.randint(0,n_docs,5)]
