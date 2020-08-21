@@ -352,7 +352,7 @@ def queryData():
         qparams["_id"] = {"$in":valid_ids}
 
     if 'genre' in request.args:
-        qparams['musicinfo.tags.genres'] = request.args['genre'].split(",")
+        qparams['musicinfo.tags.genres'] = {"$all":request.args['genre'].split(",")}
 
     n_docs = col_meta.count_documents(qparams)
     q_docs = col_meta.find(qparams)

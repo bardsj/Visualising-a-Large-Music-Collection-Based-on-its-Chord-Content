@@ -95,7 +95,7 @@ export default () => {
         </Col>
       </Row>
       <Row>
-        <QueryTable queryParams={queryParams} requestParams={requestParams}/>
+        <QueryTable queryParams={queryParams} requestParams={JSON.parse(JSON.stringify(requestParams))}/>
       </Row>
     </Container>
   </>)

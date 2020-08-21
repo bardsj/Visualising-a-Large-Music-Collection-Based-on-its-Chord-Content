@@ -76465,7 +76465,7 @@ var QueryTable = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "componentDidUpdate",
     value: function componentDidUpdate(prevProps) {
-      if (prevProps.queryParams !== this.props.queryParams || prevProps.requestParams.tag_val !== this.props.requestParams.tag_val) {
+      if (prevProps.queryParams !== this.props.queryParams || String(prevProps.requestParams.tag_val) !== String(this.props.requestParams.tag_val)) {
         this.fetchData();
       }
     }
@@ -76490,7 +76490,7 @@ var QueryTable = /*#__PURE__*/function (_React$Component) {
         url = url + "&genre=" + this.props.requestParams.tag_val.join(",");
       }
 
-      fetch(url, this.signal).then(function (r) {
+      fetch(url).then(function (r) {
         return r.json();
       }).then(function (r) {
         return _this2.setState({
@@ -76544,7 +76544,12 @@ var QueryTable = /*#__PURE__*/function (_React$Component) {
       }, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Table, {
         bordered: true,
         size: "sm"
-      }, /*#__PURE__*/_react.default.createElement("thead", null, /*#__PURE__*/_react.default.createElement("tr", null, /*#__PURE__*/_react.default.createElement("th", null, "Track Name"), /*#__PURE__*/_react.default.createElement("th", null, "Artist"), /*#__PURE__*/_react.default.createElement("th", null, "Chords"), /*#__PURE__*/_react.default.createElement("th", null, "Genre Tags"), /*#__PURE__*/_react.default.createElement("th", null, "Audio"))), /*#__PURE__*/_react.default.createElement("tbody", null, tableRows)), this.state.loading ? spinner : null);
+      }, /*#__PURE__*/_react.default.createElement("thead", null, /*#__PURE__*/_react.default.createElement("tr", null, /*#__PURE__*/_react.default.createElement("th", null, "Track Name"), /*#__PURE__*/_react.default.createElement("th", null, "Artist"), /*#__PURE__*/_react.default.createElement("th", null, "Chords"), /*#__PURE__*/_react.default.createElement("th", null, "Genre Tags"), /*#__PURE__*/_react.default.createElement("th", null, "Audio"))), /*#__PURE__*/_react.default.createElement("tbody", null, tableRows)), this.state.loading ? spinner : null, this.state.tableData ? this.state.tableData.length == 0 ? /*#__PURE__*/_react.default.createElement("div", {
+        style: {
+          "textAlign": "center",
+          "width": "100%"
+        }
+      }, "No Results") : null : null);
     }
   }]);
   return QueryTable;
@@ -76747,7 +76752,7 @@ var _default = function _default() {
     sm: 2
   }, legend)), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Row, null, /*#__PURE__*/_react.default.createElement(_queryTable.QueryTable, {
     queryParams: queryParams,
-    requestParams: requestParams
+    requestParams: JSON.parse(JSON.stringify(requestParams))
   }))));
 };
 

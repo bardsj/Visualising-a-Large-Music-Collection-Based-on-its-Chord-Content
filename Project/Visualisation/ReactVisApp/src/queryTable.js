@@ -12,7 +12,7 @@ export class QueryTable extends React.Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (prevProps.queryParams !== this.props.queryParams || prevProps.requestParams.tag_val !== this.props.requestParams.tag_val) {
+        if (prevProps.queryParams !== this.props.queryParams || (String(prevProps.requestParams.tag_val) !== String(this.props.requestParams.tag_val))) {
             this.fetchData()
         }
     }
@@ -28,7 +28,7 @@ export class QueryTable extends React.Component {
         if (this.props.requestParams.tag_name == 'genres' && this.props.requestParams.tag_val.length > 0) {
             url = url + "&genre=" + this.props.requestParams.tag_val.join(",")
         }
-        fetch(url,this.signal).then(r=>r.json()).then(r=>this.setState({tableData:r,loading:false}))
+        fetch(url).then(r=>r.json()).then(r=>this.setState({tableData:r,loading:false}))
     }
 
     render() {
@@ -84,6 +84,7 @@ export class QueryTable extends React.Component {
                     </tbody>
                 </Table>
                 {this.state.loading ? spinner : null}
+                {this.state.tableData ? (this.state.tableData.length == 0 ? <div style={{"textAlign":"center","width":"100%"}}>No Results</div> : null) : null}
             </div>
         )
     }
