@@ -361,7 +361,7 @@ def queryData():
         q_docs = [d for d in q_docs if d['_id'] in chord_ids]
         n_docs = len(q_docs)
     else:
-        q_docs = col_meta.find()
+        q_docs = col_meta.find(qparams)
         n_docs = q_docs.count()
 
     # Sample random 5 tracks
