@@ -277,4 +277,4 @@ def run_pattern(argv):
 
 
 if __name__ == "__main__":
-    runSpeedTest(sys.argv[1:])
+    run_pattern(sys.argv[1:])
