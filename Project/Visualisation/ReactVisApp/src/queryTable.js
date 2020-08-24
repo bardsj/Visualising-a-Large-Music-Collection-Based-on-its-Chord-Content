@@ -59,7 +59,7 @@ export class QueryTable extends React.Component {
                     <Popover id="popover-basic">
                         <Popover.Title as="h3">Chords</Popover.Title>
                         <Popover.Content>
-                            {x['chords'].map((k,j)=><Badge style={{"background-color":color3(x['chordRVal'][j]/d3.max(x['chordRVal'])),"margin":2}}>{k}</Badge>)}
+                            {x['chords'].map((k,j)=><Badge key={k} style={{"backgroundColor":color3(x['chordRVal'][j]/d3.max(x['chordRVal'])),"margin":2}}>{k}</Badge>)}
                         </Popover.Content>
                     </Popover>
                 )

@@ -76670,8 +76670,9 @@ var QueryTable = /*#__PURE__*/function (_React$Component) {
             as: "h3"
           }, "Chords"), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Popover.Content, null, x['chords'].map(function (k, j) {
             return /*#__PURE__*/_react.default.createElement(_reactBootstrap.Badge, {
+              key: k,
               style: {
-                "background-color": color3(x['chordRVal'][j] / d3.max(x['chordRVal'])),
+                "backgroundColor": color3(x['chordRVal'][j] / d3.max(x['chordRVal'])),
                 "margin": 2
               }
             }, k);
