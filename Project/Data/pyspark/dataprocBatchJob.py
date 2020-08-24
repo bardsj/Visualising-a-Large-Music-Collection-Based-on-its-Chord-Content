@@ -243,7 +243,7 @@ def run_pattern(argv):
 
         write_results.append({
             "_id":str(i).zfill(4)+"-"+str(params_ps['minSupport'])+"-"+str(params_ps['filterRatio'])+"-"+str(params_ps['filterConfidence'])+"-"+str(False)+"s",
-            "filter_params":params,
+            "filter_params":params_ps,
             "tag_params":tag_filt,
             "itemsets":itemsets,
             "majmin_agg":False,
@@ -261,7 +261,7 @@ def run_pattern(argv):
 
             write_results.append({
                 "_id":str(i).zfill(4)+"-"+str(params_fpg['minSupport'])+"-"+str(params_fpg['filterRatio'])+"-"+str(params_fpg['filterConfidence'])+"-"+str(majmin_agg)+"f",
-                "filter_params":params,
+                "filter_params":params_fpg,
                 "tag_params":tag_filt,
                 "itemsets":itemsets,
                 "majmin_agg":majmin_agg,
@@ -269,8 +269,21 @@ def run_pattern(argv):
                 "fi_type":'frequent'
             })
 
-    with open("itemsets.json","w+") as filename:
-        json.dump(write_results,filename)
+    try:
+        with open("itemsets.json","w+") as filename:
+            json.dump(write_results,filename)
+        
+        from subprocess import call
+        call(["gsutil","cp","itemsets.json","gs://fi_results"])
+    except:
+        pass
+
+    try:
+        with open("gs://fi_results/itemsets.json","w+") as filename:
+            json.dump(write_results,filename)
+    except:
+        pass
+
 
 
     print("Total time: " + str(time.time()-st))
