@@ -76302,9 +76302,9 @@ var ChartParallelSeq = /*#__PURE__*/function (_React$Component) {
       var r_url = "";
 
       if (request_params.tag_val.length > 0) {
-        r_url = "http://127.0.0.1:5000/parallelSeq?tag_val=" + request_params.tag_val.join() + "&tag_name=" + request_params.tag_name;
+        r_url = "http://127.0.0.1:5000/parallelSeq?fi_type=sequence&tag_val=" + request_params.tag_val.join() + "&tag_name=" + request_params.tag_name;
       } else {
-        r_url = "http://127.0.0.1:5000/parallelSeq?";
+        r_url = "http://127.0.0.1:5000/parallelSeq?fi_type=sequence&";
       }
 
       if (request_params.optType) {
@@ -76976,7 +76976,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "59680" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63314" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

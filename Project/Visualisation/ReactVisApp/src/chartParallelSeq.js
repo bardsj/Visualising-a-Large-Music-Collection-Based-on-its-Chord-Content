@@ -11,10 +11,10 @@ export class ChartParallelSeq extends React.Component {
     fetchData(request_params,majMinSel) {
         let r_url = ""
         if (request_params.tag_val.length > 0) {
-            r_url = "http://127.0.0.1:5000/parallelSeq?tag_val=" + request_params.tag_val.join() + "&tag_name=" + request_params.tag_name
+            r_url = "http://127.0.0.1:5000/parallelSeq?fi_type=sequence&tag_val=" + request_params.tag_val.join() + "&tag_name=" + request_params.tag_name
         }
         else {
-            r_url = "http://127.0.0.1:5000/parallelSeq?"
+            r_url = "http://127.0.0.1:5000/parallelSeq?fi_type=sequence&"
         }
         if (request_params.optType) {
             r_url = r_url + "&order_opt=" + request_params.optType

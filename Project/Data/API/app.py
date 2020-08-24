@@ -74,6 +74,13 @@ def getData(request):
 
     # If tag values (i.e. genre) specified in the request, return relevant document of
     # frequent itemsets and relevant metadata
+    fi_type = 'frequent'
+    if 'fi_type' in request.args:
+        if 'fi_type' == 'sequence':
+            fi_type = 'sequence'
+        else:
+            fi_type = 'frequent'
+
     if 'tag_name' and 'tag_val' in request.args:
         # Get tag request
         tag_val = request.args['tag_val'].split(",")
@@ -86,9 +93,9 @@ def getData(request):
                     agg = True
                 else:
                     agg = False
-                data_mult = col.find({"tag_params.tag_name":tag_name,"tag_params.tag_val":{"$in":tag_val},"majmin_agg":agg})
+                data_mult = col.find({"tag_params.tag_name":tag_name,"tag_params.tag_val":{"$in":tag_val},"majmin_agg":agg,"fi_type":fi_type})
             else:
-                data_mult = col.find({"tag_params.tag_name":tag_name,"tag_params.tag_val":{"$in":tag_val},"majmin_agg":False})
+                data_mult = col.find({"tag_params.tag_name":tag_name,"tag_params.tag_val":{"$in":tag_val},"majmin_agg":False,"fi_type":fi_type})
             # Parse into suitable format/data structure
             sets = []
             for d in data_mult:
@@ -108,9 +115,9 @@ def getData(request):
                     agg = True
                 else:
                     agg = False
-                data = col.find_one({"tag_params":None,"majmin_agg":agg})
+                data = col.find_one({"tag_params":None,"majmin_agg":agg,"fi_type":fi_type})
             else:
-                data = col.find_one({"tag_params":None,"majmin_agg":False})
+                data = col.find_one({"tag_params":None,"majmin_agg":False,"fi_type":fi_type})
             sets = [{"labels":l,"values":v,"tag":None} for l,v in zip(data['itemsets']['items'].values(),data['itemsets']['supportPc'].values())]
         except errors.PyMongoError as e:
             abort(500,description="Could not connect to the database - " + str(e))
@@ -319,8 +326,6 @@ def returnPrallelClust():
 
 import json
 
-with open('Project\Data\API\itemsets_seq_20pc.json') as filename:
-    data_seq = json.load(filename)[0]
 
 @app.route('/parallelSeq',methods=['GET'])
 def returnDataParallelSeq():
@@ -328,7 +333,8 @@ def returnDataParallelSeq():
         API route - data for the parallel coordinates layout with sequential data
     """
 
-    sets = [{"labels":l,"values":v,"tag":None} for l,v in zip(data_seq['itemsets']['sequence'].values(),data_seq['itemsets']['supportPc'].values())]
+    sets = getData(request)
+
     # Get singletons
     single_sets = [s for s in sets if len(s['labels']) == 1]
     # Remove duplicates and keep the highest support val (duplicates occur when more than one genre is selected)

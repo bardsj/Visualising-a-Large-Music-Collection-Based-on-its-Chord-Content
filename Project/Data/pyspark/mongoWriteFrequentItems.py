@@ -16,5 +16,6 @@ with MongoClient(os.environ['MSC_MONGO_PERSONAL_URI']) as client:
                                                "tag_params": d['tag_params'],
                                                "itemsets": d['itemsets'],
                                                "majmin_agg": d['majmin_agg'],
-                                               "dfCount":d['dfCount']
+                                               "dfCount":d['dfCount'],
+                                               "fi_type":d['fi_type']
                                                 }}, upsert=True)
