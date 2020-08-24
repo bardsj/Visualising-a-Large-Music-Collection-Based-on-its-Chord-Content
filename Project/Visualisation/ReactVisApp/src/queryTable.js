@@ -1,5 +1,6 @@
 import React from "react";
-import { Table, Spinner, Popover, OverlayTrigger, Button } from 'react-bootstrap';
+import { Table, Spinner, Popover, OverlayTrigger, Button, Badge } from 'react-bootstrap';
+import * as d3 from 'd3';
 
 export class QueryTable extends React.Component {
     constructor(props) {
@@ -45,12 +46,20 @@ export class QueryTable extends React.Component {
 
 
         if (this.state.tableData) {
+
+            var color3= d3.scaleLinear()
+                .domain([0, 1])
+                .range(['red', 'green'])
+                .interpolate(d3.interpolateHcl);
+
+            //<p style={{"block":"inline","color":color3(x['chordRVal'][i])}}>{x['chords'].map(x=>"| "+x+" | ")}</p>
+
             tableRows = this.state.tableData.map((x, i) => {
                 const popover = (
                     <Popover id="popover-basic">
                         <Popover.Title as="h3">Chords</Popover.Title>
                         <Popover.Content>
-                            {x['chords'].join(", ")}
+                            {x['chords'].map((k,j)=><Badge style={{"background-color":color3(x['chordRVal'][j]/d3.max(x['chordRVal'])),"margin":2}}>{k}</Badge>)}
                         </Popover.Content>
                     </Popover>
                 )

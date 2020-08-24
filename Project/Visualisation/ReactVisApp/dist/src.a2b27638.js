@@ -76572,6 +76572,12 @@ var _react = _interopRequireDefault(require("react"));
 
 var _reactBootstrap = require("react-bootstrap");
 
+var d3 = _interopRequireWildcard(require("d3"));
+
+function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = (0, _getPrototypeOf2.default)(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2.default)(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2.default)(this, result); }; }
@@ -76655,12 +76661,21 @@ var QueryTable = /*#__PURE__*/function (_React$Component) {
       }, "Loading...")));
 
       if (this.state.tableData) {
+        var color3 = d3.scaleLinear().domain([0, 1]).range(['red', 'green']).interpolate(d3.interpolateHcl); //<p style={{"block":"inline","color":color3(x['chordRVal'][i])}}>{x['chords'].map(x=>"| "+x+" | ")}</p>
+
         tableRows = this.state.tableData.map(function (x, i) {
           var popover = /*#__PURE__*/_react.default.createElement(_reactBootstrap.Popover, {
             id: "popover-basic"
           }, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Popover.Title, {
             as: "h3"
-          }, "Chords"), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Popover.Content, null, x['chords'].join(", ")));
+          }, "Chords"), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Popover.Content, null, x['chords'].map(function (k, j) {
+            return /*#__PURE__*/_react.default.createElement(_reactBootstrap.Badge, {
+              style: {
+                "background-color": color3(x['chordRVal'][j] / d3.max(x['chordRVal'])),
+                "margin": 2
+              }
+            }, k);
+          })));
 
           return /*#__PURE__*/_react.default.createElement("tr", {
             key: i
@@ -76707,7 +76722,7 @@ var QueryTable = /*#__PURE__*/function (_React$Component) {
 }(_react.default.Component);
 
 exports.QueryTable = QueryTable;
-},{"@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js","@babel/runtime/helpers/inherits":"node_modules/@babel/runtime/helpers/inherits.js","@babel/runtime/helpers/possibleConstructorReturn":"node_modules/@babel/runtime/helpers/possibleConstructorReturn.js","@babel/runtime/helpers/getPrototypeOf":"node_modules/@babel/runtime/helpers/getPrototypeOf.js","react":"node_modules/react/index.js","react-bootstrap":"node_modules/react-bootstrap/esm/index.js"}],"src/App.js":[function(require,module,exports) {
+},{"@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js","@babel/runtime/helpers/inherits":"node_modules/@babel/runtime/helpers/inherits.js","@babel/runtime/helpers/possibleConstructorReturn":"node_modules/@babel/runtime/helpers/possibleConstructorReturn.js","@babel/runtime/helpers/getPrototypeOf":"node_modules/@babel/runtime/helpers/getPrototypeOf.js","react":"node_modules/react/index.js","react-bootstrap":"node_modules/react-bootstrap/esm/index.js","d3":"node_modules/d3/index.js"}],"src/App.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
