@@ -44,6 +44,9 @@ export class ChartHier extends React.Component {
                 this.fetchData(this.props.request_params)
             }
         }
+        if (prevProps.queryParams !== this.props.queryParams) {
+            this.createChart()
+        }
     }
 
     createChart() {
@@ -55,6 +58,9 @@ export class ChartHier extends React.Component {
         let sets = this.state.data.sets
         // Filter based on slider support val
         sets = sets.filter(x => x.values > this.props.request_params.support / 100)
+        if (this.props.queryParams['chordSel'].length > 0) {
+            sets = sets.filter(x=> x.labels.some(r=> this.props.queryParams['chordSel'].includes(r)))
+        }
         const r = (this.props.height / 2) - 50;
 
         // Filter out nodes from order that all not in filtered sets
@@ -170,11 +176,12 @@ export class ChartHier extends React.Component {
         // Append text to labels
         const labels = nodes_group.append("text")
             .text((d) => d.label)
-            .attr("fill", "black")
+            .attr("fill", d=> this.props.queryParams['chordSel'].includes(d.label) ? "red": "black")
             .attr("dx", (d) => d.coords.x * labelOffset)
             .attr("dy", (d) => -d.coords.y * labelOffset)
             .attr("text-anchor", "middle")
             .attr("font-size", 10)
+            .attr("font-weight", d=> this.props.queryParams['chordSel'].includes(d.label) ? 700: 400)
 
 
         const beta = this.props.request_params.beta
@@ -221,6 +228,18 @@ export class ChartHier extends React.Component {
                 .attr("stroke-width", d=>d.values**1.5*50)
                 .attr("stroke-opacity", d => (d.values / d3.max(sets.map(x => x.values))) ** this.props.request_params.focus)
                 nodes_group.raise()
+        })
+
+        nodes_group.on("click",(sel)=>{
+            let currentQState = this.props.queryParams['chordSel']
+            if (currentQState.includes(sel.label)) {
+                currentQState.splice(currentQState.indexOf(sel.label),1)
+            }
+            else {
+                currentQState.push(sel.label)
+            }
+            this.props.setQueryParams({"chordSel":currentQState})
+
         })
 
         nodes_group.raise()

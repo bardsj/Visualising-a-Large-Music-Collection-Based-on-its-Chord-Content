@@ -44,6 +44,9 @@ export class ChartParallelClust extends React.Component {
                 this.fetchData(this.props.request_params)
             }
         }
+        if (prevProps.queryParams !== this.props.queryParams) {
+            this.createChart()
+        }
     }
 
     createChart() {
@@ -54,6 +57,9 @@ export class ChartParallelClust extends React.Component {
         let node_list = this.state.data.order
         let data = this.state.data.sets
         data = data.filter(x => x.values > this.props.request_params.support / 100)
+        if (this.props.queryParams['chordSel'].length > 0) {
+            data = data.filter(x=> x.labels.some(r=> this.props.queryParams['chordSel'].includes(r)))
+        }
         const margin = ({ top: 20, bottom: 20, left: 60, right: 10 })
 
         // Number of parallel axes from max itemset length
@@ -161,6 +167,8 @@ export class ChartParallelClust extends React.Component {
             .attr("dx", -4)
             .attr("dy", 2)
             .attr("text-anchor", "end")
+            .attr("fill", d=> this.props.queryParams['chordSel'].includes(d.node) ? "red": "black")
+            .attr("font-weight", d=> this.props.queryParams['chordSel'].includes(d.node) ? 700: 400)
 
         // Add transparent rectangle to labels for easier hover selection
         const label_bg = nodes_group.append("rect")
@@ -233,6 +241,18 @@ export class ChartParallelClust extends React.Component {
                 .attr("stroke", d => this.props.request_params.cPath ? d3.interpolateTurbo(node_cmap_sc(d.labels[d.ax].node)) : cmap[d.tag])
                 .attr("stroke-width", d=>d.values**1.5*50)
                 .attr("stroke-opacity", d => (d.values / d3.max(data.map(x => x.values))) ** this.props.request_params.focus)
+        })
+
+        label_bg.on("click",(sel)=>{
+            let currentQState = this.props.queryParams['chordSel']
+            if (currentQState.includes(sel.node)) {
+                currentQState.splice(currentQState.indexOf(sel.node),1)
+            }
+            else {
+                currentQState.push(sel.node)
+            }
+            this.props.setQueryParams({"chordSel":currentQState})
+
         })
 
 

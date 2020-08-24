@@ -52,22 +52,22 @@ export default () => {
     chart =  <ChartCircular id={1} width={800} height={800} request_params={requestParams} queryParams={queryParams} setQueryParams={setQueryParams}/>
   }
   else if (requestParams.chartType === "Parallel")  {
-      chart = <ChartParallel id={1} width={800} height={800} request_params={requestParams}/>
+      chart = <ChartParallel id={1} width={800} height={800} request_params={requestParams} queryParams={queryParams} setQueryParams={setQueryParams}/>
   }
   else if (requestParams.chartType === "Circular Hierarchical") {
-    chart = <ChartHier id={1} width={800} height={800} request_params={requestParams}/>
+    chart = <ChartHier id={1} width={800} height={800} request_params={requestParams} queryParams={queryParams} setQueryParams={setQueryParams}/>
   }
   else if (requestParams.chartType === "Circular Hierarchical - Single Hue") {
-    chart = <ChartHierSingleHue id={1} width={800} height={800} request_params={requestParams}/>
+    chart = <ChartHierSingleHue id={1} width={800} height={800} request_params={requestParams} queryParams={queryParams} setQueryParams={setQueryParams}/>
   }
   else if (requestParams.chartType === "Circular Clustered") {
-    chart = <ChartClust id={1} width={800} height={800} request_params={requestParams}/>
+    chart = <ChartClust id={1} width={800} height={800} request_params={requestParams} queryParams={queryParams} setQueryParams={setQueryParams}/>
   }
   else if (requestParams.chartType === "Parallel Clustered") {
-    chart = <ChartParallelClust id={1} width={800} height={800} request_params={requestParams}/>
+    chart = <ChartParallelClust id={1} width={800} height={800} request_params={requestParams} queryParams={queryParams} setQueryParams={setQueryParams}/>
   }
   else if (requestParams.chartType === "Parallel Sequence") {
-    chart = <ChartParallelSeq id={1} width={800} height={800} request_params={requestParams}/>
+    chart = <ChartParallelSeq id={1} width={800} height={800} request_params={requestParams} queryParams={queryParams} setQueryParams={setQueryParams}/>
   }
 
   let legend = ""

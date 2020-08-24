@@ -217,14 +217,6 @@ export class ChartCircular extends React.Component {
 
         })
 
-        // Remove spacing nodes
-        if (!this.props.request_params.optType) {
-            nodes_group.filter(x => x.label.includes("sep")).remove()
-        }
-
-        // Remove seps from order before writing to state
-        order = order.filter(x => !x.includes("sep"))
-
         nodes_group.raise()
         this.setState({ sets: sets })
     }
