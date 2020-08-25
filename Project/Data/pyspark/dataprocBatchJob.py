@@ -239,6 +239,7 @@ def run_pattern(argv):
         count = items.getDataframeCount()
         # Convert to dict for storage
         itemsets['sequence'] = itemsets['sequence'].apply(lambda x: list(chain(*x)))
+        itemsets.rename(columns={'sequence':'items'},inplace=True)
         itemsets = itemsets.to_dict()
 
         write_results.append({

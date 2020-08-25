@@ -27,7 +27,7 @@ export function VisParams(props) {
     else if (props.requestParams.chartType.includes("Parallel")) {
         controls = (
             <div>
-                <div style={{ paddingLeft: 20, paddingBottom: 5 }}>
+                <div style={{ paddingLeft: 20, paddingBottom: 5, paddingTop: 10 }}>
                     <input type="checkbox" id="cPaths" defaultChecked={props.requestParams.cPaths} onChange={(e) => props.setRequestParams({ ...props.requestParams, cPath: e.target.checked })} />
                     <label style={{ paddingLeft: 10, fontSize: 12 }} >Colour paths by node start</label>
                 </div>
@@ -68,7 +68,7 @@ export function VisParams(props) {
 
     return (
         <div>
-            {majminSel}
+            {props.requestParams.chartType.includes("Sequence") ? null :majminSel}
             {controls}
         </div>
     )

@@ -8,7 +8,7 @@ export class ChartParallelSeq extends React.Component {
         this.state = { data: null, request_params: null }
     }
 
-    fetchData(request_params,majMinSel) {
+    fetchData(request_params) {
         let r_url = ""
         if (request_params.tag_val.length > 0) {
             r_url = "http://127.0.0.1:5000/parallelSeq?fi_type=sequence&tag_val=" + request_params.tag_val.join() + "&tag_name=" + request_params.tag_name
@@ -18,9 +18,6 @@ export class ChartParallelSeq extends React.Component {
         }
         if (request_params.optType) {
             r_url = r_url + "&order_opt=" + request_params.optType
-        }
-        if (request_params.majMinSel) {
-            r_url = r_url + "&majmin_agg=" + request_params.majMinSel
         }
         fetch(r_url, { mode: 'cors' })
             .then(r => r.json())

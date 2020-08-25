@@ -76,8 +76,8 @@ def getData(request):
     # frequent itemsets and relevant metadata
     fi_type = 'frequent'
     if 'fi_type' in request.args:
-        if 'fi_type' == 'sequence':
-            fi_type = 'sequence'
+        if request.args['fi_type'] == 'sequence':
+            fi_type = 'sequential'
         else:
             fi_type = 'frequent'
 
@@ -90,39 +90,46 @@ def getData(request):
             # Check if aggregation specified in request
             if 'majmin_agg' in request.args:
                 if request.args['majmin_agg'] == "true":
-                    agg = True
+                    # No major/minor aggregation for sequence data at this time
+                    if fi_type == 'frequent':
+                        agg = True
+                    else:
+                        agg = False
                 else:
                     agg = False
                 data_mult = col.find({"tag_params.tag_name":tag_name,"tag_params.tag_val":{"$in":tag_val},"majmin_agg":agg,"fi_type":fi_type})
             else:
                 data_mult = col.find({"tag_params.tag_name":tag_name,"tag_params.tag_val":{"$in":tag_val},"majmin_agg":False,"fi_type":fi_type})
+                if not data_mult.count():
+                    abort(404,description="Error retrieving data")
             # Parse into suitable format/data structure
             sets = []
             for d in data_mult:
                 for i,s in zip(d['itemsets']['items'].values(),d['itemsets']['supportPc'].values()):
                     sets.append({"labels":i, "values":s,"tag":d['tag_params']['tag_val']})
-
         except errors.PyMongoError as e:
             abort(500,description="Could not connect to the database - " + str(e))
-        if not data_mult:
-            abort(404,description="Error retrieving data")
     else:
         # If no tags return data for all tracks
         try:
             # Check if aggregation specified in request
             if 'majmin_agg' in request.args:
                 if request.args['majmin_agg'] == "true":
-                    agg = True
+                    # No major/minor aggregation for sequence data at this time
+                    if fi_type == 'frequent':
+                        agg = True
+                    else:
+                        agg = False
                 else:
                     agg = False
                 data = col.find_one({"tag_params":None,"majmin_agg":agg,"fi_type":fi_type})
             else:
                 data = col.find_one({"tag_params":None,"majmin_agg":False,"fi_type":fi_type})
+            if not data:
+                abort(404,description="Error retrieving data")
             sets = [{"labels":l,"values":v,"tag":None} for l,v in zip(data['itemsets']['items'].values(),data['itemsets']['supportPc'].values())]
         except errors.PyMongoError as e:
             abort(500,description="Could not connect to the database - " + str(e))
-        if not data:
-            abort(404,description="Error retrieving data")
     
     return sets
 
@@ -335,9 +342,8 @@ def returnDataParallelSeq():
 
     sets = getData(request)
 
-    # Get singletons
-    single_sets = [s for s in sets if len(s['labels']) == 1]
-    # Remove duplicates and keep the highest support val (duplicates occur when more than one genre is selected)
+    # Remove singletons
+    sets = [s for s in sets if len(s['labels']) > 1]
 
     return jsonify({"sets":sets,"order":default_order})
 

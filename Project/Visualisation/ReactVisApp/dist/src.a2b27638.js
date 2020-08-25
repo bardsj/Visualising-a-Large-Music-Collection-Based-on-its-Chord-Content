@@ -74540,7 +74540,8 @@ function VisParams(props) {
     controls = /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("div", {
       style: {
         paddingLeft: 20,
-        paddingBottom: 5
+        paddingBottom: 5,
+        paddingTop: 10
       }
     }, /*#__PURE__*/_react.default.createElement("input", {
       type: "checkbox",
@@ -74724,7 +74725,7 @@ function VisParams(props) {
     }, props.requestParams.support)));
   }
 
-  return /*#__PURE__*/_react.default.createElement("div", null, majminSel, controls);
+  return /*#__PURE__*/_react.default.createElement("div", null, props.requestParams.chartType.includes("Sequence") ? null : majminSel, controls);
 }
 },{"@babel/runtime/helpers/defineProperty":"node_modules/@babel/runtime/helpers/defineProperty.js","react":"node_modules/react/index.js","react-bootstrap":"node_modules/react-bootstrap/esm/index.js"}],"src/legend.js":[function(require,module,exports) {
 "use strict";
@@ -76296,7 +76297,7 @@ var ChartParallelSeq = /*#__PURE__*/function (_React$Component) {
 
   (0, _createClass2.default)(ChartParallelSeq, [{
     key: "fetchData",
-    value: function fetchData(request_params, majMinSel) {
+    value: function fetchData(request_params) {
       var _this2 = this;
 
       var r_url = "";
@@ -76309,10 +76310,6 @@ var ChartParallelSeq = /*#__PURE__*/function (_React$Component) {
 
       if (request_params.optType) {
         r_url = r_url + "&order_opt=" + request_params.optType;
-      }
-
-      if (request_params.majMinSel) {
-        r_url = r_url + "&majmin_agg=" + request_params.majMinSel;
       }
 
       fetch(r_url, {
@@ -76776,7 +76773,7 @@ var _default = function _default() {
   var _useState = (0, _react.useState)({
     tag_val: ["jazz"],
     tag_name: "genres",
-    chartType: "Circular",
+    chartType: "Parallel Sequence",
     focus: 1,
     support: 1,
     beta: 1,
@@ -76976,7 +76973,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63314" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "59119" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
