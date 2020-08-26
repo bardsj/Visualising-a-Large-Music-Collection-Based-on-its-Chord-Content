@@ -10,6 +10,7 @@ from itertools import chain
 import pandas as pd
 from sklearn.cluster import KMeans, AgglomerativeClustering
 from collections import OrderedDict
+from random import shuffle
 
 # Create instance of Flask app with
 app = Flask(__name__)
@@ -359,18 +360,25 @@ def queryData():
         qparams['musicinfo.tags.genres'] = {"$all":request.args['genre'].split(",")}
 
     if 'chordSel' in request.args:
+        # Get all tracks for metadata query
         q_docs = [d for d in col_meta.find(qparams)]
+        # Get all valid ids
         valid_ids = [int(d['_id']) for d in q_docs]
+        # Get chords requested
         rch = request.args['chordSel'].split(",")
-        #exprs = [{"$and":[{'chordRatio.'+ch:{"$exists":True}},{'chordRatio.'+ch:{"$gt":0.2}}]} for ch in rch]
+
         # Generate filter based on selected chords
-        exprs = [{'chordRatio.'+ch:{"$exists":True}} for ch in rch]
+        #exprs = [{'chordRatio.'+ch:{"$exists":True}} for ch in rch]
+        exprs = [{"$and":[{'chordRatio.'+ch:{"$exists":True}},{'chordRatio.'+ch:{"$gt":0.1}}]} for ch in rch]
+
         # Include valid id based on genre selection
-        exprs.append({'_id':{'$in':valid_ids}})
+        #exprs.append({'_id':{'$in':valid_ids}})
         # Get tracks ids from chord database
-        chord_ids = [str(x['_id']) for x in col_chord.find({"$and":exprs})]
+        chord_ids = [x['_id'] for x in col_chord.find({"$and":exprs},{'_id':1})]
+        query_ids = set(valid_ids).intersection(set(chord_ids))
+
         # Filter original query based on new chord info
-        q_docs = [d for d in q_docs if d['_id'] in chord_ids]
+        q_docs = list(filter(lambda x: int(x['_id']) in chord_ids,q_docs))
         n_docs = len(q_docs)
     else:
         q_docs = col_meta.find(qparams)

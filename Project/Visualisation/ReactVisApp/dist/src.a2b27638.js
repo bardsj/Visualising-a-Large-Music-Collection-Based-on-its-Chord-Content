@@ -76773,7 +76773,7 @@ var _default = function _default() {
   var _useState = (0, _react.useState)({
     tag_val: ["jazz"],
     tag_name: "genres",
-    chartType: "Parallel Sequence",
+    chartType: "Circular",
     focus: 1,
     support: 1,
     beta: 1,
@@ -76973,7 +76973,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "59119" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61430" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
