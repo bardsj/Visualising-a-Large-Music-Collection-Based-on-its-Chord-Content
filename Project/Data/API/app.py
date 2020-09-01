@@ -16,13 +16,12 @@ from random import shuffle
 app = Flask(__name__)
 # Enable CORS 
 CORS(app)
-# Pymongo connection (public user, read only access for this collection)
-client = MongoClient("mongodb+srv://publicUser:jdACcF7TyiU2Vshj@msc.5jje5.gcp.mongodb.net/jamendo?retryWrites=false&w=majority")
-col = client.jamendo.itemsetData
 
+# Metadata and itemset results db connection
 client_meta = MongoClient(os.environ['MSC_MONGO_PERSONAL_URI'])
 col_meta = client_meta.jamendo.songMetadata
-
+col_res = client_meta.jamendo.itemsetData
+# Chord db connection
 client_chord = MongoClient(os.environ['MSC_CHORD_DB_URI'])
 col_chord = client_chord.jamendo.chords
 
@@ -98,9 +97,9 @@ def getData(request):
                         agg = False
                 else:
                     agg = False
-                data_mult = col.find({"tag_params.tag_name":tag_name,"tag_params.tag_val":{"$in":tag_val},"majmin_agg":agg,"fi_type":fi_type})
+                data_mult = col_res.find({"tag_params.tag_name":tag_name,"tag_params.tag_val":{"$in":tag_val},"majmin_agg":agg,"fi_type":fi_type})
             else:
-                data_mult = col.find({"tag_params.tag_name":tag_name,"tag_params.tag_val":{"$in":tag_val},"majmin_agg":False,"fi_type":fi_type})
+                data_mult = col_res.find({"tag_params.tag_name":tag_name,"tag_params.tag_val":{"$in":tag_val},"majmin_agg":False,"fi_type":fi_type})
                 if not data_mult.count():
                     abort(404,description="Error retrieving data")
             # Parse into suitable format/data structure
@@ -123,9 +122,9 @@ def getData(request):
                         agg = False
                 else:
                     agg = False
-                data = col.find_one({"tag_params":None,"majmin_agg":agg,"fi_type":fi_type})
+                data = col_res.find_one({"tag_params":None,"majmin_agg":agg,"fi_type":fi_type})
             else:
-                data = col.find_one({"tag_params":None,"majmin_agg":False,"fi_type":fi_type})
+                data = col_res.find_one({"tag_params":None,"majmin_agg":False,"fi_type":fi_type})
             if not data:
                 abort(404,description="Error retrieving data")
             sets = [{"labels":l,"values":v,"tag":None} for l,v in zip(data['itemsets']['items'].values(),data['itemsets']['supportPc'].values())]
