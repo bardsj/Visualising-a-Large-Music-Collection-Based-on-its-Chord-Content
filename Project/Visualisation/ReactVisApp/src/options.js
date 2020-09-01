@@ -23,7 +23,6 @@ export class Options extends React.Component {
                                 <option>Circular Hierarchical - Single Hue</option>
                                 <option>Circular Clustered</option>
                                 <option>Parallel Clustered</option>
-                                <option>Parallel Sequence</option>
                             </Form.Control>
                             <Form.Label>Genre</Form.Label>
                             <Form.Group>

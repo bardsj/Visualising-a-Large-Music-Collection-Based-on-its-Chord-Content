@@ -9,7 +9,6 @@ import { Container, Row, Col } from 'react-bootstrap'
 import { ChartHierSingleHue } from "./chartHierSingleHue";
 import { ChartClust } from "./chartClust";
 import { ChartParallelClust } from "./chartParallelClust";
-import { ChartParallelSeq } from "./chartParallelSeq";
 import { QueryTable } from "./queryTable";
 
 // <Chart width={600} height={600} request_params={{tag_val:"jazz", tag_name:"genres"}}/>
@@ -47,29 +46,27 @@ export default () => {
   }
  
   let chart = ""
-  let width = 800
-  let height = 800
 
   if (requestParams.chartType === "Circular") {
-    chart =  <ChartCircular id={1} width={width} height={height} request_params={requestParams} queryParams={queryParams} setQueryParams={setQueryParams}/>
+    chart =  <ChartCircular id={1} width={800} height={800} request_params={requestParams} queryParams={queryParams} setQueryParams={setQueryParams}/>
   }
   else if (requestParams.chartType === "Parallel")  {
-    chart = <ChartParallel id={1} width={width} height={height} request_params={requestParams} queryParams={queryParams} setQueryParams={setQueryParams}/>
+      chart = <ChartParallel id={1} width={800} height={800} request_params={requestParams} queryParams={queryParams} setQueryParams={setQueryParams}/>
   }
   else if (requestParams.chartType === "Circular Hierarchical") {
-    chart = <ChartHier id={1} width={width} height={height} request_params={requestParams} queryParams={queryParams} setQueryParams={setQueryParams}/>
+    chart = <ChartHier id={1} width={800} height={800} request_params={requestParams} queryParams={queryParams} setQueryParams={setQueryParams}/>
   }
   else if (requestParams.chartType === "Circular Hierarchical - Single Hue") {
-    chart = <ChartHierSingleHue id={1} width={width} height={height} request_params={requestParams} queryParams={queryParams} setQueryParams={setQueryParams}/>
+    chart = <ChartHierSingleHue id={1} width={800} height={800} request_params={requestParams} queryParams={queryParams} setQueryParams={setQueryParams}/>
   }
   else if (requestParams.chartType === "Circular Clustered") {
-    chart = <ChartClust id={1} width={width} height={height} request_params={requestParams} queryParams={queryParams} setQueryParams={setQueryParams}/>
+    chart = <ChartClust id={1} width={800} height={800} request_params={requestParams} queryParams={queryParams} setQueryParams={setQueryParams}/>
   }
   else if (requestParams.chartType === "Parallel Clustered") {
-    chart = <ChartParallelClust id={1} width={width} height={height} request_params={requestParams} queryParams={queryParams} setQueryParams={setQueryParams}/>
+    chart = <ChartParallelClust id={1} width={800} height={800} request_params={requestParams} queryParams={queryParams} setQueryParams={setQueryParams}/>
   }
   else if (requestParams.chartType === "Parallel Sequence") {
-    chart = <ChartParallelSeq id={1} width={width} height={height} request_params={requestParams} queryParams={queryParams} setQueryParams={setQueryParams}/>
+    chart = <ChartParallelSeq id={1} width={800} height={800} request_params={requestParams} queryParams={queryParams} setQueryParams={setQueryParams}/>
   }
 
   let legend = ""

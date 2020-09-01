@@ -57441,1030 +57441,7 @@ function nodeColormap() {
 
   return colorMap;
 }
-},{"d3":"node_modules/d3/index.js"}],"src/chartCircular.js":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.ChartCircular = void 0;
-
-var _construct2 = _interopRequireDefault(require("@babel/runtime/helpers/construct"));
-
-var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toConsumableArray"));
-
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
-
-var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
-
-var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits"));
-
-var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
-
-var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
-
-var _react = _interopRequireDefault(require("react"));
-
-var d3 = _interopRequireWildcard(require("d3"));
-
-var _colorMap = require("./colorMap");
-
-function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = (0, _getPrototypeOf2.default)(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2.default)(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2.default)(this, result); }; }
-
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
-
-var ChartCircular = /*#__PURE__*/function (_React$Component) {
-  (0, _inherits2.default)(ChartCircular, _React$Component);
-
-  var _super = _createSuper(ChartCircular);
-
-  function ChartCircular(props) {
-    var _this;
-
-    (0, _classCallCheck2.default)(this, ChartCircular);
-    _this = _super.call(this, props);
-    _this.state = {
-      data: null,
-      request_params: null
-    };
-    return _this;
-  }
-
-  (0, _createClass2.default)(ChartCircular, [{
-    key: "fetchData",
-    value: function fetchData(request_params) {
-      var _this2 = this;
-
-      var r_url = "";
-
-      if (request_params.tag_val.length > 0) {
-        r_url = "http://127.0.0.1:5000/circular?tag_val=" + request_params.tag_val.join() + "&tag_name=" + request_params.tag_name;
-      } else {
-        r_url = "http://127.0.0.1:5000/circular?";
-      }
-
-      if (request_params.optType) {
-        r_url = r_url + "&order_opt=" + request_params.optType;
-      }
-
-      if (request_params.majMinSel) {
-        r_url = r_url + "&majmin_agg=" + request_params.majMinSel;
-      }
-
-      fetch(r_url, {
-        mode: 'cors'
-      }).then(function (r) {
-        return r.json();
-      }).then(function (r) {
-        return _this2.setState({
-          data: r,
-          request_params: request_params
-        }, function () {
-          _this2.createChart();
-        });
-      });
-    }
-  }, {
-    key: "componentDidMount",
-    value: function componentDidMount() {
-      this.fetchData(this.props.request_params);
-    }
-  }, {
-    key: "componentDidUpdate",
-    value: function componentDidUpdate(prevProps) {
-      if (prevProps.request_params !== this.props.request_params) {
-        if (prevProps.request_params.support !== this.props.request_params.support) {
-          this.createChart();
-        } else if (prevProps.request_params.focus !== this.props.request_params.focus) {
-          this.updateFocus();
-        } else {
-          this.fetchData(this.props.request_params);
-        }
-      }
-
-      if (prevProps.queryParams !== this.props.queryParams) {
-        this.createChart();
-      }
-    }
-  }, {
-    key: "createChart",
-    value: function createChart() {
-      var _this3 = this;
-
-      var svg = d3.select(this.refs[this.props.id + 'chartsvg']);
-      svg.selectAll("*").remove();
-      var width = this.props.width;
-      var height = this.props.height;
-      var order = this.state.data.order;
-      var sets = this.state.data.sets; // Filter based on slider support val
-
-      sets = sets.filter(function (x) {
-        return x.values > _this3.props.request_params.support / 100;
-      }); // Filter sets based on query params
-      //sets = sets.filter(x => x.labels.some(i=>i.includes(this.props.queryParams['chordSel'])))
-
-      if (this.props.queryParams['chordSel'].length > 0) {
-        sets = sets.filter(function (x) {
-          return x.labels.some(function (r) {
-            return _this3.props.queryParams['chordSel'].includes(r);
-          });
-        });
-      }
-
-      var r = this.props.height / 2 - 50; // Filter out nodes from order that all not in filtered sets
-
-      var filtered_set = (0, _construct2.default)(Array, (0, _toConsumableArray2.default)(new Set(sets.flatMap(function (x) {
-        return x['labels'];
-      }))));
-      order = order.filter(function (x) {
-        return filtered_set.includes(x) || x.includes("sep");
-      }); // Calculate radial coordinate from ordered list of nodes
-
-      var sc_radial = d3.scalePoint().domain(order).range([0, Math.PI * 2 - Math.PI * 2 / order.length]); // Colour map
-
-      var cmap = (0, _colorMap.genreColormap)(this.state.request_params.tag_val);
-      var ncmap = (0, _colorMap.nodeColormap)(); // Convert radial coordinate to cartesian
-
-      var node2point = function node2point(d) {
-        return {
-          x: r * Math.sin(sc_radial(d)),
-          y: r * Math.cos(sc_radial(d))
-        };
-      }; // Centre of the circle
-
-
-      var centre = {
-        x: width / 2,
-        y: width / 2
-      }; // If no opt type selected (i.e. root node order)
-
-      if (!this.props.request_params.optType) {
-        // Get groups of root nodes based on current order
-        var root_ix = [0];
-
-        for (var i = 0; i < order.length - 1; i++) {
-          if (order[i][1] == "b") {
-            if (order[i].slice(0, 2) !== order[i + 1].slice(0, 2)) {
-              root_ix.push(i);
-              root_ix.push(i + 1);
-            }
-          } else {
-            if (order[i][0] !== order[i + 1][0]) {
-              root_ix.push(i);
-              root_ix.push(i + 1);
-            }
-          }
-        }
-
-        root_ix.push(order.length - 1); // Split into pair chunks
-
-        var root_ix_pairs = [];
-
-        for (var _i = 0; _i < root_ix.length; _i += 2) {
-          root_ix_pairs.push([root_ix[_i], root_ix[_i + 1]]);
-        }
-
-        var arcGen = d3.arc().innerRadius(r + 5).outerRadius(r + 40).startAngle(function (d) {
-          return sc_radial(order[d[0]]) - 0.03;
-        }).endAngle(function (d) {
-          return sc_radial(order[d[1]]) + 0.03;
-        });
-        var root_arcs = svg.selectAll("path").data(root_ix_pairs).enter().append("path").attr("d", function (d) {
-          return arcGen(d);
-        }).attr("transform", "translate(" + centre.y + "," + centre.x + ")").attr("fill", "#ebebeb");
-      } // Create objects containing node labels and coordinates from list of edges (sets)
-
-
-      var node_points = order.map(function (x) {
-        return {
-          "label": x,
-          "coords": node2point(x)
-        };
-      }); // Append node groups
-
-      var nodes_group = svg.selectAll("g").data(node_points).enter().append("g").attr("transform", function (d) {
-        var x = centre.x + d.coords.x;
-        var y = centre.y - d.coords.y;
-        return "translate(" + x + "," + y + ")";
-      }); // Append node circles to node groups
-
-      var nodes = nodes_group.append("circle").attr("class", "node").attr("r", 5).attr("fill", function (d) {
-        if (d.label[1] == "b") {
-          return ncmap[d.label.slice(0, 2)];
-        } else {
-          return ncmap[d.label[0]];
-        }
-      }); // Text offset
-
-      var labelOffset = 0.06; // Append text to labels
-
-      var labels = nodes_group.append("text").text(function (d) {
-        return d.label;
-      }).attr("id", function (d) {
-        return d.label;
-      }).attr("fill", function (d) {
-        return _this3.props.queryParams['chordSel'].includes(d.label) ? "red" : "black";
-      }).attr("dx", function (d) {
-        return d.coords.x * labelOffset;
-      }).attr("dy", function (d) {
-        return -d.coords.y * labelOffset;
-      }).attr("text-anchor", "middle").attr("font-size", 10).attr("font-weight", function (d) {
-        return _this3.props.queryParams['chordSel'].includes(d.label) ? 700 : 400;
-      });
-      var beta = 0;
-      var lineGen = d3.line().x(function (d) {
-        return d.x + centre.x;
-      }).y(function (d) {
-        return centre.y - d.y;
-      }).curve(d3.curveBundle.beta(beta / 1000));
-      var links = svg.selectAll("path").select(".link").data(sets).enter().append("path").attr("class", "link").attr("d", function (d) {
-        return lineGen([node2point(d.labels[0]), node2point(d.labels[1])]);
-      }).attr("stroke", function (d) {
-        return cmap[d.tag];
-      }).attr("fill", "none").attr("stroke-width", function (d) {
-        return Math.pow(d.values, 1.5) * 50;
-      }).attr("stroke-opacity", function (d) {
-        return Math.pow(d.values / d3.max(sets.map(function (x) {
-          return x.values;
-        })), _this3.props.request_params.focus);
-      });
-      nodes_group.on("mouseenter", function (sel) {
-        d3.selectAll(".link").filter(function (d) {
-          return d.labels.includes(sel.label);
-        }).raise().transition(0.1).attr("stroke", "red").attr("stroke-width", 3).attr("stroke-opacity", function (d) {
-          return Math.pow(d.values / d3.max(sets.map(function (x) {
-            return x.values;
-          })), 1);
-        });
-        nodes_group.raise();
-      });
-      nodes_group.on("mouseleave", function (sel) {
-        d3.selectAll(".link").filter(function (d) {
-          return d.labels.includes(sel.label);
-        }).transition(0.1).attr("stroke", function (d) {
-          return cmap[d.tag];
-        }).attr("stroke-width", function (d) {
-          return Math.pow(d.values, 1.5) * 50;
-        }).attr("stroke-opacity", function (d) {
-          return Math.pow(d.values / d3.max(sets.map(function (x) {
-            return x.values;
-          })), _this3.props.request_params.focus);
-        });
-        nodes_group.raise();
-      });
-      nodes_group.on("click", function (sel) {
-        var currentQState = _this3.props.queryParams['chordSel'];
-
-        if (currentQState.includes(sel.label)) {
-          currentQState.splice(currentQState.indexOf(sel.label), 1);
-        } else {
-          currentQState.push(sel.label);
-        }
-
-        _this3.props.setQueryParams({
-          "chordSel": currentQState
-        });
-      });
-      nodes_group.raise();
-      this.setState({
-        sets: sets
-      });
-    }
-  }, {
-    key: "updateFocus",
-    value: function updateFocus() {
-      var _this4 = this;
-
-      var svg = d3.select(this.refs[this.props.id + 'chartsvg']);
-      svg.selectAll(".link").attr("stroke-opacity", function (d) {
-        return Math.pow(d.values / d3.max(_this4.state.sets.map(function (x) {
-          return x.values;
-        })), _this4.props.request_params.focus);
-      });
-    }
-  }, {
-    key: "render",
-    value: function render() {
-      return /*#__PURE__*/_react.default.createElement("svg", {
-        ref: this.props.id + 'chartsvg',
-        width: this.props.width,
-        height: this.props.height,
-        style: {
-          display: "block",
-          margin: "auto"
-        }
-      });
-    }
-  }]);
-  return ChartCircular;
-}(_react.default.Component);
-
-exports.ChartCircular = ChartCircular;
-},{"@babel/runtime/helpers/construct":"node_modules/@babel/runtime/helpers/construct.js","@babel/runtime/helpers/toConsumableArray":"node_modules/@babel/runtime/helpers/toConsumableArray.js","@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js","@babel/runtime/helpers/inherits":"node_modules/@babel/runtime/helpers/inherits.js","@babel/runtime/helpers/possibleConstructorReturn":"node_modules/@babel/runtime/helpers/possibleConstructorReturn.js","@babel/runtime/helpers/getPrototypeOf":"node_modules/@babel/runtime/helpers/getPrototypeOf.js","react":"node_modules/react/index.js","d3":"node_modules/d3/index.js","./colorMap":"src/colorMap.js"}],"src/chartParallel.js":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.ChartParallel = void 0;
-
-var _construct2 = _interopRequireDefault(require("@babel/runtime/helpers/construct"));
-
-var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toConsumableArray"));
-
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
-
-var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
-
-var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits"));
-
-var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
-
-var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
-
-var _react = _interopRequireDefault(require("react"));
-
-var d3 = _interopRequireWildcard(require("d3"));
-
-var _colorMap = require("./colorMap");
-
-function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = (0, _getPrototypeOf2.default)(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2.default)(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2.default)(this, result); }; }
-
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
-
-var ChartParallel = /*#__PURE__*/function (_React$Component) {
-  (0, _inherits2.default)(ChartParallel, _React$Component);
-
-  var _super = _createSuper(ChartParallel);
-
-  function ChartParallel(props) {
-    var _this;
-
-    (0, _classCallCheck2.default)(this, ChartParallel);
-    _this = _super.call(this, props);
-    _this.state = {
-      data: null,
-      request_params: null
-    };
-    return _this;
-  }
-
-  (0, _createClass2.default)(ChartParallel, [{
-    key: "fetchData",
-    value: function fetchData(request_params, majMinSel) {
-      var _this2 = this;
-
-      var r_url = "";
-
-      if (request_params.tag_val.length > 0) {
-        r_url = "http://127.0.0.1:5000/parallel?tag_val=" + request_params.tag_val.join() + "&tag_name=" + request_params.tag_name;
-      } else {
-        r_url = "http://127.0.0.1:5000/parallel?";
-      }
-
-      if (request_params.optType) {
-        r_url = r_url + "&order_opt=" + request_params.optType;
-      }
-
-      if (request_params.majMinSel) {
-        r_url = r_url + "&majmin_agg=" + request_params.majMinSel;
-      }
-
-      fetch(r_url, {
-        mode: 'cors'
-      }).then(function (r) {
-        return r.json();
-      }).then(function (r) {
-        return _this2.setState({
-          data: r,
-          request_params: request_params
-        }, function () {
-          _this2.createChart();
-        });
-      });
-    }
-  }, {
-    key: "componentDidMount",
-    value: function componentDidMount() {
-      this.fetchData(this.props.request_params);
-    }
-  }, {
-    key: "componentDidUpdate",
-    value: function componentDidUpdate(prevProps) {
-      if (prevProps.request_params !== this.props.request_params) {
-        if (prevProps.request_params.support !== this.props.request_params.support) {
-          this.createChart();
-        } else if (prevProps.request_params.focus !== this.props.request_params.focus) {
-          this.updateFocus();
-        } else {
-          this.fetchData(this.props.request_params);
-        }
-      }
-
-      if (prevProps.queryParams !== this.props.queryParams) {
-        this.createChart();
-      }
-    }
-  }, {
-    key: "createChart",
-    value: function createChart() {
-      var _this3 = this;
-
-      var svg = d3.select(this.refs[this.props.id + 'chartsvg']);
-      svg.selectAll("*").remove();
-      var width = this.props.width;
-      var height = this.props.height;
-      var node_list = this.state.data.order;
-      var data = this.state.data.sets;
-      data = data.filter(function (x) {
-        return x.values > _this3.props.request_params.support / 100;
-      });
-
-      if (this.props.queryParams['chordSel'].length > 0) {
-        data = data.filter(function (x) {
-          return x.labels.some(function (r) {
-            return _this3.props.queryParams['chordSel'].includes(r);
-          });
-        });
-      }
-
-      var margin = {
-        top: 20,
-        bottom: 20,
-        left: 60,
-        right: 10
-      }; // Number of parallel axes from max itemset length
-
-      var n_ax = d3.max(data.map(function (x) {
-        return x.labels.length;
-      })); // Filter out nodes from order that all not in filtered sets
-
-      var filtered_set = (0, _construct2.default)(Array, (0, _toConsumableArray2.default)(new Set(data.flatMap(function (x) {
-        return x['labels'];
-      }))));
-      node_list = node_list.filter(function (x) {
-        return filtered_set.includes(x);
-      }); // Colour map
-
-      var cmap = (0, _colorMap.genreColormap)(this.state.request_params.tag_val); // Add axes field to data by taking index of node in data node lists
-
-      var data_ax = data.map(function (d) {
-        return {
-          labels: d.labels.map(function (l, i) {
-            return {
-              node: l,
-              ax: i
-            };
-          }),
-          values: d.values,
-          tag: d.tag,
-          km_label: d.km_label
-        };
-      });
-      var scY = []; // Add axis field for n axes from node list
-
-      var node_list_ax = []; // Categorical y scale
-
-      var _loop = function _loop(i) {
-        //const ax_nodes = new Array(... new Set(data_ax.filter(x => x.labels[i]).map(x => x.labels[i].node)))
-        //scY.push(d3.scalePoint().domain(node_list.filter(x=>ax_nodes.includes(x))).range([margin.top, height - margin.bottom]))
-        var ax_nodes = node_list;
-        scY.push(d3.scalePoint().domain(node_list).range([margin.top, height - margin.bottom]));
-        node_list_ax.push.apply(node_list_ax, (0, _toConsumableArray2.default)(ax_nodes.map(function (x) {
-          return {
-            ax: i,
-            node: x
-          };
-        })));
-      };
-
-      for (var i = 0; i < n_ax; i++) {
-        _loop(i);
-      } // Linear x scale for parallel axes
-
-
-      var scX = d3.scaleLinear().domain([0, n_ax - 1]).range([margin.left, width - margin.right]); // Add node groups to create parallel axes
-
-      var nodes_group = svg.selectAll("g").data(node_list_ax).enter().append("g").attr("transform", function (d) {
-        return "translate(" + scX(d.ax) + "," + scY[d.ax](d.node) + ")";
-      }); // Append circle to node groups
-
-      var nodes = nodes_group.append("circle").attr("r", 2); // Append labels to node groups
-
-      var labels = nodes_group.append("text").text(function (d) {
-        return d.node;
-      }).attr("class", "label").attr("font-size", 10).attr("dx", -4).attr("dy", 2).attr("text-anchor", "end").attr("fill", function (d) {
-        return _this3.props.queryParams['chordSel'].includes(d.node) ? "red" : "black";
-      }).attr("font-weight", function (d) {
-        return _this3.props.queryParams['chordSel'].includes(d.node) ? 700 : 400;
-      }); // Add transparent rectangle to labels for easier hover selection
-
-      var label_bg = nodes_group.append("rect").attr("width", 30).attr("height", 20).attr("fill", "transparent").attr("transform", "translate(-34,-6)"); // Path generator
-
-      var lineGen = d3.line().y(function (d) {
-        return d.y;
-      }).x(function (d) {
-        return d.x;
-      });
-
-      var create_points = function create_points(d, i) {
-        var line = [{
-          "x": scX(d.labels[i].ax),
-          "y": scY[d.labels[i].ax](d.labels[i].node)
-        }, {
-          "x": scX(d.labels[i + 1].ax),
-          "y": scY[d.labels[i + 1].ax](d.labels[i + 1].node)
-        }];
-        return line;
-      };
-
-      var node_cmap_sc = d3.scalePoint().range([0, 1]).domain(node_list); // Append lines for each axes seperately to allow each to be coloured based on start node
-
-      var data_filt = [];
-
-      var _loop2 = function _loop2(_i) {
-        data_filt.push.apply(data_filt, (0, _toConsumableArray2.default)(data_ax.filter(function (x) {
-          return x.labels.length > _i + 1;
-        }).map(function (d) {
-          return Object.assign(d, {
-            ax: _i
-          });
-        })));
-      };
-
-      for (var _i = 0; _i < n_ax; _i++) {
-        _loop2(_i);
-      } // Append paths
-
-
-      var links = svg.selectAll("path").select(".link").data(data_filt).enter().append("path").attr("class", "link").attr("d", function (d) {
-        return lineGen(create_points(d, d.ax));
-      }).attr("fill", "none").attr("stroke", function (d) {
-        return _this3.props.request_params.cPath ? d3.interpolateTurbo(node_cmap_sc(d.labels[d.ax].node)) : cmap[d.tag];
-      }).attr("fill", "none").attr("stroke-width", function (d) {
-        return Math.pow(d.values, 1.5) * 50;
-      }).attr("stroke-opacity", function (d) {
-        return Math.pow(d.values / d3.max(data.map(function (x) {
-          return x.values;
-        })), _this3.props.request_params.focus);
-      }); // Highlight paths when hovering on node
-
-      label_bg.on("mouseenter", function (sel) {
-        d3.selectAll(".label").filter(function (l) {
-          return l == sel;
-        }).transition(0.1).attr("font-size", 15);
-        d3.selectAll(".link") //.filter(d=>d.labels.includes(sel.label))
-        .filter(function (d) {
-          return d.labels[sel.ax] ? d.labels[sel.ax].node === sel.node : null;
-        }).transition(0.1).attr("stroke", "red").attr("stroke-width", 3).attr("stroke-opacity", function (d) {
-          return Math.pow(d.values / d3.max(data.map(function (x) {
-            return x.values;
-          })), 1);
-        });
-      });
-      label_bg.on("mouseleave", function (sel) {
-        d3.selectAll(".label").filter(function (l) {
-          return l == sel;
-        }).transition(0.1).attr("font-size", 10);
-        d3.selectAll(".link").filter(function (d) {
-          return d.labels[sel.ax] ? d.labels[sel.ax].node === sel.node : null;
-        }).transition(0.1).attr("stroke", function (d) {
-          return _this3.props.request_params.cPath ? d3.interpolateTurbo(node_cmap_sc(d.labels[d.ax].node)) : cmap[d.tag];
-        }).attr("stroke-width", function (d) {
-          return Math.pow(d.values, 1.5) * 50;
-        }).attr("stroke-opacity", function (d) {
-          return Math.pow(d.values / d3.max(data.map(function (x) {
-            return x.values;
-          })), _this3.props.request_params.focus);
-        });
-      });
-      label_bg.on("click", function (sel) {
-        var currentQState = _this3.props.queryParams['chordSel'];
-
-        if (currentQState.includes(sel.node)) {
-          currentQState.splice(currentQState.indexOf(sel.node), 1);
-        } else {
-          currentQState.push(sel.node);
-        }
-
-        _this3.props.setQueryParams({
-          "chordSel": currentQState
-        });
-      }); // Raise label groups above paths
-
-      nodes_group.raise();
-      label_bg.raise();
-      this.setState({
-        sets: data
-      }); // Raise label groups above paths
-
-      nodes_group.raise();
-      label_bg.raise();
-      this.setState({
-        sets: data
-      });
-    }
-  }, {
-    key: "updateFocus",
-    value: function updateFocus() {
-      var _this4 = this;
-
-      var svg = d3.select(this.refs[this.props.id + 'chartsvg']);
-      svg.selectAll(".link").attr("stroke-opacity", function (d) {
-        return Math.pow(d.values / d3.max(_this4.state.sets.map(function (x) {
-          return x.values;
-        })), _this4.props.request_params.focus);
-      });
-    }
-  }, {
-    key: "render",
-    value: function render() {
-      return /*#__PURE__*/_react.default.createElement("svg", {
-        ref: this.props.id + 'chartsvg',
-        width: this.props.width,
-        height: this.props.height,
-        style: {
-          display: "block",
-          margin: "auto"
-        }
-      });
-    }
-  }]);
-  return ChartParallel;
-}(_react.default.Component);
-
-exports.ChartParallel = ChartParallel;
-},{"@babel/runtime/helpers/construct":"node_modules/@babel/runtime/helpers/construct.js","@babel/runtime/helpers/toConsumableArray":"node_modules/@babel/runtime/helpers/toConsumableArray.js","@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js","@babel/runtime/helpers/inherits":"node_modules/@babel/runtime/helpers/inherits.js","@babel/runtime/helpers/possibleConstructorReturn":"node_modules/@babel/runtime/helpers/possibleConstructorReturn.js","@babel/runtime/helpers/getPrototypeOf":"node_modules/@babel/runtime/helpers/getPrototypeOf.js","react":"node_modules/react/index.js","d3":"node_modules/d3/index.js","./colorMap":"src/colorMap.js"}],"src/chartHier.js":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.ChartHier = void 0;
-
-var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
-
-var _construct2 = _interopRequireDefault(require("@babel/runtime/helpers/construct"));
-
-var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toConsumableArray"));
-
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
-
-var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
-
-var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits"));
-
-var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
-
-var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
-
-var _react = _interopRequireDefault(require("react"));
-
-var d3 = _interopRequireWildcard(require("d3"));
-
-var _colorMap = require("./colorMap");
-
-function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = (0, _getPrototypeOf2.default)(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2.default)(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2.default)(this, result); }; }
-
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
-
-var ChartHier = /*#__PURE__*/function (_React$Component) {
-  (0, _inherits2.default)(ChartHier, _React$Component);
-
-  var _super = _createSuper(ChartHier);
-
-  function ChartHier(props) {
-    var _this;
-
-    (0, _classCallCheck2.default)(this, ChartHier);
-    _this = _super.call(this, props);
-    _this.state = {
-      data: null,
-      request_params: null
-    };
-    return _this;
-  }
-
-  (0, _createClass2.default)(ChartHier, [{
-    key: "fetchData",
-    value: function fetchData(request_params, majMinSel) {
-      var _this2 = this;
-
-      var r_url = "";
-
-      if (request_params.tag_val.length > 0) {
-        r_url = "http://127.0.0.1:5000/circHier?tag_val=" + request_params.tag_val.join() + "&tag_name=" + request_params.tag_name;
-      } else {
-        r_url = "http://127.0.0.1:5000/circHier?";
-      }
-
-      if (request_params.optType) {
-        r_url = r_url + "&order_opt=" + request_params.optType;
-      }
-
-      if (request_params.majMinSel) {
-        r_url = r_url + "&majmin_agg=" + request_params.majMinSel;
-      }
-
-      fetch(r_url, {
-        mode: 'cors'
-      }).then(function (r) {
-        return r.json();
-      }).then(function (r) {
-        return _this2.setState({
-          data: r,
-          request_params: request_params
-        }, function () {
-          _this2.createChart();
-        });
-      });
-    }
-  }, {
-    key: "componentDidMount",
-    value: function componentDidMount() {
-      this.fetchData(this.props.request_params);
-    }
-  }, {
-    key: "componentDidUpdate",
-    value: function componentDidUpdate(prevProps) {
-      if (prevProps.request_params !== this.props.request_params) {
-        if (prevProps.request_params.support !== this.props.request_params.support) {
-          this.createChart();
-        } else if (prevProps.request_params.focus !== this.props.request_params.focus) {
-          this.updateFocus();
-        } else {
-          this.fetchData(this.props.request_params);
-        }
-      }
-
-      if (prevProps.queryParams !== this.props.queryParams) {
-        this.createChart();
-      }
-    }
-  }, {
-    key: "createChart",
-    value: function createChart() {
-      var _this3 = this;
-
-      var svg = d3.select(this.refs[this.props.id + 'chartsvg']);
-      svg.selectAll("*").remove();
-      var width = this.props.width;
-      var height = this.props.height;
-      var order = this.state.data.order;
-      var sets = this.state.data.sets; // Filter based on slider support val
-
-      sets = sets.filter(function (x) {
-        return x.values > _this3.props.request_params.support / 100;
-      });
-
-      if (this.props.queryParams['chordSel'].length > 0) {
-        sets = sets.filter(function (x) {
-          return x.labels.some(function (r) {
-            return _this3.props.queryParams['chordSel'].includes(r);
-          });
-        });
-      }
-
-      var r = this.props.height / 2 - 50; // Filter out nodes from order that all not in filtered sets
-
-      var filtered_set = (0, _construct2.default)(Array, (0, _toConsumableArray2.default)(new Set(sets.flatMap(function (x) {
-        return x['labels'];
-      }))));
-      order = order.filter(function (x) {
-        return filtered_set.includes(x);
-      }); // Calculate radial coordinate from ordered list of nodes
-
-      var sc_radial = d3.scalePoint().domain(order).range([0, Math.PI * 2 - Math.PI * 2 / order.length]); // Colour map
-
-      var cmap = (0, _colorMap.genreColormap)(this.state.request_params.tag_val); // Convert radial coordinate to cartesian
-
-      var node2point = function node2point(d) {
-        return {
-          x: r * Math.sin(sc_radial(d)),
-          y: r * Math.cos(sc_radial(d))
-        };
-      }; // Centre of the circle
-
-
-      var centre = {
-        x: width / 2,
-        y: width / 2
-      }; // If no opt type selected (i.e. root node order)
-
-      if (!this.props.request_params.optType) {
-        // Get groups of root nodes based on current order
-        var root_ix = [0];
-
-        for (var i = 0; i < order.length - 1; i++) {
-          if (order[i][1] == "b") {
-            if (order[i].slice(0, 2) !== order[i + 1].slice(0, 2)) {
-              root_ix.push(i);
-              root_ix.push(i + 1);
-            }
-          } else {
-            if (order[i][0] !== order[i + 1][0]) {
-              root_ix.push(i);
-              root_ix.push(i + 1);
-            }
-          }
-        }
-
-        root_ix.push(order.length - 1); // Split into pair chunks
-
-        var root_ix_pairs = [];
-
-        for (var _i = 0; _i < root_ix.length; _i += 2) {
-          root_ix_pairs.push([root_ix[_i], root_ix[_i + 1]]);
-        }
-
-        var arcGen = d3.arc().innerRadius(r + 5).outerRadius(r + 40).startAngle(function (d) {
-          return sc_radial(order[d[0]]) - 0.03;
-        }).endAngle(function (d) {
-          return sc_radial(order[d[1]]) + 0.03;
-        });
-        var root_arcs = svg.selectAll("path").data(root_ix_pairs).enter().append("path").attr("d", function (d) {
-          return arcGen(d);
-        }).attr("transform", "translate(" + centre.y + "," + centre.x + ")").attr("fill", "#ebebeb");
-      } // Create objects containing node labels and coordinates from list of edges (sets)
-
-
-      var node_points = order.map(function (x) {
-        return {
-          "label": x,
-          "coords": node2point(x)
-        };
-      }); // Calculate inner heirarchy bundling nodes
-
-      var i_nodes = {}; // For each root note get angle of sub nodes
-
-      for (var _i2 = 0; _i2 < order.length; _i2++) {
-        if (order[_i2][1] != "b") {
-          if (order[_i2][0] in i_nodes) {
-            i_nodes[order[_i2][0]].push(sc_radial(order[_i2]));
-          } else {
-            i_nodes[order[_i2][0]] = [sc_radial(order[_i2])];
-          }
-        } else {
-          if (order.slice(0, 2) in i_nodes) {
-            i_nodes[order[_i2].slice(0, 2)].push(sc_radial(order[_i2]));
-          } else {
-            i_nodes[order[_i2].slice(0, 2)] = [sc_radial(order[_i2])];
-          }
-        }
-      } // Calculate mean angle for each root note
-
-
-      var root_nodes = {};
-
-      for (var _i3 = 0, _Object$entries = Object.entries(i_nodes); _i3 < _Object$entries.length; _i3++) {
-        var _Object$entries$_i = (0, _slicedToArray2.default)(_Object$entries[_i3], 2),
-            key = _Object$entries$_i[0],
-            value = _Object$entries$_i[1];
-
-        var mean_angle = Math.atan2(d3.sum(value.map(Math.sin)) / value.length, d3.sum(value.map(Math.cos)) / value.length);
-        root_nodes[key] = {
-          x: r * Math.sin(mean_angle),
-          y: r * Math.cos(mean_angle)
-        };
-      } // Append node groups
-
-
-      var nodes_group = svg.selectAll("g").data(node_points).enter().append("g").attr("transform", function (d) {
-        var x = centre.x + d.coords.x;
-        var y = centre.y - d.coords.y;
-        return "translate(" + x + "," + y + ")";
-      }); // Append node circles to node groups
-
-      var nodes = nodes_group.append("circle").attr("class", "node").attr("r", 5); // Text offset
-
-      var labelOffset = 0.06; // Append text to labels
-
-      var labels = nodes_group.append("text").text(function (d) {
-        return d.label;
-      }).attr("fill", function (d) {
-        return _this3.props.queryParams['chordSel'].includes(d.label) ? "red" : "black";
-      }).attr("dx", function (d) {
-        return d.coords.x * labelOffset;
-      }).attr("dy", function (d) {
-        return -d.coords.y * labelOffset;
-      }).attr("text-anchor", "middle").attr("font-size", 10).attr("font-weight", function (d) {
-        return _this3.props.queryParams['chordSel'].includes(d.label) ? 700 : 400;
-      });
-      var beta = this.props.request_params.beta;
-      var lineGen = d3.line().x(function (d) {
-        return d.x + centre.x;
-      }).y(function (d) {
-        return centre.y - d.y;
-      }).curve(d3.curveBundle.beta(beta));
-      var path_factor = 1.4;
-      var links = svg.selectAll("path").select(".link").data(sets).enter().append("path").attr("class", "link").attr("d", function (d) {
-        return lineGen([node2point(d.labels[0]), {
-          x: root_nodes[d.labels[0][1] === "b" ? d.labels[0].slice(0, 2) : d.labels[0][0]].x / path_factor,
-          y: root_nodes[d.labels[0][1] === "b" ? d.labels[0].slice(0, 2) : d.labels[0][0]].y / path_factor
-        }, {
-          x: root_nodes[d.labels[1][1] === "b" ? d.labels[1].slice(0, 2) : d.labels[1][0]].x / path_factor,
-          y: root_nodes[d.labels[1][1] === "b" ? d.labels[1].slice(0, 2) : d.labels[1][0]].y / path_factor
-        }, node2point(d.labels[1])]);
-      }).attr("stroke", function (d) {
-        return cmap[d.tag];
-      }).attr("fill", "none").attr("stroke-width", function (d) {
-        return Math.pow(d.values, 1.5) * 50;
-      }).attr("stroke-opacity", function (d) {
-        return Math.pow(d.values / d3.max(sets.map(function (x) {
-          return x.values;
-        })), _this3.props.request_params.focus);
-      });
-      nodes_group.on("mouseenter", function (sel) {
-        d3.selectAll(".link").filter(function (d) {
-          return d.labels.includes(sel.label);
-        }).raise().transition(0.1).attr("stroke", "red").attr("stroke-width", 3).attr("stroke-opacity", function (d) {
-          return Math.pow(d.values / d3.max(sets.map(function (x) {
-            return x.values;
-          })), 1);
-        });
-        nodes_group.raise();
-      });
-      nodes_group.on("mouseleave", function (sel) {
-        d3.selectAll(".link").filter(function (d) {
-          return d.labels.includes(sel.label);
-        }).transition(0.1).attr("stroke", function (d) {
-          return cmap[d.tag];
-        }).attr("stroke-width", function (d) {
-          return Math.pow(d.values, 1.5) * 50;
-        }).attr("stroke-opacity", function (d) {
-          return Math.pow(d.values / d3.max(sets.map(function (x) {
-            return x.values;
-          })), _this3.props.request_params.focus);
-        });
-        nodes_group.raise();
-      });
-      nodes_group.on("click", function (sel) {
-        var currentQState = _this3.props.queryParams['chordSel'];
-
-        if (currentQState.includes(sel.label)) {
-          currentQState.splice(currentQState.indexOf(sel.label), 1);
-        } else {
-          currentQState.push(sel.label);
-        }
-
-        _this3.props.setQueryParams({
-          "chordSel": currentQState
-        });
-      });
-      nodes_group.raise();
-      this.setState({
-        sets: sets
-      });
-    }
-  }, {
-    key: "updateFocus",
-    value: function updateFocus() {
-      var _this4 = this;
-
-      var svg = d3.select(this.refs[this.props.id + 'chartsvg']);
-      svg.selectAll(".link").attr("stroke-opacity", function (d) {
-        return Math.pow(d.values / d3.max(_this4.state.sets.map(function (x) {
-          return x.values;
-        })), _this4.props.request_params.focus);
-      });
-    }
-  }, {
-    key: "render",
-    value: function render() {
-      return /*#__PURE__*/_react.default.createElement("svg", {
-        ref: this.props.id + 'chartsvg',
-        width: this.props.width,
-        height: this.props.height,
-        style: {
-          display: "block",
-          margin: "auto"
-        }
-      });
-    }
-  }]);
-  return ChartHier;
-}(_react.default.Component);
-
-exports.ChartHier = ChartHier;
-},{"@babel/runtime/helpers/slicedToArray":"node_modules/@babel/runtime/helpers/slicedToArray.js","@babel/runtime/helpers/construct":"node_modules/@babel/runtime/helpers/construct.js","@babel/runtime/helpers/toConsumableArray":"node_modules/@babel/runtime/helpers/toConsumableArray.js","@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js","@babel/runtime/helpers/inherits":"node_modules/@babel/runtime/helpers/inherits.js","@babel/runtime/helpers/possibleConstructorReturn":"node_modules/@babel/runtime/helpers/possibleConstructorReturn.js","@babel/runtime/helpers/getPrototypeOf":"node_modules/@babel/runtime/helpers/getPrototypeOf.js","react":"node_modules/react/index.js","d3":"node_modules/d3/index.js","./colorMap":"src/colorMap.js"}],"node_modules/@babel/runtime/helpers/esm/extends.js":[function(require,module,exports) {
+},{"d3":"node_modules/d3/index.js"}],"node_modules/@babel/runtime/helpers/esm/extends.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -74307,7 +73284,1157 @@ function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-},{"./Accordion":"node_modules/react-bootstrap/esm/Accordion.js","./AccordionContext":"node_modules/react-bootstrap/esm/AccordionContext.js","./AccordionCollapse":"node_modules/react-bootstrap/esm/AccordionCollapse.js","./AccordionToggle":"node_modules/react-bootstrap/esm/AccordionToggle.js","./Alert":"node_modules/react-bootstrap/esm/Alert.js","./Badge":"node_modules/react-bootstrap/esm/Badge.js","./Breadcrumb":"node_modules/react-bootstrap/esm/Breadcrumb.js","./BreadcrumbItem":"node_modules/react-bootstrap/esm/BreadcrumbItem.js","./Button":"node_modules/react-bootstrap/esm/Button.js","./ButtonGroup":"node_modules/react-bootstrap/esm/ButtonGroup.js","./ButtonToolbar":"node_modules/react-bootstrap/esm/ButtonToolbar.js","./Card":"node_modules/react-bootstrap/esm/Card.js","./CardColumns":"node_modules/react-bootstrap/esm/CardColumns.js","./CardDeck":"node_modules/react-bootstrap/esm/CardDeck.js","./CardImg":"node_modules/react-bootstrap/esm/CardImg.js","./CardGroup":"node_modules/react-bootstrap/esm/CardGroup.js","./Carousel":"node_modules/react-bootstrap/esm/Carousel.js","./CarouselItem":"node_modules/react-bootstrap/esm/CarouselItem.js","./CloseButton":"node_modules/react-bootstrap/esm/CloseButton.js","./Col":"node_modules/react-bootstrap/esm/Col.js","./Collapse":"node_modules/react-bootstrap/esm/Collapse.js","./Dropdown":"node_modules/react-bootstrap/esm/Dropdown.js","./DropdownButton":"node_modules/react-bootstrap/esm/DropdownButton.js","./Fade":"node_modules/react-bootstrap/esm/Fade.js","./Form":"node_modules/react-bootstrap/esm/Form.js","./FormControl":"node_modules/react-bootstrap/esm/FormControl.js","./FormCheck":"node_modules/react-bootstrap/esm/FormCheck.js","./FormFile":"node_modules/react-bootstrap/esm/FormFile.js","./FormGroup":"node_modules/react-bootstrap/esm/FormGroup.js","./FormLabel":"node_modules/react-bootstrap/esm/FormLabel.js","./FormText":"node_modules/react-bootstrap/esm/FormText.js","./Container":"node_modules/react-bootstrap/esm/Container.js","./Image":"node_modules/react-bootstrap/esm/Image.js","./Figure":"node_modules/react-bootstrap/esm/Figure.js","./InputGroup":"node_modules/react-bootstrap/esm/InputGroup.js","./Jumbotron":"node_modules/react-bootstrap/esm/Jumbotron.js","./ListGroup":"node_modules/react-bootstrap/esm/ListGroup.js","./ListGroupItem":"node_modules/react-bootstrap/esm/ListGroupItem.js","./Media":"node_modules/react-bootstrap/esm/Media.js","./Modal":"node_modules/react-bootstrap/esm/Modal.js","./ModalBody":"node_modules/react-bootstrap/esm/ModalBody.js","./ModalDialog":"node_modules/react-bootstrap/esm/ModalDialog.js","./ModalFooter":"node_modules/react-bootstrap/esm/ModalFooter.js","./ModalTitle":"node_modules/react-bootstrap/esm/ModalTitle.js","./Nav":"node_modules/react-bootstrap/esm/Nav.js","./Navbar":"node_modules/react-bootstrap/esm/Navbar.js","./NavbarBrand":"node_modules/react-bootstrap/esm/NavbarBrand.js","./NavDropdown":"node_modules/react-bootstrap/esm/NavDropdown.js","./NavItem":"node_modules/react-bootstrap/esm/NavItem.js","./NavLink":"node_modules/react-bootstrap/esm/NavLink.js","./Overlay":"node_modules/react-bootstrap/esm/Overlay.js","./OverlayTrigger":"node_modules/react-bootstrap/esm/OverlayTrigger.js","./PageItem":"node_modules/react-bootstrap/esm/PageItem.js","./Pagination":"node_modules/react-bootstrap/esm/Pagination.js","./Popover":"node_modules/react-bootstrap/esm/Popover.js","./PopoverTitle":"node_modules/react-bootstrap/esm/PopoverTitle.js","./PopoverContent":"node_modules/react-bootstrap/esm/PopoverContent.js","./ProgressBar":"node_modules/react-bootstrap/esm/ProgressBar.js","./ResponsiveEmbed":"node_modules/react-bootstrap/esm/ResponsiveEmbed.js","./Row":"node_modules/react-bootstrap/esm/Row.js","./SafeAnchor":"node_modules/react-bootstrap/esm/SafeAnchor.js","./Spinner":"node_modules/react-bootstrap/esm/Spinner.js","./SplitButton":"node_modules/react-bootstrap/esm/SplitButton.js","./Tab":"node_modules/react-bootstrap/esm/Tab.js","./TabContainer":"node_modules/react-bootstrap/esm/TabContainer.js","./TabContent":"node_modules/react-bootstrap/esm/TabContent.js","./Table":"node_modules/react-bootstrap/esm/Table.js","./TabPane":"node_modules/react-bootstrap/esm/TabPane.js","./Tabs":"node_modules/react-bootstrap/esm/Tabs.js","./ThemeProvider":"node_modules/react-bootstrap/esm/ThemeProvider.js","./Toast":"node_modules/react-bootstrap/esm/Toast.js","./ToastBody":"node_modules/react-bootstrap/esm/ToastBody.js","./ToastHeader":"node_modules/react-bootstrap/esm/ToastHeader.js","./ToggleButton":"node_modules/react-bootstrap/esm/ToggleButton.js","./ToggleButtonGroup":"node_modules/react-bootstrap/esm/ToggleButtonGroup.js","./Tooltip":"node_modules/react-bootstrap/esm/Tooltip.js"}],"src/options.js":[function(require,module,exports) {
+},{"./Accordion":"node_modules/react-bootstrap/esm/Accordion.js","./AccordionContext":"node_modules/react-bootstrap/esm/AccordionContext.js","./AccordionCollapse":"node_modules/react-bootstrap/esm/AccordionCollapse.js","./AccordionToggle":"node_modules/react-bootstrap/esm/AccordionToggle.js","./Alert":"node_modules/react-bootstrap/esm/Alert.js","./Badge":"node_modules/react-bootstrap/esm/Badge.js","./Breadcrumb":"node_modules/react-bootstrap/esm/Breadcrumb.js","./BreadcrumbItem":"node_modules/react-bootstrap/esm/BreadcrumbItem.js","./Button":"node_modules/react-bootstrap/esm/Button.js","./ButtonGroup":"node_modules/react-bootstrap/esm/ButtonGroup.js","./ButtonToolbar":"node_modules/react-bootstrap/esm/ButtonToolbar.js","./Card":"node_modules/react-bootstrap/esm/Card.js","./CardColumns":"node_modules/react-bootstrap/esm/CardColumns.js","./CardDeck":"node_modules/react-bootstrap/esm/CardDeck.js","./CardImg":"node_modules/react-bootstrap/esm/CardImg.js","./CardGroup":"node_modules/react-bootstrap/esm/CardGroup.js","./Carousel":"node_modules/react-bootstrap/esm/Carousel.js","./CarouselItem":"node_modules/react-bootstrap/esm/CarouselItem.js","./CloseButton":"node_modules/react-bootstrap/esm/CloseButton.js","./Col":"node_modules/react-bootstrap/esm/Col.js","./Collapse":"node_modules/react-bootstrap/esm/Collapse.js","./Dropdown":"node_modules/react-bootstrap/esm/Dropdown.js","./DropdownButton":"node_modules/react-bootstrap/esm/DropdownButton.js","./Fade":"node_modules/react-bootstrap/esm/Fade.js","./Form":"node_modules/react-bootstrap/esm/Form.js","./FormControl":"node_modules/react-bootstrap/esm/FormControl.js","./FormCheck":"node_modules/react-bootstrap/esm/FormCheck.js","./FormFile":"node_modules/react-bootstrap/esm/FormFile.js","./FormGroup":"node_modules/react-bootstrap/esm/FormGroup.js","./FormLabel":"node_modules/react-bootstrap/esm/FormLabel.js","./FormText":"node_modules/react-bootstrap/esm/FormText.js","./Container":"node_modules/react-bootstrap/esm/Container.js","./Image":"node_modules/react-bootstrap/esm/Image.js","./Figure":"node_modules/react-bootstrap/esm/Figure.js","./InputGroup":"node_modules/react-bootstrap/esm/InputGroup.js","./Jumbotron":"node_modules/react-bootstrap/esm/Jumbotron.js","./ListGroup":"node_modules/react-bootstrap/esm/ListGroup.js","./ListGroupItem":"node_modules/react-bootstrap/esm/ListGroupItem.js","./Media":"node_modules/react-bootstrap/esm/Media.js","./Modal":"node_modules/react-bootstrap/esm/Modal.js","./ModalBody":"node_modules/react-bootstrap/esm/ModalBody.js","./ModalDialog":"node_modules/react-bootstrap/esm/ModalDialog.js","./ModalFooter":"node_modules/react-bootstrap/esm/ModalFooter.js","./ModalTitle":"node_modules/react-bootstrap/esm/ModalTitle.js","./Nav":"node_modules/react-bootstrap/esm/Nav.js","./Navbar":"node_modules/react-bootstrap/esm/Navbar.js","./NavbarBrand":"node_modules/react-bootstrap/esm/NavbarBrand.js","./NavDropdown":"node_modules/react-bootstrap/esm/NavDropdown.js","./NavItem":"node_modules/react-bootstrap/esm/NavItem.js","./NavLink":"node_modules/react-bootstrap/esm/NavLink.js","./Overlay":"node_modules/react-bootstrap/esm/Overlay.js","./OverlayTrigger":"node_modules/react-bootstrap/esm/OverlayTrigger.js","./PageItem":"node_modules/react-bootstrap/esm/PageItem.js","./Pagination":"node_modules/react-bootstrap/esm/Pagination.js","./Popover":"node_modules/react-bootstrap/esm/Popover.js","./PopoverTitle":"node_modules/react-bootstrap/esm/PopoverTitle.js","./PopoverContent":"node_modules/react-bootstrap/esm/PopoverContent.js","./ProgressBar":"node_modules/react-bootstrap/esm/ProgressBar.js","./ResponsiveEmbed":"node_modules/react-bootstrap/esm/ResponsiveEmbed.js","./Row":"node_modules/react-bootstrap/esm/Row.js","./SafeAnchor":"node_modules/react-bootstrap/esm/SafeAnchor.js","./Spinner":"node_modules/react-bootstrap/esm/Spinner.js","./SplitButton":"node_modules/react-bootstrap/esm/SplitButton.js","./Tab":"node_modules/react-bootstrap/esm/Tab.js","./TabContainer":"node_modules/react-bootstrap/esm/TabContainer.js","./TabContent":"node_modules/react-bootstrap/esm/TabContent.js","./Table":"node_modules/react-bootstrap/esm/Table.js","./TabPane":"node_modules/react-bootstrap/esm/TabPane.js","./Tabs":"node_modules/react-bootstrap/esm/Tabs.js","./ThemeProvider":"node_modules/react-bootstrap/esm/ThemeProvider.js","./Toast":"node_modules/react-bootstrap/esm/Toast.js","./ToastBody":"node_modules/react-bootstrap/esm/ToastBody.js","./ToastHeader":"node_modules/react-bootstrap/esm/ToastHeader.js","./ToggleButton":"node_modules/react-bootstrap/esm/ToggleButton.js","./ToggleButtonGroup":"node_modules/react-bootstrap/esm/ToggleButtonGroup.js","./Tooltip":"node_modules/react-bootstrap/esm/Tooltip.js"}],"src/chartCircular.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.ChartCircular = void 0;
+
+var _construct2 = _interopRequireDefault(require("@babel/runtime/helpers/construct"));
+
+var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toConsumableArray"));
+
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
+
+var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
+
+var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits"));
+
+var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
+
+var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
+
+var _react = _interopRequireDefault(require("react"));
+
+var d3 = _interopRequireWildcard(require("d3"));
+
+var _colorMap = require("./colorMap");
+
+var _reactBootstrap = require("react-bootstrap");
+
+function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = (0, _getPrototypeOf2.default)(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2.default)(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2.default)(this, result); }; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+var ChartCircular = /*#__PURE__*/function (_React$Component) {
+  (0, _inherits2.default)(ChartCircular, _React$Component);
+
+  var _super = _createSuper(ChartCircular);
+
+  function ChartCircular(props) {
+    var _this;
+
+    (0, _classCallCheck2.default)(this, ChartCircular);
+    _this = _super.call(this, props);
+    _this.state = {
+      data: null,
+      request_params: null
+    };
+    return _this;
+  }
+
+  (0, _createClass2.default)(ChartCircular, [{
+    key: "fetchData",
+    value: function fetchData(request_params) {
+      var _this2 = this;
+
+      var r_url = "";
+
+      if (request_params.tag_val.length > 0) {
+        r_url = "http://127.0.0.1:5000/circular?tag_val=" + request_params.tag_val.join() + "&tag_name=" + request_params.tag_name;
+      } else {
+        r_url = "http://127.0.0.1:5000/circular?";
+      }
+
+      if (request_params.optType) {
+        r_url = r_url + "&order_opt=" + request_params.optType;
+      }
+
+      if (request_params.majMinSel) {
+        r_url = r_url + "&majmin_agg=" + request_params.majMinSel;
+      }
+
+      fetch(r_url, {
+        mode: 'cors'
+      }).then(function (r) {
+        return r.json();
+      }).then(function (r) {
+        return _this2.setState({
+          data: r,
+          request_params: request_params
+        }, function () {
+          _this2.createChart();
+        });
+      });
+    }
+  }, {
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      this.fetchData(this.props.request_params);
+    }
+  }, {
+    key: "componentDidUpdate",
+    value: function componentDidUpdate(prevProps) {
+      if (prevProps.request_params !== this.props.request_params) {
+        if (prevProps.request_params.support !== this.props.request_params.support) {
+          this.createChart();
+        } else if (prevProps.request_params.focus !== this.props.request_params.focus) {
+          this.updateFocus();
+        } else {
+          this.fetchData(this.props.request_params);
+        }
+      }
+
+      if (prevProps.queryParams !== this.props.queryParams) {
+        this.createChart();
+      }
+    }
+  }, {
+    key: "createChart",
+    value: function createChart() {
+      var _this3 = this;
+
+      // Set condition to loop through if no genres are selected
+      var genres_tmp = ["all"];
+
+      if (this.state.request_params.tag_val.length > 0) {
+        genres_tmp = this.state.request_params.tag_val;
+      } // Iterate over genres and create new chart on selected svg
+
+
+      var _loop = function _loop(tag_ix) {
+        var svg = d3.select(_this3.refs[genres_tmp[tag_ix] + 'chartsvg']);
+        svg.selectAll("*").remove();
+        var width = svg.node().getBoundingClientRect().width;
+        var height = svg.node().getBoundingClientRect().height;
+        var order = _this3.state.data.order;
+        var sets = _this3.state.data.sets;
+
+        if (_this3.state.request_params.tag_val.length > 0) {
+          sets = sets.filter(function (x) {
+            return x.tag == genres_tmp[tag_ix];
+          });
+        } // Filter based on slider support val
+
+
+        sets = sets.filter(function (x) {
+          return x.values > _this3.props.request_params.support / 100;
+        }); // Filter sets based on query params
+        //sets = sets.filter(x => x.labels.some(i=>i.includes(this.props.queryParams['chordSel'])))
+
+        if (_this3.props.queryParams['chordSel'].length > 0) {
+          sets = sets.filter(function (x) {
+            return x.labels.some(function (r) {
+              return _this3.props.queryParams['chordSel'].includes(r);
+            });
+          });
+        }
+
+        var r = height / 2 - height / 16; // Filter out nodes from order that all not in filtered sets
+
+        var filtered_set = (0, _construct2.default)(Array, (0, _toConsumableArray2.default)(new Set(sets.flatMap(function (x) {
+          return x['labels'];
+        }))));
+        order = order.filter(function (x) {
+          return filtered_set.includes(x) || x.includes("sep");
+        }); // Calculate radial coordinate from ordered list of nodes
+
+        var sc_radial = d3.scalePoint().domain(order).range([0, Math.PI * 2 - Math.PI * 2 / order.length]); // Colour map
+
+        var cmap = (0, _colorMap.genreColormap)(_this3.state.request_params.tag_val);
+        var ncmap = (0, _colorMap.nodeColormap)(); // Convert radial coordinate to cartesian
+
+        var node2point = function node2point(d) {
+          return {
+            x: r * Math.sin(sc_radial(d)),
+            y: r * Math.cos(sc_radial(d))
+          };
+        }; // Centre of the circle
+
+
+        var centre = {
+          x: width / 2,
+          y: width / 2
+        }; // If no opt type selected (i.e. root node order)
+
+        if (!_this3.props.request_params.optType) {
+          // Get groups of root nodes based on current order
+          var root_ix = [0];
+
+          for (var i = 0; i < order.length - 1; i++) {
+            if (order[i][1] == "b") {
+              if (order[i].slice(0, 2) !== order[i + 1].slice(0, 2)) {
+                root_ix.push(i);
+                root_ix.push(i + 1);
+              }
+            } else {
+              if (order[i][0] !== order[i + 1][0]) {
+                root_ix.push(i);
+                root_ix.push(i + 1);
+              }
+            }
+          }
+
+          root_ix.push(order.length - 1); // Split into pair chunks
+
+          var root_ix_pairs = [];
+
+          for (var _i = 0; _i < root_ix.length; _i += 2) {
+            root_ix_pairs.push([root_ix[_i], root_ix[_i + 1]]);
+          }
+
+          var arcGen = d3.arc().innerRadius(r + r / 80).outerRadius(r + r / 10).startAngle(function (d) {
+            return sc_radial(order[d[0]]) - 0.03;
+          }).endAngle(function (d) {
+            return sc_radial(order[d[1]]) + 0.03;
+          });
+          var root_arcs = svg.selectAll("path").data(root_ix_pairs).enter().append("path").attr("d", function (d) {
+            return arcGen(d);
+          }).attr("transform", "translate(" + centre.y + "," + centre.x + ")").attr("fill", "#ebebeb");
+        } // Create objects containing node labels and coordinates from list of edges (sets)
+
+
+        var node_points = order.map(function (x) {
+          return {
+            "label": x,
+            "coords": node2point(x)
+          };
+        }); // Append node groups
+
+        var nodes_group = svg.selectAll("g").data(node_points).enter().append("g").attr("transform", function (d) {
+          var x = centre.x + d.coords.x;
+          var y = centre.y - d.coords.y;
+          return "translate(" + x + "," + y + ")";
+        }); // Append node circles to node groups
+
+        var nodes = nodes_group.append("circle").attr("class", "node").attr("r", 5).attr("fill", function (d) {
+          if (d.label[1] == "b") {
+            return ncmap[d.label.slice(0, 2)];
+          } else {
+            return ncmap[d.label[0]];
+          }
+        }); // Text offset
+
+        var labelOffset = 0.06; // Append text to labels
+
+        var labels = nodes_group.append("text").text(function (d) {
+          return d.label;
+        }).attr("id", function (d) {
+          return d.label;
+        }).attr("fill", function (d) {
+          return _this3.props.queryParams['chordSel'].includes(d.label) ? "red" : "black";
+        }).attr("dx", function (d) {
+          return d.coords.x * labelOffset;
+        }).attr("dy", function (d) {
+          return -d.coords.y * labelOffset;
+        }).attr("text-anchor", "middle").attr("font-size", 10).attr("font-weight", function (d) {
+          return _this3.props.queryParams['chordSel'].includes(d.label) ? 700 : 400;
+        });
+        var beta = 0;
+        var lineGen = d3.line().x(function (d) {
+          return d.x + centre.x;
+        }).y(function (d) {
+          return centre.y - d.y;
+        }).curve(d3.curveBundle.beta(beta / 1000));
+        var links = svg.selectAll("path").select(".link").data(sets).enter().append("path").attr("class", "link").attr("d", function (d) {
+          return lineGen([node2point(d.labels[0]), node2point(d.labels[1])]);
+        }).attr("stroke", function (d) {
+          return cmap[d.tag];
+        }).attr("fill", "none").attr("stroke-width", function (d) {
+          return Math.pow(d.values, 1.5) * 50;
+        }).attr("stroke-opacity", function (d) {
+          return Math.pow(d.values / d3.max(sets.map(function (x) {
+            return x.values;
+          })), _this3.props.request_params.focus);
+        });
+        nodes_group.on("mouseenter", function (sel) {
+          d3.selectAll(".link").filter(function (d) {
+            return d.labels.includes(sel.label);
+          }).raise().transition(0.1).attr("stroke", "red").attr("stroke-width", 3).attr("stroke-opacity", function (d) {
+            return Math.pow(d.values / d3.max(sets.map(function (x) {
+              return x.values;
+            })), 1);
+          });
+          nodes_group.raise();
+        });
+        nodes_group.on("mouseleave", function (sel) {
+          d3.selectAll(".link").filter(function (d) {
+            return d.labels.includes(sel.label);
+          }).transition(0.1).attr("stroke", function (d) {
+            return cmap[d.tag];
+          }).attr("stroke-width", function (d) {
+            return Math.pow(d.values, 1.5) * 50;
+          }).attr("stroke-opacity", function (d) {
+            return Math.pow(d.values / d3.max(sets.map(function (x) {
+              return x.values;
+            })), _this3.props.request_params.focus);
+          });
+          nodes_group.raise();
+        });
+        nodes_group.on("click", function (sel) {
+          var currentQState = _this3.props.queryParams['chordSel'];
+
+          if (currentQState.includes(sel.label)) {
+            currentQState.splice(currentQState.indexOf(sel.label), 1);
+          } else {
+            currentQState.push(sel.label);
+          }
+
+          _this3.props.setQueryParams({
+            "chordSel": currentQState
+          });
+        });
+        nodes_group.raise();
+
+        _this3.setState({
+          sets: sets
+        });
+      };
+
+      for (var tag_ix = 0; tag_ix < genres_tmp.length; tag_ix++) {
+        _loop(tag_ix);
+      }
+    }
+  }, {
+    key: "updateFocus",
+    value: function updateFocus() {
+      var _this4 = this;
+
+      var svg = d3.selectAll("svg");
+      svg.selectAll(".link").attr("stroke-opacity", function (d) {
+        return Math.pow(d.values / d3.max(_this4.state.sets.map(function (x) {
+          return x.values;
+        })), _this4.props.request_params.focus);
+      });
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      var _this5 = this;
+
+      var svg_list = /*#__PURE__*/_react.default.createElement("svg", {
+        ref: 'allchartsvg',
+        width: this.props.width,
+        height: this.props.height,
+        style: {
+          display: "block",
+          margin: "auto"
+        }
+      });
+
+      if (this.state.request_params && this.state.request_params.tag_val.length > 0) {
+        svg_list = this.state.request_params.tag_val.map(function (x, i) {
+          return /*#__PURE__*/_react.default.createElement("svg", {
+            key: i,
+            ref: x + 'chartsvg',
+            width: _this5.props.width / 2,
+            height: _this5.props.height / 2,
+            style: {
+              display: "block",
+              margin: "auto"
+            }
+          });
+        });
+      }
+
+      return /*#__PURE__*/_react.default.createElement("div", null, svg_list);
+    }
+  }]);
+  return ChartCircular;
+}(_react.default.Component);
+
+exports.ChartCircular = ChartCircular;
+},{"@babel/runtime/helpers/construct":"node_modules/@babel/runtime/helpers/construct.js","@babel/runtime/helpers/toConsumableArray":"node_modules/@babel/runtime/helpers/toConsumableArray.js","@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js","@babel/runtime/helpers/inherits":"node_modules/@babel/runtime/helpers/inherits.js","@babel/runtime/helpers/possibleConstructorReturn":"node_modules/@babel/runtime/helpers/possibleConstructorReturn.js","@babel/runtime/helpers/getPrototypeOf":"node_modules/@babel/runtime/helpers/getPrototypeOf.js","react":"node_modules/react/index.js","d3":"node_modules/d3/index.js","./colorMap":"src/colorMap.js","react-bootstrap":"node_modules/react-bootstrap/esm/index.js"}],"src/chartParallel.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.ChartParallel = void 0;
+
+var _construct2 = _interopRequireDefault(require("@babel/runtime/helpers/construct"));
+
+var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toConsumableArray"));
+
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
+
+var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
+
+var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits"));
+
+var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
+
+var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
+
+var _react = _interopRequireDefault(require("react"));
+
+var d3 = _interopRequireWildcard(require("d3"));
+
+var _colorMap = require("./colorMap");
+
+function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = (0, _getPrototypeOf2.default)(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2.default)(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2.default)(this, result); }; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+var ChartParallel = /*#__PURE__*/function (_React$Component) {
+  (0, _inherits2.default)(ChartParallel, _React$Component);
+
+  var _super = _createSuper(ChartParallel);
+
+  function ChartParallel(props) {
+    var _this;
+
+    (0, _classCallCheck2.default)(this, ChartParallel);
+    _this = _super.call(this, props);
+    _this.state = {
+      data: null,
+      request_params: null
+    };
+    return _this;
+  }
+
+  (0, _createClass2.default)(ChartParallel, [{
+    key: "fetchData",
+    value: function fetchData(request_params, majMinSel) {
+      var _this2 = this;
+
+      var r_url = "";
+
+      if (request_params.tag_val.length > 0) {
+        r_url = "http://127.0.0.1:5000/parallel?tag_val=" + request_params.tag_val.join() + "&tag_name=" + request_params.tag_name;
+      } else {
+        r_url = "http://127.0.0.1:5000/parallel?";
+      }
+
+      if (request_params.optType) {
+        r_url = r_url + "&order_opt=" + request_params.optType;
+      }
+
+      if (request_params.majMinSel) {
+        r_url = r_url + "&majmin_agg=" + request_params.majMinSel;
+      }
+
+      fetch(r_url, {
+        mode: 'cors'
+      }).then(function (r) {
+        return r.json();
+      }).then(function (r) {
+        return _this2.setState({
+          data: r,
+          request_params: request_params
+        }, function () {
+          _this2.createChart();
+        });
+      });
+    }
+  }, {
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      this.fetchData(this.props.request_params);
+    }
+  }, {
+    key: "componentDidUpdate",
+    value: function componentDidUpdate(prevProps) {
+      if (prevProps.request_params !== this.props.request_params) {
+        if (prevProps.request_params.support !== this.props.request_params.support) {
+          this.createChart();
+        } else if (prevProps.request_params.focus !== this.props.request_params.focus) {
+          this.updateFocus();
+        } else {
+          this.fetchData(this.props.request_params);
+        }
+      }
+
+      if (prevProps.queryParams !== this.props.queryParams) {
+        this.createChart();
+      }
+    }
+  }, {
+    key: "createChart",
+    value: function createChart() {
+      var _this3 = this;
+
+      // Set condition to loop through if no genres are selected
+      var genres_tmp = ["all"];
+
+      if (this.state.request_params.tag_val.length > 0) {
+        genres_tmp = this.state.request_params.tag_val;
+      } // Iterate over genres and create new chart on selected svg
+
+
+      var _loop = function _loop(tag_ix) {
+        var svg = d3.select(_this3.refs[genres_tmp[tag_ix] + 'chartsvg']);
+        svg.selectAll("*").remove();
+        var width = svg.node().getBoundingClientRect().width;
+        var height = svg.node().getBoundingClientRect().height;
+        var node_list = _this3.state.data.order;
+        var data = _this3.state.data.sets;
+
+        if (_this3.state.request_params.tag_val.length > 0) {
+          data = data.filter(function (x) {
+            return x.tag == genres_tmp[tag_ix];
+          });
+        }
+
+        data = data.filter(function (x) {
+          return x.values > _this3.props.request_params.support / 100;
+        });
+
+        if (_this3.props.queryParams['chordSel'].length > 0) {
+          data = data.filter(function (x) {
+            return x.labels.some(function (r) {
+              return _this3.props.queryParams['chordSel'].includes(r);
+            });
+          });
+        }
+
+        var margin = {
+          top: 20,
+          bottom: 20,
+          left: 60,
+          right: 10
+        }; // Number of parallel axes from max itemset length
+
+        var n_ax = d3.max(data.map(function (x) {
+          return x.labels.length;
+        })); // Filter out nodes from order that all not in filtered sets
+
+        var filtered_set = (0, _construct2.default)(Array, (0, _toConsumableArray2.default)(new Set(data.flatMap(function (x) {
+          return x['labels'];
+        }))));
+        node_list = node_list.filter(function (x) {
+          return filtered_set.includes(x);
+        }); // Colour map
+
+        var cmap = (0, _colorMap.genreColormap)(_this3.state.request_params.tag_val); // Add axes field to data by taking index of node in data node lists
+
+        var data_ax = data.map(function (d) {
+          return {
+            labels: d.labels.map(function (l, i) {
+              return {
+                node: l,
+                ax: i
+              };
+            }),
+            values: d.values,
+            tag: d.tag,
+            km_label: d.km_label
+          };
+        });
+        var scY = []; // Add axis field for n axes from node list
+
+        var node_list_ax = []; // Categorical y scale
+
+        var _loop2 = function _loop2(i) {
+          //const ax_nodes = new Array(... new Set(data_ax.filter(x => x.labels[i]).map(x => x.labels[i].node)))
+          //scY.push(d3.scalePoint().domain(node_list.filter(x=>ax_nodes.includes(x))).range([margin.top, height - margin.bottom]))
+          var ax_nodes = node_list;
+          scY.push(d3.scalePoint().domain(node_list).range([margin.top, height - margin.bottom]));
+          node_list_ax.push.apply(node_list_ax, (0, _toConsumableArray2.default)(ax_nodes.map(function (x) {
+            return {
+              ax: i,
+              node: x
+            };
+          })));
+        };
+
+        for (var i = 0; i < n_ax; i++) {
+          _loop2(i);
+        } // Linear x scale for parallel axes
+
+
+        var scX = d3.scaleLinear().domain([0, n_ax - 1]).range([margin.left, width - margin.right]); // Add node groups to create parallel axes
+
+        var nodes_group = svg.selectAll("g").data(node_list_ax).enter().append("g").attr("transform", function (d) {
+          return "translate(" + scX(d.ax) + "," + scY[d.ax](d.node) + ")";
+        }); // Append circle to node groups
+
+        var nodes = nodes_group.append("circle").attr("r", 2); // Append labels to node groups
+
+        var labels = nodes_group.append("text").text(function (d) {
+          return d.node;
+        }).attr("class", "label").attr("font-size", 10).attr("dx", -4).attr("dy", 2).attr("text-anchor", "end").attr("fill", function (d) {
+          return _this3.props.queryParams['chordSel'].includes(d.node) ? "red" : "black";
+        }).attr("font-weight", function (d) {
+          return _this3.props.queryParams['chordSel'].includes(d.node) ? 700 : 400;
+        }); // Add transparent rectangle to labels for easier hover selection
+
+        var label_bg = nodes_group.append("rect").attr("width", 30).attr("height", 20).attr("fill", "transparent").attr("transform", "translate(-34,-6)"); // Path generator
+
+        var lineGen = d3.line().y(function (d) {
+          return d.y;
+        }).x(function (d) {
+          return d.x;
+        });
+
+        var create_points = function create_points(d, i) {
+          var line = [{
+            "x": scX(d.labels[i].ax),
+            "y": scY[d.labels[i].ax](d.labels[i].node)
+          }, {
+            "x": scX(d.labels[i + 1].ax),
+            "y": scY[d.labels[i + 1].ax](d.labels[i + 1].node)
+          }];
+          return line;
+        };
+
+        var node_cmap_sc = d3.scalePoint().range([0, 1]).domain(node_list); // Append lines for each axes seperately to allow each to be coloured based on start node
+
+        var data_filt = [];
+
+        var _loop3 = function _loop3(_i) {
+          data_filt.push.apply(data_filt, (0, _toConsumableArray2.default)(data_ax.filter(function (x) {
+            return x.labels.length > _i + 1;
+          }).map(function (d) {
+            return Object.assign(d, {
+              ax: _i
+            });
+          })));
+        };
+
+        for (var _i = 0; _i < n_ax; _i++) {
+          _loop3(_i);
+        } // Append paths
+
+
+        var links = svg.selectAll("path").select(".link").data(data_filt).enter().append("path").attr("class", "link").attr("d", function (d) {
+          return lineGen(create_points(d, d.ax));
+        }).attr("fill", "none").attr("stroke", function (d) {
+          return _this3.props.request_params.cPath ? d3.interpolateTurbo(node_cmap_sc(d.labels[d.ax].node)) : cmap[d.tag];
+        }).attr("fill", "none").attr("stroke-width", function (d) {
+          return Math.pow(d.values, 1.5) * 50;
+        }).attr("stroke-opacity", function (d) {
+          return Math.pow(d.values / d3.max(data.map(function (x) {
+            return x.values;
+          })), _this3.props.request_params.focus);
+        }); // Highlight paths when hovering on node
+
+        label_bg.on("mouseenter", function (sel) {
+          d3.selectAll(".label").filter(function (l) {
+            return l == sel;
+          }).transition(0.1).attr("font-size", 15);
+          d3.selectAll(".link") //.filter(d=>d.labels.includes(sel.label))
+          .filter(function (d) {
+            return d.labels[sel.ax] ? d.labels[sel.ax].node === sel.node : null;
+          }).transition(0.1).attr("stroke", "red").attr("stroke-width", 3).attr("stroke-opacity", function (d) {
+            return Math.pow(d.values / d3.max(data.map(function (x) {
+              return x.values;
+            })), 1);
+          });
+        });
+        label_bg.on("mouseleave", function (sel) {
+          d3.selectAll(".label").filter(function (l) {
+            return l == sel;
+          }).transition(0.1).attr("font-size", 10);
+          d3.selectAll(".link").filter(function (d) {
+            return d.labels[sel.ax] ? d.labels[sel.ax].node === sel.node : null;
+          }).transition(0.1).attr("stroke", function (d) {
+            return _this3.props.request_params.cPath ? d3.interpolateTurbo(node_cmap_sc(d.labels[d.ax].node)) : cmap[d.tag];
+          }).attr("stroke-width", function (d) {
+            return Math.pow(d.values, 1.5) * 50;
+          }).attr("stroke-opacity", function (d) {
+            return Math.pow(d.values / d3.max(data.map(function (x) {
+              return x.values;
+            })), _this3.props.request_params.focus);
+          });
+        });
+        label_bg.on("click", function (sel) {
+          var currentQState = _this3.props.queryParams['chordSel'];
+
+          if (currentQState.includes(sel.node)) {
+            currentQState.splice(currentQState.indexOf(sel.node), 1);
+          } else {
+            currentQState.push(sel.node);
+          }
+
+          _this3.props.setQueryParams({
+            "chordSel": currentQState
+          });
+        }); // Raise label groups above paths
+
+        nodes_group.raise();
+        label_bg.raise();
+
+        _this3.setState({
+          sets: data
+        }); // Raise label groups above paths
+
+
+        nodes_group.raise();
+        label_bg.raise();
+
+        _this3.setState({
+          sets: data
+        });
+      };
+
+      for (var tag_ix = 0; tag_ix < genres_tmp.length; tag_ix++) {
+        _loop(tag_ix);
+      }
+    }
+  }, {
+    key: "updateFocus",
+    value: function updateFocus() {
+      var _this4 = this;
+
+      var svg = d3.select("svg");
+      svg.selectAll(".link").attr("stroke-opacity", function (d) {
+        return Math.pow(d.values / d3.max(_this4.state.sets.map(function (x) {
+          return x.values;
+        })), _this4.props.request_params.focus);
+      });
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      var _this5 = this;
+
+      var svg_list = /*#__PURE__*/_react.default.createElement("svg", {
+        ref: 'allchartsvg',
+        width: this.props.width,
+        height: this.props.height,
+        style: {
+          display: "block",
+          margin: "auto"
+        }
+      });
+
+      if (this.state.request_params && this.state.request_params.tag_val.length > 0) {
+        svg_list = this.state.request_params.tag_val.map(function (x, i) {
+          return /*#__PURE__*/_react.default.createElement("svg", {
+            key: i,
+            ref: x + 'chartsvg',
+            width: _this5.props.width / 2,
+            height: _this5.props.height / 2,
+            style: {
+              display: "block",
+              margin: "auto"
+            }
+          });
+        });
+      }
+
+      return /*#__PURE__*/_react.default.createElement("div", null, svg_list);
+    }
+  }]);
+  return ChartParallel;
+}(_react.default.Component);
+
+exports.ChartParallel = ChartParallel;
+},{"@babel/runtime/helpers/construct":"node_modules/@babel/runtime/helpers/construct.js","@babel/runtime/helpers/toConsumableArray":"node_modules/@babel/runtime/helpers/toConsumableArray.js","@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js","@babel/runtime/helpers/inherits":"node_modules/@babel/runtime/helpers/inherits.js","@babel/runtime/helpers/possibleConstructorReturn":"node_modules/@babel/runtime/helpers/possibleConstructorReturn.js","@babel/runtime/helpers/getPrototypeOf":"node_modules/@babel/runtime/helpers/getPrototypeOf.js","react":"node_modules/react/index.js","d3":"node_modules/d3/index.js","./colorMap":"src/colorMap.js"}],"src/chartHier.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.ChartHier = void 0;
+
+var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
+
+var _construct2 = _interopRequireDefault(require("@babel/runtime/helpers/construct"));
+
+var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toConsumableArray"));
+
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
+
+var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
+
+var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits"));
+
+var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
+
+var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
+
+var _react = _interopRequireDefault(require("react"));
+
+var d3 = _interopRequireWildcard(require("d3"));
+
+var _colorMap = require("./colorMap");
+
+function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = (0, _getPrototypeOf2.default)(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2.default)(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2.default)(this, result); }; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+var ChartHier = /*#__PURE__*/function (_React$Component) {
+  (0, _inherits2.default)(ChartHier, _React$Component);
+
+  var _super = _createSuper(ChartHier);
+
+  function ChartHier(props) {
+    var _this;
+
+    (0, _classCallCheck2.default)(this, ChartHier);
+    _this = _super.call(this, props);
+    _this.state = {
+      data: null,
+      request_params: null
+    };
+    return _this;
+  }
+
+  (0, _createClass2.default)(ChartHier, [{
+    key: "fetchData",
+    value: function fetchData(request_params, majMinSel) {
+      var _this2 = this;
+
+      var r_url = "";
+
+      if (request_params.tag_val.length > 0) {
+        r_url = "http://127.0.0.1:5000/circHier?tag_val=" + request_params.tag_val.join() + "&tag_name=" + request_params.tag_name;
+      } else {
+        r_url = "http://127.0.0.1:5000/circHier?";
+      }
+
+      if (request_params.optType) {
+        r_url = r_url + "&order_opt=" + request_params.optType;
+      }
+
+      if (request_params.majMinSel) {
+        r_url = r_url + "&majmin_agg=" + request_params.majMinSel;
+      }
+
+      fetch(r_url, {
+        mode: 'cors'
+      }).then(function (r) {
+        return r.json();
+      }).then(function (r) {
+        return _this2.setState({
+          data: r,
+          request_params: request_params
+        }, function () {
+          _this2.createChart();
+        });
+      });
+    }
+  }, {
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      this.fetchData(this.props.request_params);
+    }
+  }, {
+    key: "componentDidUpdate",
+    value: function componentDidUpdate(prevProps) {
+      if (prevProps.request_params !== this.props.request_params) {
+        if (prevProps.request_params.support !== this.props.request_params.support) {
+          this.createChart();
+        } else if (prevProps.request_params.focus !== this.props.request_params.focus) {
+          this.updateFocus();
+        } else {
+          this.fetchData(this.props.request_params);
+        }
+      }
+
+      if (prevProps.queryParams !== this.props.queryParams) {
+        this.createChart();
+      }
+    }
+  }, {
+    key: "createChart",
+    value: function createChart() {
+      var _this3 = this;
+
+      // Set condition to loop through if no genres are selected
+      var genres_tmp = ["all"];
+
+      if (this.state.request_params.tag_val.length > 0) {
+        genres_tmp = this.state.request_params.tag_val;
+      } // Iterate over genres and create new chart on selected svg
+
+
+      var _loop = function _loop(tag_ix) {
+        var svg = d3.select(_this3.refs[genres_tmp[tag_ix] + 'chartsvg']);
+        svg.selectAll("*").remove();
+        var width = svg.node().getBoundingClientRect().width;
+        var height = svg.node().getBoundingClientRect().height;
+        var order = _this3.state.data.order;
+        var sets = _this3.state.data.sets;
+
+        if (_this3.state.request_params.tag_val.length > 0) {
+          sets = sets.filter(function (x) {
+            return x.tag == genres_tmp[tag_ix];
+          });
+        } // Filter based on slider support val
+
+
+        sets = sets.filter(function (x) {
+          return x.values > _this3.props.request_params.support / 100;
+        });
+
+        if (_this3.props.queryParams['chordSel'].length > 0) {
+          sets = sets.filter(function (x) {
+            return x.labels.some(function (r) {
+              return _this3.props.queryParams['chordSel'].includes(r);
+            });
+          });
+        }
+
+        var r = height / 2 - height / 16; // Filter out nodes from order that all not in filtered sets
+
+        var filtered_set = (0, _construct2.default)(Array, (0, _toConsumableArray2.default)(new Set(sets.flatMap(function (x) {
+          return x['labels'];
+        }))));
+        order = order.filter(function (x) {
+          return filtered_set.includes(x);
+        }); // Calculate radial coordinate from ordered list of nodes
+
+        var sc_radial = d3.scalePoint().domain(order).range([0, Math.PI * 2 - Math.PI * 2 / order.length]); // Colour map
+
+        var cmap = (0, _colorMap.genreColormap)(_this3.state.request_params.tag_val); // Convert radial coordinate to cartesian
+
+        var node2point = function node2point(d) {
+          return {
+            x: r * Math.sin(sc_radial(d)),
+            y: r * Math.cos(sc_radial(d))
+          };
+        }; // Centre of the circle
+
+
+        var centre = {
+          x: width / 2,
+          y: width / 2
+        }; // If no opt type selected (i.e. root node order)
+
+        if (!_this3.props.request_params.optType) {
+          // Get groups of root nodes based on current order
+          var root_ix = [0];
+
+          for (var i = 0; i < order.length - 1; i++) {
+            if (order[i][1] == "b") {
+              if (order[i].slice(0, 2) !== order[i + 1].slice(0, 2)) {
+                root_ix.push(i);
+                root_ix.push(i + 1);
+              }
+            } else {
+              if (order[i][0] !== order[i + 1][0]) {
+                root_ix.push(i);
+                root_ix.push(i + 1);
+              }
+            }
+          }
+
+          root_ix.push(order.length - 1); // Split into pair chunks
+
+          var root_ix_pairs = [];
+
+          for (var _i = 0; _i < root_ix.length; _i += 2) {
+            root_ix_pairs.push([root_ix[_i], root_ix[_i + 1]]);
+          }
+
+          var arcGen = d3.arc().innerRadius(r + r / 80).outerRadius(r + r / 10).startAngle(function (d) {
+            return sc_radial(order[d[0]]) - 0.03;
+          }).endAngle(function (d) {
+            return sc_radial(order[d[1]]) + 0.03;
+          });
+          var root_arcs = svg.selectAll("path").data(root_ix_pairs).enter().append("path").attr("d", function (d) {
+            return arcGen(d);
+          }).attr("transform", "translate(" + centre.y + "," + centre.x + ")").attr("fill", "#ebebeb");
+        } // Create objects containing node labels and coordinates from list of edges (sets)
+
+
+        var node_points = order.map(function (x) {
+          return {
+            "label": x,
+            "coords": node2point(x)
+          };
+        }); // Calculate inner heirarchy bundling nodes
+
+        var i_nodes = {}; // For each root note get angle of sub nodes
+
+        for (var _i2 = 0; _i2 < order.length; _i2++) {
+          if (order[_i2][1] != "b") {
+            if (order[_i2][0] in i_nodes) {
+              i_nodes[order[_i2][0]].push(sc_radial(order[_i2]));
+            } else {
+              i_nodes[order[_i2][0]] = [sc_radial(order[_i2])];
+            }
+          } else {
+            if (order.slice(0, 2) in i_nodes) {
+              i_nodes[order[_i2].slice(0, 2)].push(sc_radial(order[_i2]));
+            } else {
+              i_nodes[order[_i2].slice(0, 2)] = [sc_radial(order[_i2])];
+            }
+          }
+        } // Calculate mean angle for each root note
+
+
+        var root_nodes = {};
+
+        for (var _i3 = 0, _Object$entries = Object.entries(i_nodes); _i3 < _Object$entries.length; _i3++) {
+          var _Object$entries$_i = (0, _slicedToArray2.default)(_Object$entries[_i3], 2),
+              key = _Object$entries$_i[0],
+              value = _Object$entries$_i[1];
+
+          var mean_angle = Math.atan2(d3.sum(value.map(Math.sin)) / value.length, d3.sum(value.map(Math.cos)) / value.length);
+          root_nodes[key] = {
+            x: r * Math.sin(mean_angle),
+            y: r * Math.cos(mean_angle)
+          };
+        } // Append node groups
+
+
+        var nodes_group = svg.selectAll("g").data(node_points).enter().append("g").attr("transform", function (d) {
+          var x = centre.x + d.coords.x;
+          var y = centre.y - d.coords.y;
+          return "translate(" + x + "," + y + ")";
+        }); // Append node circles to node groups
+
+        var nodes = nodes_group.append("circle").attr("class", "node").attr("r", 5); // Text offset
+
+        var labelOffset = 0.06; // Append text to labels
+
+        var labels = nodes_group.append("text").text(function (d) {
+          return d.label;
+        }).attr("fill", function (d) {
+          return _this3.props.queryParams['chordSel'].includes(d.label) ? "red" : "black";
+        }).attr("dx", function (d) {
+          return d.coords.x * labelOffset;
+        }).attr("dy", function (d) {
+          return -d.coords.y * labelOffset;
+        }).attr("text-anchor", "middle").attr("font-size", 10).attr("font-weight", function (d) {
+          return _this3.props.queryParams['chordSel'].includes(d.label) ? 700 : 400;
+        });
+        var beta = _this3.props.request_params.beta;
+        var lineGen = d3.line().x(function (d) {
+          return d.x + centre.x;
+        }).y(function (d) {
+          return centre.y - d.y;
+        }).curve(d3.curveBundle.beta(beta));
+        var path_factor = 1.4;
+        var links = svg.selectAll("path").select(".link").data(sets).enter().append("path").attr("class", "link").attr("d", function (d) {
+          return lineGen([node2point(d.labels[0]), {
+            x: root_nodes[d.labels[0][1] === "b" ? d.labels[0].slice(0, 2) : d.labels[0][0]].x / path_factor,
+            y: root_nodes[d.labels[0][1] === "b" ? d.labels[0].slice(0, 2) : d.labels[0][0]].y / path_factor
+          }, {
+            x: root_nodes[d.labels[1][1] === "b" ? d.labels[1].slice(0, 2) : d.labels[1][0]].x / path_factor,
+            y: root_nodes[d.labels[1][1] === "b" ? d.labels[1].slice(0, 2) : d.labels[1][0]].y / path_factor
+          }, node2point(d.labels[1])]);
+        }).attr("stroke", function (d) {
+          return cmap[d.tag];
+        }).attr("fill", "none").attr("stroke-width", function (d) {
+          return Math.pow(d.values, 1.5) * 50;
+        }).attr("stroke-opacity", function (d) {
+          return Math.pow(d.values / d3.max(sets.map(function (x) {
+            return x.values;
+          })), _this3.props.request_params.focus);
+        });
+        nodes_group.on("mouseenter", function (sel) {
+          d3.selectAll(".link").filter(function (d) {
+            return d.labels.includes(sel.label);
+          }).raise().transition(0.1).attr("stroke", "red").attr("stroke-width", 3).attr("stroke-opacity", function (d) {
+            return Math.pow(d.values / d3.max(sets.map(function (x) {
+              return x.values;
+            })), 1);
+          });
+          nodes_group.raise();
+        });
+        nodes_group.on("mouseleave", function (sel) {
+          d3.selectAll(".link").filter(function (d) {
+            return d.labels.includes(sel.label);
+          }).transition(0.1).attr("stroke", function (d) {
+            return cmap[d.tag];
+          }).attr("stroke-width", function (d) {
+            return Math.pow(d.values, 1.5) * 50;
+          }).attr("stroke-opacity", function (d) {
+            return Math.pow(d.values / d3.max(sets.map(function (x) {
+              return x.values;
+            })), _this3.props.request_params.focus);
+          });
+          nodes_group.raise();
+        });
+        nodes_group.on("click", function (sel) {
+          var currentQState = _this3.props.queryParams['chordSel'];
+
+          if (currentQState.includes(sel.label)) {
+            currentQState.splice(currentQState.indexOf(sel.label), 1);
+          } else {
+            currentQState.push(sel.label);
+          }
+
+          _this3.props.setQueryParams({
+            "chordSel": currentQState
+          });
+        });
+        nodes_group.raise();
+
+        _this3.setState({
+          sets: sets
+        });
+      };
+
+      for (var tag_ix = 0; tag_ix < genres_tmp.length; tag_ix++) {
+        _loop(tag_ix);
+      }
+    }
+  }, {
+    key: "updateFocus",
+    value: function updateFocus() {
+      var _this4 = this;
+
+      var svg = d3.selectAll("svg");
+      svg.selectAll(".link").attr("stroke-opacity", function (d) {
+        return Math.pow(d.values / d3.max(_this4.state.sets.map(function (x) {
+          return x.values;
+        })), _this4.props.request_params.focus);
+      });
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      var _this5 = this;
+
+      var svg_list = /*#__PURE__*/_react.default.createElement("svg", {
+        ref: 'allchartsvg',
+        width: this.props.width,
+        height: this.props.height,
+        style: {
+          display: "block",
+          margin: "auto"
+        }
+      });
+
+      if (this.state.request_params && this.state.request_params.tag_val.length > 0) {
+        svg_list = this.state.request_params.tag_val.map(function (x, i) {
+          return /*#__PURE__*/_react.default.createElement("svg", {
+            key: i,
+            ref: x + 'chartsvg',
+            width: _this5.props.width / 2,
+            height: _this5.props.height / 2,
+            style: {
+              display: "block",
+              margin: "auto"
+            }
+          });
+        });
+      }
+
+      return /*#__PURE__*/_react.default.createElement("div", null, svg_list);
+    }
+  }]);
+  return ChartHier;
+}(_react.default.Component);
+
+exports.ChartHier = ChartHier;
+},{"@babel/runtime/helpers/slicedToArray":"node_modules/@babel/runtime/helpers/slicedToArray.js","@babel/runtime/helpers/construct":"node_modules/@babel/runtime/helpers/construct.js","@babel/runtime/helpers/toConsumableArray":"node_modules/@babel/runtime/helpers/toConsumableArray.js","@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js","@babel/runtime/helpers/inherits":"node_modules/@babel/runtime/helpers/inherits.js","@babel/runtime/helpers/possibleConstructorReturn":"node_modules/@babel/runtime/helpers/possibleConstructorReturn.js","@babel/runtime/helpers/getPrototypeOf":"node_modules/@babel/runtime/helpers/getPrototypeOf.js","react":"node_modules/react/index.js","d3":"node_modules/d3/index.js","./colorMap":"src/colorMap.js"}],"src/options.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -74371,7 +74498,7 @@ var Options = /*#__PURE__*/function (_React$Component) {
             chartType: e.target.value
           }));
         }
-      }, /*#__PURE__*/_react.default.createElement("option", null, "Circular"), /*#__PURE__*/_react.default.createElement("option", null, "Parallel"), /*#__PURE__*/_react.default.createElement("option", null, "Circular Hierarchical"), /*#__PURE__*/_react.default.createElement("option", null, "Circular Hierarchical - Single Hue"), /*#__PURE__*/_react.default.createElement("option", null, "Circular Clustered"), /*#__PURE__*/_react.default.createElement("option", null, "Parallel Clustered"), /*#__PURE__*/_react.default.createElement("option", null, "Parallel Sequence")), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Label, null, "Genre"), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Group, null, genres.map(function (genre, index) {
+      }, /*#__PURE__*/_react.default.createElement("option", null, "Circular"), /*#__PURE__*/_react.default.createElement("option", null, "Parallel"), /*#__PURE__*/_react.default.createElement("option", null, "Circular Hierarchical"), /*#__PURE__*/_react.default.createElement("option", null, "Circular Hierarchical - Single Hue"), /*#__PURE__*/_react.default.createElement("option", null, "Circular Clustered"), /*#__PURE__*/_react.default.createElement("option", null, "Parallel Clustered")), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Label, null, "Genre"), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Group, null, genres.map(function (genre, index) {
         return /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Check, {
           onChange: function onChange(e) {
             return _this.props.handleFilter(e);
@@ -74951,223 +75078,245 @@ var ChartHierSingleHue = /*#__PURE__*/function (_React$Component) {
     value: function createChart() {
       var _this3 = this;
 
-      var svg = d3.select(this.refs[this.props.id + 'chartsvg']);
-      svg.selectAll("*").remove();
-      var width = this.props.width;
-      var height = this.props.height;
-      var order = this.state.data.order;
-      var sets = this.state.data.sets; // Filter based on slider support val
+      // Set condition to loop through if no genres are selected
+      var genres_tmp = ["all"];
 
-      sets = sets.filter(function (x) {
-        return x.values > _this3.props.request_params.support / 100;
-      });
+      if (this.state.request_params.tag_val.length > 0) {
+        genres_tmp = this.state.request_params.tag_val;
+      } // Iterate over genres and create new chart on selected svg
 
-      if (this.props.queryParams['chordSel'].length > 0) {
-        sets = sets.filter(function (x) {
-          return x.labels.some(function (r) {
-            return _this3.props.queryParams['chordSel'].includes(r);
+
+      var _loop = function _loop(tag_ix) {
+        var svg = d3.select(_this3.refs[genres_tmp[tag_ix] + 'chartsvg']);
+        svg.selectAll("*").remove();
+        var width = svg.node().getBoundingClientRect().width;
+        var height = svg.node().getBoundingClientRect().height;
+        var order = _this3.state.data.order;
+        var sets = _this3.state.data.sets;
+
+        if (_this3.state.request_params.tag_val.length > 0) {
+          sets = sets.filter(function (x) {
+            return x.tag == genres_tmp[tag_ix];
           });
+        } // Filter based on slider support val
+
+
+        sets = sets.filter(function (x) {
+          return x.values > _this3.props.request_params.support / 100;
         });
-      }
 
-      var r = this.props.height / 2 - 50; // Filter out nodes from order that all not in filtered sets
+        if (_this3.props.queryParams['chordSel'].length > 0) {
+          sets = sets.filter(function (x) {
+            return x.labels.some(function (r) {
+              return _this3.props.queryParams['chordSel'].includes(r);
+            });
+          });
+        }
 
-      var filtered_set = (0, _construct2.default)(Array, (0, _toConsumableArray2.default)(new Set(sets.flatMap(function (x) {
-        return x['labels'];
-      }))));
-      order = order.filter(function (x) {
-        return filtered_set.includes(x);
-      }); // Calculate radial coordinate from ordered list of nodes
+        var r = height / 2 - height / 16; // Filter out nodes from order that all not in filtered sets
 
-      var sc_radial = d3.scalePoint().domain(order).range([0, Math.PI * 2 - Math.PI * 2 / order.length]); // Colour map
-      //const scColor = d3.scaleSequential().domain([0,d3.max(sets.flatMap(x=>x.values))]).interpolator(d3.interpolateYlOrRd)
+        var filtered_set = (0, _construct2.default)(Array, (0, _toConsumableArray2.default)(new Set(sets.flatMap(function (x) {
+          return x['labels'];
+        }))));
+        order = order.filter(function (x) {
+          return filtered_set.includes(x);
+        }); // Calculate radial coordinate from ordered list of nodes
 
-      var scColor = d3.scaleSequential().domain([0, 0.2]).interpolator(d3.interpolateYlOrRd); // Convert radial coordinate to cartesian
+        var sc_radial = d3.scalePoint().domain(order).range([0, Math.PI * 2 - Math.PI * 2 / order.length]); // Colour map
+        //const scColor = d3.scaleSequential().domain([0,d3.max(sets.flatMap(x=>x.values))]).interpolator(d3.interpolateYlOrRd)
 
-      var node2point = function node2point(d) {
-        return {
-          x: r * Math.sin(sc_radial(d)),
-          y: r * Math.cos(sc_radial(d))
-        };
-      }; // Centre of the circle
+        var scColor = d3.scaleSequential().domain([0, 0.2]).interpolator(d3.interpolateYlOrRd); // Convert radial coordinate to cartesian
+
+        var node2point = function node2point(d) {
+          return {
+            x: r * Math.sin(sc_radial(d)),
+            y: r * Math.cos(sc_radial(d))
+          };
+        }; // Centre of the circle
 
 
-      var centre = {
-        x: width / 2,
-        y: width / 2
-      }; // If no opt type selected (i.e. root node order)
+        var centre = {
+          x: width / 2,
+          y: width / 2
+        }; // If no opt type selected (i.e. root node order)
 
-      if (!this.props.request_params.optType) {
-        // Get groups of root nodes based on current order
-        var root_ix = [0];
+        if (!_this3.props.request_params.optType) {
+          // Get groups of root nodes based on current order
+          var root_ix = [0];
 
-        for (var i = 0; i < order.length - 1; i++) {
-          if (order[i][1] == "b") {
-            if (order[i].slice(0, 2) !== order[i + 1].slice(0, 2)) {
-              root_ix.push(i);
-              root_ix.push(i + 1);
+          for (var i = 0; i < order.length - 1; i++) {
+            if (order[i][1] == "b") {
+              if (order[i].slice(0, 2) !== order[i + 1].slice(0, 2)) {
+                root_ix.push(i);
+                root_ix.push(i + 1);
+              }
+            } else {
+              if (order[i][0] !== order[i + 1][0]) {
+                root_ix.push(i);
+                root_ix.push(i + 1);
+              }
+            }
+          }
+
+          root_ix.push(order.length - 1); // Split into pair chunks
+
+          var root_ix_pairs = [];
+
+          for (var _i = 0; _i < root_ix.length; _i += 2) {
+            root_ix_pairs.push([root_ix[_i], root_ix[_i + 1]]);
+          }
+
+          var arcGen = d3.arc().innerRadius(r + r / 80).outerRadius(r + r / 10).startAngle(function (d) {
+            return sc_radial(order[d[0]]) - 0.03;
+          }).endAngle(function (d) {
+            return sc_radial(order[d[1]]) + 0.03;
+          });
+          var root_arcs = svg.selectAll("path").data(root_ix_pairs).enter().append("path").attr("d", function (d) {
+            return arcGen(d);
+          }).attr("transform", "translate(" + centre.y + "," + centre.x + ")").attr("fill", "#ebebeb");
+        } // Create objects containing node labels and coordinates from list of edges (sets)
+
+
+        var node_points = order.map(function (x) {
+          return {
+            "label": x,
+            "coords": node2point(x)
+          };
+        }); // Calculate inner heirarchy bundling nodes
+
+        var i_nodes = {}; // For each root note get angle of sub nodes
+
+        for (var _i2 = 0; _i2 < order.length; _i2++) {
+          if (order[_i2][1] != "b") {
+            if (order[_i2][0] in i_nodes) {
+              i_nodes[order[_i2][0]].push(sc_radial(order[_i2]));
+            } else {
+              i_nodes[order[_i2][0]] = [sc_radial(order[_i2])];
             }
           } else {
-            if (order[i][0] !== order[i + 1][0]) {
-              root_ix.push(i);
-              root_ix.push(i + 1);
+            if (order.slice(0, 2) in i_nodes) {
+              i_nodes[order[_i2].slice(0, 2)].push(sc_radial(order[_i2]));
+            } else {
+              i_nodes[order[_i2].slice(0, 2)] = [sc_radial(order[_i2])];
             }
           }
-        }
+        } // Calculate mean angle for each root note
 
-        root_ix.push(order.length - 1); // Split into pair chunks
 
-        var root_ix_pairs = [];
+        var root_nodes = {};
 
-        for (var _i = 0; _i < root_ix.length; _i += 2) {
-          root_ix_pairs.push([root_ix[_i], root_ix[_i + 1]]);
-        }
+        for (var _i3 = 0, _Object$entries = Object.entries(i_nodes); _i3 < _Object$entries.length; _i3++) {
+          var _Object$entries$_i = (0, _slicedToArray2.default)(_Object$entries[_i3], 2),
+              key = _Object$entries$_i[0],
+              value = _Object$entries$_i[1];
 
-        var arcGen = d3.arc().innerRadius(r + 5).outerRadius(r + 40).startAngle(function (d) {
-          return sc_radial(order[d[0]]) - 0.03;
-        }).endAngle(function (d) {
-          return sc_radial(order[d[1]]) + 0.03;
+          var mean_angle = Math.atan2(d3.sum(value.map(Math.sin)) / value.length, d3.sum(value.map(Math.cos)) / value.length);
+          root_nodes[key] = {
+            x: r * Math.sin(mean_angle),
+            y: r * Math.cos(mean_angle)
+          };
+        } // Append node groups
+
+
+        var nodes_group = svg.selectAll("g").data(node_points).enter().append("g").attr("transform", function (d) {
+          var x = centre.x + d.coords.x;
+          var y = centre.y - d.coords.y;
+          return "translate(" + x + "," + y + ")";
+        }); // Append node circles to node groups
+
+        var nodes = nodes_group.append("circle").attr("class", "node").attr("r", 5); // Text offset
+
+        var labelOffset = 0.06; // Append text to labels
+
+        var labels = nodes_group.append("text").text(function (d) {
+          return d.label;
+        }).attr("fill", function (d) {
+          return _this3.props.queryParams['chordSel'].includes(d.label) ? "red" : "black";
+        }).attr("dx", function (d) {
+          return d.coords.x * labelOffset;
+        }).attr("dy", function (d) {
+          return -d.coords.y * labelOffset;
+        }).attr("text-anchor", "middle").attr("font-size", 10).attr("font-weight", function (d) {
+          return _this3.props.queryParams['chordSel'].includes(d.label) ? 700 : 400;
         });
-        var root_arcs = svg.selectAll("path").data(root_ix_pairs).enter().append("path").attr("d", function (d) {
-          return arcGen(d);
-        }).attr("transform", "translate(" + centre.y + "," + centre.x + ")").attr("fill", "#ebebeb");
-      } // Create objects containing node labels and coordinates from list of edges (sets)
-
-
-      var node_points = order.map(function (x) {
-        return {
-          "label": x,
-          "coords": node2point(x)
-        };
-      }); // Calculate inner heirarchy bundling nodes
-
-      var i_nodes = {}; // For each root note get angle of sub nodes
-
-      for (var _i2 = 0; _i2 < order.length; _i2++) {
-        if (order[_i2][1] != "b") {
-          if (order[_i2][0] in i_nodes) {
-            i_nodes[order[_i2][0]].push(sc_radial(order[_i2]));
-          } else {
-            i_nodes[order[_i2][0]] = [sc_radial(order[_i2])];
-          }
-        } else {
-          if (order.slice(0, 2) in i_nodes) {
-            i_nodes[order[_i2].slice(0, 2)].push(sc_radial(order[_i2]));
-          } else {
-            i_nodes[order[_i2].slice(0, 2)] = [sc_radial(order[_i2])];
-          }
-        }
-      } // Calculate mean angle for each root note
-
-
-      var root_nodes = {};
-
-      for (var _i3 = 0, _Object$entries = Object.entries(i_nodes); _i3 < _Object$entries.length; _i3++) {
-        var _Object$entries$_i = (0, _slicedToArray2.default)(_Object$entries[_i3], 2),
-            key = _Object$entries$_i[0],
-            value = _Object$entries$_i[1];
-
-        var mean_angle = Math.atan2(d3.sum(value.map(Math.sin)) / value.length, d3.sum(value.map(Math.cos)) / value.length);
-        root_nodes[key] = {
-          x: r * Math.sin(mean_angle),
-          y: r * Math.cos(mean_angle)
-        };
-      } // Append node groups
-
-
-      var nodes_group = svg.selectAll("g").data(node_points).enter().append("g").attr("transform", function (d) {
-        var x = centre.x + d.coords.x;
-        var y = centre.y - d.coords.y;
-        return "translate(" + x + "," + y + ")";
-      }); // Append node circles to node groups
-
-      var nodes = nodes_group.append("circle").attr("class", "node").attr("r", 5); // Text offset
-
-      var labelOffset = 0.06; // Append text to labels
-
-      var labels = nodes_group.append("text").text(function (d) {
-        return d.label;
-      }).attr("fill", function (d) {
-        return _this3.props.queryParams['chordSel'].includes(d.label) ? "red" : "black";
-      }).attr("dx", function (d) {
-        return d.coords.x * labelOffset;
-      }).attr("dy", function (d) {
-        return -d.coords.y * labelOffset;
-      }).attr("text-anchor", "middle").attr("font-size", 10).attr("font-weight", function (d) {
-        return _this3.props.queryParams['chordSel'].includes(d.label) ? 700 : 400;
-      });
-      var beta = this.props.request_params.beta;
-      var lineGen = d3.line().x(function (d) {
-        return d.x + centre.x;
-      }).y(function (d) {
-        return centre.y - d.y;
-      }).curve(d3.curveBundle.beta(beta));
-      var path_factor = 1.4;
-      var links = svg.selectAll("path").select(".link").data(sets).enter().append("path").attr("class", "link").attr("d", function (d) {
-        return lineGen([node2point(d.labels[0]), {
-          x: root_nodes[d.labels[0][1] === "b" ? d.labels[0].slice(0, 2) : d.labels[0][0]].x / path_factor,
-          y: root_nodes[d.labels[0][1] === "b" ? d.labels[0].slice(0, 2) : d.labels[0][0]].y / path_factor
-        }, {
-          x: root_nodes[d.labels[1][1] === "b" ? d.labels[1].slice(0, 2) : d.labels[1][0]].x / path_factor,
-          y: root_nodes[d.labels[1][1] === "b" ? d.labels[1].slice(0, 2) : d.labels[1][0]].y / path_factor
-        }, node2point(d.labels[1])]);
-      }).attr("stroke", function (d) {
-        return scColor(d.values);
-      }).attr("fill", "none").attr("stroke-width", function (d) {
-        return Math.pow(d.values, 1.5) * 50;
-      }).attr("stroke-opacity", function (d) {
-        return Math.pow(d.values / d3.max(sets.map(function (x) {
-          return x.values;
-        })), _this3.props.request_params.focus);
-      });
-      nodes_group.on("mouseenter", function (sel) {
-        d3.selectAll(".link").filter(function (d) {
-          return d.labels.includes(sel.label);
-        }).raise().transition(0.1).attr("stroke", "red").attr("stroke-width", 3).attr("stroke-opacity", function (d) {
-          return Math.pow(d.values / d3.max(sets.map(function (x) {
-            return x.values;
-          })), 1);
-        });
-        nodes_group.raise();
-      });
-      nodes_group.on("mouseleave", function (sel) {
-        d3.selectAll(".link").filter(function (d) {
-          return d.labels.includes(sel.label);
-        }).transition(0.1).attr("stroke", function (d) {
+        var beta = _this3.props.request_params.beta;
+        var lineGen = d3.line().x(function (d) {
+          return d.x + centre.x;
+        }).y(function (d) {
+          return centre.y - d.y;
+        }).curve(d3.curveBundle.beta(beta));
+        var path_factor = 1.4;
+        var links = svg.selectAll("path").select(".link").data(sets).enter().append("path").attr("class", "link").attr("d", function (d) {
+          return lineGen([node2point(d.labels[0]), {
+            x: root_nodes[d.labels[0][1] === "b" ? d.labels[0].slice(0, 2) : d.labels[0][0]].x / path_factor,
+            y: root_nodes[d.labels[0][1] === "b" ? d.labels[0].slice(0, 2) : d.labels[0][0]].y / path_factor
+          }, {
+            x: root_nodes[d.labels[1][1] === "b" ? d.labels[1].slice(0, 2) : d.labels[1][0]].x / path_factor,
+            y: root_nodes[d.labels[1][1] === "b" ? d.labels[1].slice(0, 2) : d.labels[1][0]].y / path_factor
+          }, node2point(d.labels[1])]);
+        }).attr("stroke", function (d) {
           return scColor(d.values);
-        }).attr("stroke-width", function (d) {
+        }).attr("fill", "none").attr("stroke-width", function (d) {
           return Math.pow(d.values, 1.5) * 50;
         }).attr("stroke-opacity", function (d) {
           return Math.pow(d.values / d3.max(sets.map(function (x) {
             return x.values;
           })), _this3.props.request_params.focus);
         });
-        nodes_group.raise();
-      });
-      nodes_group.on("click", function (sel) {
-        var currentQState = _this3.props.queryParams['chordSel'];
-
-        if (currentQState.includes(sel.label)) {
-          currentQState.splice(currentQState.indexOf(sel.label), 1);
-        } else {
-          currentQState.push(sel.label);
-        }
-
-        _this3.props.setQueryParams({
-          "chordSel": currentQState
+        nodes_group.on("mouseenter", function (sel) {
+          d3.selectAll(".link").filter(function (d) {
+            return d.labels.includes(sel.label);
+          }).raise().transition(0.1).attr("stroke", "red").attr("stroke-width", 3).attr("stroke-opacity", function (d) {
+            return Math.pow(d.values / d3.max(sets.map(function (x) {
+              return x.values;
+            })), 1);
+          });
+          nodes_group.raise();
         });
-      });
-      nodes_group.raise();
-      this.setState({
-        sets: sets
-      });
+        nodes_group.on("mouseleave", function (sel) {
+          d3.selectAll(".link").filter(function (d) {
+            return d.labels.includes(sel.label);
+          }).transition(0.1).attr("stroke", function (d) {
+            return scColor(d.values);
+          }).attr("stroke-width", function (d) {
+            return Math.pow(d.values, 1.5) * 50;
+          }).attr("stroke-opacity", function (d) {
+            return Math.pow(d.values / d3.max(sets.map(function (x) {
+              return x.values;
+            })), _this3.props.request_params.focus);
+          });
+          nodes_group.raise();
+        });
+        nodes_group.on("click", function (sel) {
+          var currentQState = _this3.props.queryParams['chordSel'];
+
+          if (currentQState.includes(sel.label)) {
+            currentQState.splice(currentQState.indexOf(sel.label), 1);
+          } else {
+            currentQState.push(sel.label);
+          }
+
+          _this3.props.setQueryParams({
+            "chordSel": currentQState
+          });
+        });
+        nodes_group.raise();
+
+        _this3.setState({
+          sets: sets
+        });
+      };
+
+      for (var tag_ix = 0; tag_ix < genres_tmp.length; tag_ix++) {
+        _loop(tag_ix);
+      }
     }
   }, {
     key: "updateFocus",
     value: function updateFocus() {
       var _this4 = this;
 
-      var svg = d3.select(this.refs[this.props.id + 'chartsvg']);
+      var svg = d3.select("svg");
       svg.selectAll(".link").attr("stroke-opacity", function (d) {
         return Math.pow(d.values / d3.max(_this4.state.sets.map(function (x) {
           return x.values;
@@ -75177,8 +75326,10 @@ var ChartHierSingleHue = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "render",
     value: function render() {
-      return /*#__PURE__*/_react.default.createElement("svg", {
-        ref: this.props.id + 'chartsvg',
+      var _this5 = this;
+
+      var svg_list = /*#__PURE__*/_react.default.createElement("svg", {
+        ref: 'allchartsvg',
         width: this.props.width,
         height: this.props.height,
         style: {
@@ -75186,6 +75337,23 @@ var ChartHierSingleHue = /*#__PURE__*/function (_React$Component) {
           margin: "auto"
         }
       });
+
+      if (this.state.request_params && this.state.request_params.tag_val.length > 0) {
+        svg_list = this.state.request_params.tag_val.map(function (x, i) {
+          return /*#__PURE__*/_react.default.createElement("svg", {
+            key: i,
+            ref: x + 'chartsvg',
+            width: _this5.props.width / 2,
+            height: _this5.props.height / 2,
+            style: {
+              display: "block",
+              margin: "auto"
+            }
+          });
+        });
+      }
+
+      return /*#__PURE__*/_react.default.createElement("div", null, svg_list);
     }
   }]);
   return ChartHierSingleHue;
@@ -75312,182 +75480,359 @@ var ChartClust = /*#__PURE__*/function (_React$Component) {
     value: function createChart() {
       var _this3 = this;
 
-      var svg = d3.select(this.refs[this.props.id + 'chartsvg']);
-      svg.selectAll("*").remove();
-      var width = this.props.width;
-      var height = this.props.height;
-      var order = this.state.data.order;
-      var sets = this.state.data.sets; // Filter based on slider support val
+      // Set condition to loop through if no genres are selected
+      var genres_tmp = ["all"];
 
-      sets = sets.filter(function (x) {
-        return x.values > _this3.props.request_params.support / 100;
-      }); // Filter based on query params
+      if (this.state.request_params.tag_val.length > 0) {
+        genres_tmp = this.state.request_params.tag_val;
+      } // Iterate over genres and create new chart on selected svg
 
-      if (this.props.queryParams['chordSel'].length > 0) {
-        sets = sets.filter(function (x) {
-          return x.labels.some(function (r) {
-            return _this3.props.queryParams['chordSel'].includes(r);
+
+      var _loop = function _loop(tag_ix) {
+        var svg = d3.select(_this3.refs[genres_tmp[tag_ix] + 'chartsvg']);
+        svg.selectAll("*").remove();
+        var width = svg.node().getBoundingClientRect().width;
+        var height = svg.node().getBoundingClientRect().height;
+        var order = _this3.state.data.order;
+        var sets = _this3.state.data.sets;
+
+        if (_this3.state.request_params.tag_val.length > 0) {
+          sets = sets.filter(function (x) {
+            return x.tag == genres_tmp[tag_ix];
           });
-        });
-      }
-
-      var r = this.props.height / 2 - 50; // Filter out nodes from order that all not in filtered sets
-
-      var filtered_set = (0, _construct2.default)(Array, (0, _toConsumableArray2.default)(new Set(sets.flatMap(function (x) {
-        return x['labels'];
-      }))));
-      order = order.filter(function (x) {
-        return filtered_set.includes(x);
-      }); // Calculate radial coordinate from ordered list of nodes
-
-      var sc_radial = d3.scalePoint().domain(order).range([0, Math.PI * 2 - Math.PI * 2 / order.length]); // Colour map
-
-      var cmap = (0, _colorMap.genreColormap)(this.state.request_params.tag_val); // Convert radial coordinate to cartesian
-
-      var node2point = function node2point(d) {
-        return {
-          x: r * Math.sin(sc_radial(d)),
-          y: r * Math.cos(sc_radial(d))
-        };
-      }; // Centre of the circle
+        } // Filter based on slider support val
 
 
-      var centre = {
-        x: width / 2,
-        y: width / 2
-      }; // If no opt type selected (i.e. root node order)
+        sets = sets.filter(function (x) {
+          return x.values > _this3.props.request_params.support / 100;
+        }); // Filter based on query params
 
-      if (!this.props.request_params.optType) {
-        // Get groups of root nodes based on current order
-        var root_ix = [0];
+        if (_this3.props.queryParams['chordSel'].length > 0) {
+          sets = sets.filter(function (x) {
+            return x.labels.some(function (r) {
+              return _this3.props.queryParams['chordSel'].includes(r);
+            });
+          });
+        }
 
-        for (var i = 0; i < order.length - 1; i++) {
-          if (order[i][1] == "b") {
-            if (order[i].slice(0, 2) !== order[i + 1].slice(0, 2)) {
-              root_ix.push(i);
-              root_ix.push(i + 1);
+        var r = height / 2 - height / 16; // Filter out nodes from order that all not in filtered sets
+
+        var filtered_set = (0, _construct2.default)(Array, (0, _toConsumableArray2.default)(new Set(sets.flatMap(function (x) {
+          return x['labels'];
+        }))));
+        order = order.filter(function (x) {
+          return filtered_set.includes(x);
+        }); // Calculate radial coordinate from ordered list of nodes
+
+        var sc_radial = d3.scalePoint().domain(order).range([0, Math.PI * 2 - Math.PI * 2 / order.length]); // Colour map
+
+        var cmap = (0, _colorMap.genreColormap)(_this3.state.request_params.tag_val); // Convert radial coordinate to cartesian
+
+        var node2point = function node2point(d) {
+          return {
+            x: r * Math.sin(sc_radial(d)),
+            y: r * Math.cos(sc_radial(d))
+          };
+        }; // Centre of the circle
+
+
+        var centre = {
+          x: width / 2,
+          y: width / 2
+        }; // If no opt type selected (i.e. root node order)
+
+        if (!_this3.props.request_params.optType) {
+          // Get groups of root nodes based on current order
+          var root_ix = [0];
+
+          for (var i = 0; i < order.length - 1; i++) {
+            if (order[i][1] == "b") {
+              if (order[i].slice(0, 2) !== order[i + 1].slice(0, 2)) {
+                root_ix.push(i);
+                root_ix.push(i + 1);
+              }
+            } else {
+              if (order[i][0] !== order[i + 1][0]) {
+                root_ix.push(i);
+                root_ix.push(i + 1);
+              }
             }
+          }
+
+          root_ix.push(order.length - 1); // Split into pair chunks
+
+          var root_ix_pairs = [];
+
+          for (var _i = 0; _i < root_ix.length; _i += 2) {
+            root_ix_pairs.push([root_ix[_i], root_ix[_i + 1]]);
+          }
+
+          var arcGen = d3.arc().innerRadius(r + r / 80).outerRadius(r + r / 10).startAngle(function (d) {
+            return sc_radial(order[d[0]]) - 0.03;
+          }).endAngle(function (d) {
+            return sc_radial(order[d[1]]) + 0.03;
+          });
+          var root_arcs = svg.selectAll("path").data(root_ix_pairs).enter().append("path").attr("d", function (d) {
+            return arcGen(d);
+          }).attr("transform", "translate(" + centre.y + "," + centre.x + ")").attr("fill", "#ebebeb");
+        } // Create objects containing node labels and coordinates from list of edges (sets)
+
+
+        var node_points = order.map(function (x) {
+          return {
+            "label": x,
+            "coords": node2point(x)
+          };
+        }); // Calculate inner heirarchy bundling nodes
+        // Get cluster number values
+
+        var n_clusters = (0, _construct2.default)(Array, (0, _toConsumableArray2.default)(new Set(sets.map(function (x) {
+          return x['km_label'];
+        })))); // Inner node map
+
+        var i_nodes = {}; // Get labels and cluster value for each edge (set)
+
+        var angle_map = sets.map(function (x) {
+          return [x.labels, x.km_label];
+        }); /////////////////////////// Calculate control points //////////////////////////
+
+        for (var _i2 = 0; _i2 < angle_map.length; _i2++) {
+          if (angle_map[_i2][1] in i_nodes) {
+            // Push lhs and rhs node positions
+            i_nodes[angle_map[_i2][1]][0].push(node2point(angle_map[_i2][0][0]));
+
+            i_nodes[angle_map[_i2][1]][1].push(node2point(angle_map[_i2][0][1]));
           } else {
-            if (order[i][0] !== order[i + 1][0]) {
-              root_ix.push(i);
-              root_ix.push(i + 1);
-            }
+            i_nodes[angle_map[_i2][1]] = [[node2point(angle_map[_i2][0][0])], [node2point(angle_map[_i2][0][1])]];
           }
         }
 
-        root_ix.push(order.length - 1); // Split into pair chunks
+        var root_nodes = {};
 
-        var root_ix_pairs = [];
+        for (var _i3 = 0, _Object$entries = Object.entries(i_nodes); _i3 < _Object$entries.length; _i3++) {
+          var _Object$entries$_i = (0, _slicedToArray2.default)(_Object$entries[_i3], 2),
+              key = _Object$entries$_i[0],
+              value = _Object$entries$_i[1];
 
-        for (var _i = 0; _i < root_ix.length; _i += 2) {
-          root_ix_pairs.push([root_ix[_i], root_ix[_i + 1]]);
-        }
+          // If there is more than one node in array
+          if (value[0].length > 1) {
+            // Get lhs nodes
+            var points_ln = value[0]; // Calculate mean position of lhs nodes
 
-        var arcGen = d3.arc().innerRadius(r + 5).outerRadius(r + 40).startAngle(function (d) {
-          return sc_radial(order[d[0]]) - 0.03;
-        }).endAngle(function (d) {
-          return sc_radial(order[d[1]]) + 0.03;
+            var mean_ln = {
+              "x": d3.mean(points_ln.map(function (x) {
+                return x.x;
+              })),
+              "y": d3.mean(points_ln.map(function (x) {
+                return x.y;
+              }))
+            }; // Do the same for rhs nodes
+
+            var points_rn = value[1];
+            var mean_rn = {
+              "x": d3.mean(points_rn.map(function (x) {
+                return x.x;
+              })),
+              "y": d3.mean(points_rn.map(function (x) {
+                return x.y;
+              }))
+            };
+            root_nodes[key] = {
+              "ln": mean_ln,
+              "rn": mean_rn,
+              "centroid_ln": mean_ln,
+              "centroid_rn": mean_rn
+            };
+          } else {
+            root_nodes[key] = {
+              "ln": value[0][0],
+              "rn": value[1][0],
+              "centroid_ln": value[0][0],
+              "centroid_rn": value[1][0]
+            };
+          }
+        } /////////////////////// Optimise control point positions ///////////////////////////
+        // Calculate the total line length for a particular cluster group
+
+
+        function calc_line_length(key, i_nodes, root_nodes) {
+          var centroid = root_nodes[key];
+          var total_line_length = 0; // Calculate length between lhs and rhs centroids
+          //const mid_length = Math.sqrt((centroid.ln.x - centroid.rn.x) ** 2 + (centroid.ln.y - centroid.rn.y) ** 2)
+
+          var lineGenMid_t = d3.line().x(function (d) {
+            return d.x + centre.x;
+          }).y(function (d) {
+            return centre.y - d.y;
+          });
+          var lineGenCatmul_t = d3.line().x(function (d) {
+            return d.x + centre.x;
+          }).y(function (d) {
+            return centre.y - d.y;
+          }).curve(d3.curveCatmullRomOpen.alpha(0)); // Generate coordinates for line based on cluster value mapping to inner node values
+
+          var create_points_mid_t = function create_points_mid_t(d) {
+            var line = [{
+              "x": root_nodes[d.km_label].ln.x,
+              "y": root_nodes[d.km_label].ln.y
+            }, {
+              "x": root_nodes[d.km_label].rn.x,
+              "y": root_nodes[d.km_label].rn.y
+            }];
+            return line;
+          };
+
+          var create_points_source_t = function create_points_source_t(d) {
+            var line = [node2point(d.labels[0]), node2point(d.labels[0]), {
+              "x": root_nodes[d.km_label].ln.x,
+              "y": root_nodes[d.km_label].ln.y
+            }, {
+              "x": root_nodes[d.km_label].rn.x,
+              "y": root_nodes[d.km_label].rn.y
+            }];
+            return line;
+          };
+
+          var create_points_target_t = function create_points_target_t(d) {
+            var line = [{
+              "x": root_nodes[d.km_label].ln.x,
+              "y": root_nodes[d.km_label].ln.y
+            }, {
+              "x": root_nodes[d.km_label].rn.x,
+              "y": root_nodes[d.km_label].rn.y
+            }, node2point(d.labels[1]), node2point(d.labels[1])];
+            return line;
+          }; // Sum total line lengths
+
+
+          var lengths_mid = sets.filter(function (x) {
+            return x.km_label == key;
+          }).map(create_points_mid_t).map(lineGenMid_t).map(function (x) {
+            var svg_temp = d3.create("svg");
+            var path = svg_temp.append("path").attr("d", x);
+            svg_temp.remove("*");
+            return path['_groups'][0][0].getTotalLength();
+          });
+          var lengths_source = sets.filter(function (x) {
+            return x.km_label == key;
+          }).map(create_points_source_t).map(lineGenCatmul_t).map(function (x) {
+            var svg_temp = d3.create("svg");
+            var path = svg_temp.append("path").attr("d", x);
+            svg_temp.remove("*");
+            return path['_groups'][0][0].getTotalLength();
+          });
+          var lengths_target = sets.filter(function (x) {
+            return x.km_label == key;
+          }).map(create_points_target_t).map(lineGenCatmul_t).map(function (x) {
+            var svg_temp = d3.create("svg");
+            var path = svg_temp.append("path").attr("d", x);
+            svg_temp.remove("*");
+            return path['_groups'][0][0].getTotalLength();
+          });
+          total_line_length = d3.sum(lengths_source) + d3.sum(lengths_target) + lengths_mid[0];
+          return total_line_length;
+        } // Golden section search
+
+
+        function gss(f, a, b, key, i_nodes, root_nodes, side) {
+          var tol = arguments.length > 7 && arguments[7] !== undefined ? arguments[7] : 0.000000000000000000001;
+          var gr = (Math.sqrt(5) + 1) / 2;
+          var c = b - (b - a) / gr;
+          var d = a + (b - a) / gr;
+
+          while (Math.abs(c - d) > tol) {
+            if (f(c, key, i_nodes, root_nodes, side) < f(d, key, i_nodes, root_nodes, side)) {
+              b = d;
+            } else {
+              a = c;
+            }
+
+            c = b - (b - a) / gr;
+            d = a + (b - a) / gr;
+          }
+
+          return (b + a) / 2;
+        } // Function for gss to optimise (takes ratio of line between centroids to change position by)
+
+
+        function gss_func(r, key, i_nodes, root_nodes, side) {
+          //let new_root_nodes = Object.assign({},root_nodes)
+          var new_root_nodes = JSON.parse(JSON.stringify(root_nodes));
+
+          if (side == "ln") {
+            new_root_nodes[key].ln = {
+              "x": new_root_nodes[key].centroid_ln.x + r * (new_root_nodes[key].centroid_rn.x - new_root_nodes[key].centroid_ln.x),
+              "y": new_root_nodes[key].centroid_ln.y + r * (new_root_nodes[key].centroid_rn.y - new_root_nodes[key].centroid_ln.y)
+            };
+          }
+
+          if (side == "rn") {
+            new_root_nodes[key].rn = {
+              "x": new_root_nodes[key].centroid_rn.x + r * (new_root_nodes[key].centroid_ln.x - new_root_nodes[key].centroid_rn.x),
+              "y": new_root_nodes[key].centroid_rn.y + r * (new_root_nodes[key].centroid_ln.y - new_root_nodes[key].centroid_rn.y)
+            };
+          }
+
+          return calc_line_length(key, i_nodes, new_root_nodes, side);
+        } // Carry out optimisation - set r_l and r_r to constant value if desired
+
+
+        for (var _i4 = 0, _Object$entries2 = Object.entries(root_nodes); _i4 < _Object$entries2.length; _i4++) {
+          var _Object$entries2$_i = (0, _slicedToArray2.default)(_Object$entries2[_i4], 2),
+              _key = _Object$entries2$_i[0],
+              _value = _Object$entries2$_i[1];
+
+          // Do for lhs nodes
+          var r_l = gss(gss_func, 0.5, 0, _key, i_nodes, root_nodes, "ln"); //const r_l = 0.1
+
+          root_nodes[_key].ln = {
+            "x": root_nodes[_key].centroid_ln.x + r_l * (root_nodes[_key].centroid_rn.x - root_nodes[_key].centroid_ln.x),
+            "y": root_nodes[_key].centroid_ln.y + r_l * (root_nodes[_key].centroid_rn.y - root_nodes[_key].centroid_ln.y)
+          }; // Do for rhs nodes
+
+          var r_r = gss(gss_func, 0.5, 0, _key, i_nodes, root_nodes, "rn"); //const r_r = 0.1
+
+          root_nodes[_key].rn = {
+            "x": root_nodes[_key].centroid_rn.x + r_r * (root_nodes[_key].centroid_ln.x - root_nodes[_key].centroid_rn.x),
+            "y": root_nodes[_key].centroid_rn.y + r_r * (root_nodes[_key].centroid_ln.y - root_nodes[_key].centroid_rn.y)
+          };
+        } ////////////////////////////////////////////////////////////////////////////
+        // Append node groups
+
+
+        var nodes_group = svg.selectAll("g").data(node_points).enter().append("g").attr("transform", function (d) {
+          var x = centre.x + d.coords.x;
+          var y = centre.y - d.coords.y;
+          return "translate(" + x + "," + y + ")";
+        }); // Append node circles to node groups
+
+        var nodes = nodes_group.append("circle").attr("class", "node").attr("r", 5); // Text offset
+
+        var labelOffset = 0.06; // Append text to labels
+
+        var labels = nodes_group.append("text").text(function (d) {
+          return d.label;
+        }).attr("fill", function (d) {
+          return _this3.props.queryParams['chordSel'].includes(d.label) ? "red" : "black";
+        }).attr("dx", function (d) {
+          return d.coords.x * labelOffset;
+        }).attr("dy", function (d) {
+          return -d.coords.y * labelOffset;
+        }).attr("text-anchor", "middle").attr("font-size", 10).attr("font-weight", function (d) {
+          return _this3.props.queryParams['chordSel'].includes(d.label) ? 700 : 400;
         });
-        var root_arcs = svg.selectAll("path").data(root_ix_pairs).enter().append("path").attr("d", function (d) {
-          return arcGen(d);
-        }).attr("transform", "translate(" + centre.y + "," + centre.x + ")").attr("fill", "#ebebeb");
-      } // Create objects containing node labels and coordinates from list of edges (sets)
-
-
-      var node_points = order.map(function (x) {
-        return {
-          "label": x,
-          "coords": node2point(x)
-        };
-      }); // Calculate inner heirarchy bundling nodes
-      // Get cluster number values
-
-      var n_clusters = (0, _construct2.default)(Array, (0, _toConsumableArray2.default)(new Set(sets.map(function (x) {
-        return x['km_label'];
-      })))); // Inner node map
-
-      var i_nodes = {}; // Get labels and cluster value for each edge (set)
-
-      var angle_map = sets.map(function (x) {
-        return [x.labels, x.km_label];
-      }); /////////////////////////// Calculate control points //////////////////////////
-
-      for (var _i2 = 0; _i2 < angle_map.length; _i2++) {
-        if (angle_map[_i2][1] in i_nodes) {
-          // Push lhs and rhs node positions
-          i_nodes[angle_map[_i2][1]][0].push(node2point(angle_map[_i2][0][0]));
-
-          i_nodes[angle_map[_i2][1]][1].push(node2point(angle_map[_i2][0][1]));
-        } else {
-          i_nodes[angle_map[_i2][1]] = [[node2point(angle_map[_i2][0][0])], [node2point(angle_map[_i2][0][1])]];
-        }
-      }
-
-      var root_nodes = {};
-
-      for (var _i3 = 0, _Object$entries = Object.entries(i_nodes); _i3 < _Object$entries.length; _i3++) {
-        var _Object$entries$_i = (0, _slicedToArray2.default)(_Object$entries[_i3], 2),
-            key = _Object$entries$_i[0],
-            value = _Object$entries$_i[1];
-
-        // If there is more than one node in array
-        if (value[0].length > 1) {
-          // Get lhs nodes
-          var points_ln = value[0]; // Calculate mean position of lhs nodes
-
-          var mean_ln = {
-            "x": d3.mean(points_ln.map(function (x) {
-              return x.x;
-            })),
-            "y": d3.mean(points_ln.map(function (x) {
-              return x.y;
-            }))
-          }; // Do the same for rhs nodes
-
-          var points_rn = value[1];
-          var mean_rn = {
-            "x": d3.mean(points_rn.map(function (x) {
-              return x.x;
-            })),
-            "y": d3.mean(points_rn.map(function (x) {
-              return x.y;
-            }))
-          };
-          root_nodes[key] = {
-            "ln": mean_ln,
-            "rn": mean_rn,
-            "centroid_ln": mean_ln,
-            "centroid_rn": mean_rn
-          };
-        } else {
-          root_nodes[key] = {
-            "ln": value[0][0],
-            "rn": value[1][0],
-            "centroid_ln": value[0][0],
-            "centroid_rn": value[1][0]
-          };
-        }
-      } /////////////////////// Optimise control point positions ///////////////////////////
-      // Calculate the total line length for a particular cluster group
-
-
-      function calc_line_length(key, i_nodes, root_nodes) {
-        var centroid = root_nodes[key];
-        var total_line_length = 0; // Calculate length between lhs and rhs centroids
-        //const mid_length = Math.sqrt((centroid.ln.x - centroid.rn.x) ** 2 + (centroid.ln.y - centroid.rn.y) ** 2)
-
-        var lineGenMid_t = d3.line().x(function (d) {
+        var lineGenMid = d3.line().x(function (d) {
           return d.x + centre.x;
         }).y(function (d) {
           return centre.y - d.y;
         });
-        var lineGenCatmul_t = d3.line().x(function (d) {
+        var lineGenCatmul = d3.line().x(function (d) {
           return d.x + centre.x;
         }).y(function (d) {
           return centre.y - d.y;
         }).curve(d3.curveCatmullRomOpen.alpha(0)); // Generate coordinates for line based on cluster value mapping to inner node values
 
-        var create_points_mid_t = function create_points_mid_t(d) {
+        var create_points_mid = function create_points_mid(d) {
           var line = [{
             "x": root_nodes[d.km_label].ln.x,
             "y": root_nodes[d.km_label].ln.y
@@ -75498,7 +75843,7 @@ var ChartClust = /*#__PURE__*/function (_React$Component) {
           return line;
         };
 
-        var create_points_source_t = function create_points_source_t(d) {
+        var create_points_source = function create_points_source(d) {
           var line = [node2point(d.labels[0]), node2point(d.labels[0]), {
             "x": root_nodes[d.km_label].ln.x,
             "y": root_nodes[d.km_label].ln.y
@@ -75509,7 +75854,7 @@ var ChartClust = /*#__PURE__*/function (_React$Component) {
           return line;
         };
 
-        var create_points_target_t = function create_points_target_t(d) {
+        var create_points_target = function create_points_target(d) {
           var line = [{
             "x": root_nodes[d.km_label].ln.x,
             "y": root_nodes[d.km_label].ln.y
@@ -75518,267 +75863,113 @@ var ChartClust = /*#__PURE__*/function (_React$Component) {
             "y": root_nodes[d.km_label].rn.y
           }, node2point(d.labels[1]), node2point(d.labels[1])];
           return line;
-        }; // Sum total line lengths
-
-
-        var lengths_mid = sets.filter(function (x) {
-          return x.km_label == key;
-        }).map(create_points_mid_t).map(lineGenMid_t).map(function (x) {
-          var svg_temp = d3.create("svg");
-          var path = svg_temp.append("path").attr("d", x);
-          svg_temp.remove("*");
-          return path['_groups'][0][0].getTotalLength();
-        });
-        var lengths_source = sets.filter(function (x) {
-          return x.km_label == key;
-        }).map(create_points_source_t).map(lineGenCatmul_t).map(function (x) {
-          var svg_temp = d3.create("svg");
-          var path = svg_temp.append("path").attr("d", x);
-          svg_temp.remove("*");
-          return path['_groups'][0][0].getTotalLength();
-        });
-        var lengths_target = sets.filter(function (x) {
-          return x.km_label == key;
-        }).map(create_points_target_t).map(lineGenCatmul_t).map(function (x) {
-          var svg_temp = d3.create("svg");
-          var path = svg_temp.append("path").attr("d", x);
-          svg_temp.remove("*");
-          return path['_groups'][0][0].getTotalLength();
-        });
-        total_line_length = d3.sum(lengths_source) + d3.sum(lengths_target) + lengths_mid[0];
-        return total_line_length;
-      } // Golden section search
-
-
-      function gss(f, a, b, key, i_nodes, root_nodes, side) {
-        var tol = arguments.length > 7 && arguments[7] !== undefined ? arguments[7] : 0.000000000000000000001;
-        var gr = (Math.sqrt(5) + 1) / 2;
-        var c = b - (b - a) / gr;
-        var d = a + (b - a) / gr;
-
-        while (Math.abs(c - d) > tol) {
-          if (f(c, key, i_nodes, root_nodes, side) < f(d, key, i_nodes, root_nodes, side)) {
-            b = d;
-          } else {
-            a = c;
-          }
-
-          c = b - (b - a) / gr;
-          d = a + (b - a) / gr;
-        }
-
-        return (b + a) / 2;
-      } // Function for gss to optimise (takes ratio of line between centroids to change position by)
-
-
-      function gss_func(r, key, i_nodes, root_nodes, side) {
-        //let new_root_nodes = Object.assign({},root_nodes)
-        var new_root_nodes = JSON.parse(JSON.stringify(root_nodes));
-
-        if (side == "ln") {
-          new_root_nodes[key].ln = {
-            "x": new_root_nodes[key].centroid_ln.x + r * (new_root_nodes[key].centroid_rn.x - new_root_nodes[key].centroid_ln.x),
-            "y": new_root_nodes[key].centroid_ln.y + r * (new_root_nodes[key].centroid_rn.y - new_root_nodes[key].centroid_ln.y)
-          };
-        }
-
-        if (side == "rn") {
-          new_root_nodes[key].rn = {
-            "x": new_root_nodes[key].centroid_rn.x + r * (new_root_nodes[key].centroid_ln.x - new_root_nodes[key].centroid_rn.x),
-            "y": new_root_nodes[key].centroid_rn.y + r * (new_root_nodes[key].centroid_ln.y - new_root_nodes[key].centroid_rn.y)
-          };
-        }
-
-        return calc_line_length(key, i_nodes, new_root_nodes, side);
-      } // Carry out optimisation - set r_l and r_r to constant value if desired
-
-
-      for (var _i4 = 0, _Object$entries2 = Object.entries(root_nodes); _i4 < _Object$entries2.length; _i4++) {
-        var _Object$entries2$_i = (0, _slicedToArray2.default)(_Object$entries2[_i4], 2),
-            _key = _Object$entries2$_i[0],
-            _value = _Object$entries2$_i[1];
-
-        // Do for lhs nodes
-        var r_l = gss(gss_func, 0.5, 0, _key, i_nodes, root_nodes, "ln"); //const r_l = 0.1
-
-        root_nodes[_key].ln = {
-          "x": root_nodes[_key].centroid_ln.x + r_l * (root_nodes[_key].centroid_rn.x - root_nodes[_key].centroid_ln.x),
-          "y": root_nodes[_key].centroid_ln.y + r_l * (root_nodes[_key].centroid_rn.y - root_nodes[_key].centroid_ln.y)
-        }; // Do for rhs nodes
-
-        var r_r = gss(gss_func, 0.5, 0, _key, i_nodes, root_nodes, "rn"); //const r_r = 0.1
-
-        root_nodes[_key].rn = {
-          "x": root_nodes[_key].centroid_rn.x + r_r * (root_nodes[_key].centroid_ln.x - root_nodes[_key].centroid_rn.x),
-          "y": root_nodes[_key].centroid_rn.y + r_r * (root_nodes[_key].centroid_ln.y - root_nodes[_key].centroid_rn.y)
         };
-      } ////////////////////////////////////////////////////////////////////////////
-      // Append node groups
 
-
-      var nodes_group = svg.selectAll("g").data(node_points).enter().append("g").attr("transform", function (d) {
-        var x = centre.x + d.coords.x;
-        var y = centre.y - d.coords.y;
-        return "translate(" + x + "," + y + ")";
-      }); // Append node circles to node groups
-
-      var nodes = nodes_group.append("circle").attr("class", "node").attr("r", 5); // Text offset
-
-      var labelOffset = 0.06; // Append text to labels
-
-      var labels = nodes_group.append("text").text(function (d) {
-        return d.label;
-      }).attr("fill", function (d) {
-        return _this3.props.queryParams['chordSel'].includes(d.label) ? "red" : "black";
-      }).attr("dx", function (d) {
-        return d.coords.x * labelOffset;
-      }).attr("dy", function (d) {
-        return -d.coords.y * labelOffset;
-      }).attr("text-anchor", "middle").attr("font-size", 10).attr("font-weight", function (d) {
-        return _this3.props.queryParams['chordSel'].includes(d.label) ? 700 : 400;
-      });
-      var lineGenMid = d3.line().x(function (d) {
-        return d.x + centre.x;
-      }).y(function (d) {
-        return centre.y - d.y;
-      });
-      var lineGenCatmul = d3.line().x(function (d) {
-        return d.x + centre.x;
-      }).y(function (d) {
-        return centre.y - d.y;
-      }).curve(d3.curveCatmullRomOpen.alpha(0)); // Generate coordinates for line based on cluster value mapping to inner node values
-
-      var create_points_mid = function create_points_mid(d) {
-        var line = [{
-          "x": root_nodes[d.km_label].ln.x,
-          "y": root_nodes[d.km_label].ln.y
-        }, {
-          "x": root_nodes[d.km_label].rn.x,
-          "y": root_nodes[d.km_label].rn.y
-        }];
-        return line;
-      };
-
-      var create_points_source = function create_points_source(d) {
-        var line = [node2point(d.labels[0]), node2point(d.labels[0]), {
-          "x": root_nodes[d.km_label].ln.x,
-          "y": root_nodes[d.km_label].ln.y
-        }, {
-          "x": root_nodes[d.km_label].rn.x,
-          "y": root_nodes[d.km_label].rn.y
-        }];
-        return line;
-      };
-
-      var create_points_target = function create_points_target(d) {
-        var line = [{
-          "x": root_nodes[d.km_label].ln.x,
-          "y": root_nodes[d.km_label].ln.y
-        }, {
-          "x": root_nodes[d.km_label].rn.x,
-          "y": root_nodes[d.km_label].rn.y
-        }, node2point(d.labels[1]), node2point(d.labels[1])];
-        return line;
-      };
-
-      var link_groups = svg.selectAll(".link").data(sets).enter().append("g").attr("class", "link");
-      link_groups.append("path").attr("class", "link").attr("d", function (d) {
-        return lineGenMid(create_points_mid(d));
-      }).attr("stroke", function (d) {
-        return cmap[d.tag];
-      }) //.attr("stroke", d => d.km_label == 2 ? "red" : cmap[d.tag])
-      .attr("fill", "none").attr("stroke-width", function (d) {
-        return Math.pow(d.values, 1.5) * 50;
-      }).attr("stroke-opacity", function (d) {
-        return Math.pow(d.values / d3.max(sets.map(function (x) {
-          return x.values;
-        })), _this3.props.request_params.focus);
-      });
-      link_groups.append("path").attr("class", "link").attr("d", function (d) {
-        return lineGenCatmul(create_points_source(d));
-      }).attr("stroke", function (d) {
-        return cmap[d.tag];
-      }) //.attr("stroke", d => d.km_label == 2 ? "red" : cmap[d.tag])
-      .attr("fill", "none").attr("stroke-width", function (d) {
-        return Math.pow(d.values, 1.5) * 50;
-      }).attr("stroke-opacity", function (d) {
-        return Math.pow(d.values / d3.max(sets.map(function (x) {
-          return x.values;
-        })), _this3.props.request_params.focus);
-      });
-      link_groups.append("path").attr("class", "link").attr("d", function (d) {
-        return lineGenCatmul(create_points_target(d));
-      }).attr("stroke", function (d) {
-        return cmap[d.tag];
-      }) //.attr("stroke", d => d.km_label == 2 ? "red" : cmap[d.tag])
-      .attr("fill", "none").attr("stroke-width", function (d) {
-        return Math.pow(d.values, 1.5) * 50;
-      }).attr("stroke-opacity", function (d) {
-        return Math.pow(d.values / d3.max(sets.map(function (x) {
-          return x.values;
-        })), _this3.props.request_params.focus);
-      });
-      nodes_group.on("mouseenter", function (sel) {
-        d3.selectAll(".link").filter(function (d) {
-          return d.labels.includes(sel.label);
-        }).raise().transition(0.1).attr("stroke", "red").attr("stroke-width", 3).attr("stroke-opacity", function (d) {
-          return Math.pow(d.values / d3.max(sets.map(function (x) {
-            return x.values;
-          })), 1);
-        });
-        nodes_group.raise();
-      });
-      nodes_group.on("mouseleave", function (sel) {
-        d3.selectAll(".link").filter(function (d) {
-          return d.labels.includes(sel.label);
-        }).transition(0.1).attr("stroke", function (d) {
+        var link_groups = svg.selectAll(".link").data(sets).enter().append("g").attr("class", "link");
+        link_groups.append("path").attr("class", "link").attr("d", function (d) {
+          return lineGenMid(create_points_mid(d));
+        }).attr("stroke", function (d) {
           return cmap[d.tag];
-        }).attr("stroke-width", function (d) {
+        }) //.attr("stroke", d => d.km_label == 2 ? "red" : cmap[d.tag])
+        .attr("fill", "none").attr("stroke-width", function (d) {
           return Math.pow(d.values, 1.5) * 50;
         }).attr("stroke-opacity", function (d) {
           return Math.pow(d.values / d3.max(sets.map(function (x) {
             return x.values;
           })), _this3.props.request_params.focus);
         });
-        nodes_group.raise();
-      });
-      nodes_group.on("click", function (sel) {
-        var currentQState = _this3.props.queryParams['chordSel'];
-
-        if (currentQState.includes(sel.label)) {
-          currentQState.splice(currentQState.indexOf(sel.label), 1);
-        } else {
-          currentQState.push(sel.label);
-        }
-
-        _this3.props.setQueryParams({
-          "chordSel": currentQState
+        link_groups.append("path").attr("class", "link").attr("d", function (d) {
+          return lineGenCatmul(create_points_source(d));
+        }).attr("stroke", function (d) {
+          return cmap[d.tag];
+        }) //.attr("stroke", d => d.km_label == 2 ? "red" : cmap[d.tag])
+        .attr("fill", "none").attr("stroke-width", function (d) {
+          return Math.pow(d.values, 1.5) * 50;
+        }).attr("stroke-opacity", function (d) {
+          return Math.pow(d.values / d3.max(sets.map(function (x) {
+            return x.values;
+          })), _this3.props.request_params.focus);
         });
-      });
-      nodes_group.raise();
-      this.setState({
-        sets: sets
-      });
-      /*
-      // See control points for reference
-      svg.append("circle")
-          .attr("cx", centre.x + root_nodes[2].ln.x)
-          .attr("cy", centre.y - root_nodes[2].ln.y)
-          .attr("r", 10)
-          .attr("fill", "blue")
+        link_groups.append("path").attr("class", "link").attr("d", function (d) {
+          return lineGenCatmul(create_points_target(d));
+        }).attr("stroke", function (d) {
+          return cmap[d.tag];
+        }) //.attr("stroke", d => d.km_label == 2 ? "red" : cmap[d.tag])
+        .attr("fill", "none").attr("stroke-width", function (d) {
+          return Math.pow(d.values, 1.5) * 50;
+        }).attr("stroke-opacity", function (d) {
+          return Math.pow(d.values / d3.max(sets.map(function (x) {
+            return x.values;
+          })), _this3.props.request_params.focus);
+        });
+        nodes_group.on("mouseenter", function (sel) {
+          d3.selectAll(".link").filter(function (d) {
+            return d.labels.includes(sel.label);
+          }).raise().transition(0.1).attr("stroke", "red").attr("stroke-width", 3).attr("stroke-opacity", function (d) {
+            return Math.pow(d.values / d3.max(sets.map(function (x) {
+              return x.values;
+            })), 1);
+          });
+          nodes_group.raise();
+        });
+        nodes_group.on("mouseleave", function (sel) {
+          d3.selectAll(".link").filter(function (d) {
+            return d.labels.includes(sel.label);
+          }).transition(0.1).attr("stroke", function (d) {
+            return cmap[d.tag];
+          }).attr("stroke-width", function (d) {
+            return Math.pow(d.values, 1.5) * 50;
+          }).attr("stroke-opacity", function (d) {
+            return Math.pow(d.values / d3.max(sets.map(function (x) {
+              return x.values;
+            })), _this3.props.request_params.focus);
+          });
+          nodes_group.raise();
+        });
+        nodes_group.on("click", function (sel) {
+          var currentQState = _this3.props.queryParams['chordSel'];
+
+          if (currentQState.includes(sel.label)) {
+            currentQState.splice(currentQState.indexOf(sel.label), 1);
+          } else {
+            currentQState.push(sel.label);
+          }
+
+          _this3.props.setQueryParams({
+            "chordSel": currentQState
+          });
+        });
+        nodes_group.raise();
+
+        _this3.setState({
+          sets: sets
+        });
+        /*
+        // See control points for reference
         svg.append("circle")
-          .attr("cx", centre.x + root_nodes[2].rn.x)
-          .attr("cy", centre.y - root_nodes[2].rn.y)
-          .attr("r", 10)
-          .attr("fill", "red")
-      */
+            .attr("cx", centre.x + root_nodes[2].ln.x)
+            .attr("cy", centre.y - root_nodes[2].ln.y)
+            .attr("r", 10)
+            .attr("fill", "blue")
+              svg.append("circle")
+            .attr("cx", centre.x + root_nodes[2].rn.x)
+            .attr("cy", centre.y - root_nodes[2].rn.y)
+            .attr("r", 10)
+            .attr("fill", "red")
+        */
+
+      };
+
+      for (var tag_ix = 0; tag_ix < genres_tmp.length; tag_ix++) {
+        _loop(tag_ix);
+      }
     }
   }, {
     key: "updateFocus",
     value: function updateFocus() {
       var _this4 = this;
 
-      var svg = d3.select(this.refs[this.props.id + 'chartsvg']);
+      var svg = d3.selectAll("svg");
       svg.selectAll(".link").attr("stroke-opacity", function (d) {
         return Math.pow(d.values / d3.max(_this4.state.sets.map(function (x) {
           return x.values;
@@ -75788,8 +75979,10 @@ var ChartClust = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "render",
     value: function render() {
-      return /*#__PURE__*/_react.default.createElement("svg", {
-        ref: this.props.id + 'chartsvg',
+      var _this5 = this;
+
+      var svg_list = /*#__PURE__*/_react.default.createElement("svg", {
+        ref: 'allchartsvg',
         width: this.props.width,
         height: this.props.height,
         style: {
@@ -75797,6 +75990,23 @@ var ChartClust = /*#__PURE__*/function (_React$Component) {
           margin: "auto"
         }
       });
+
+      if (this.state.request_params && this.state.request_params.tag_val.length > 0) {
+        svg_list = this.state.request_params.tag_val.map(function (x, i) {
+          return /*#__PURE__*/_react.default.createElement("svg", {
+            key: i,
+            ref: x + 'chartsvg',
+            width: _this5.props.width / 2,
+            height: _this5.props.height / 2,
+            style: {
+              display: "block",
+              margin: "auto"
+            }
+          });
+        });
+      }
+
+      return /*#__PURE__*/_react.default.createElement("div", null, svg_list);
     }
   }]);
   return ChartClust;
@@ -75921,586 +76131,303 @@ var ChartParallelClust = /*#__PURE__*/function (_React$Component) {
     value: function createChart() {
       var _this3 = this;
 
-      var svg = d3.select(this.refs[this.props.id + 'chartsvg']);
-      svg.selectAll("*").remove();
-      var width = this.props.width;
-      var height = this.props.height;
-      var node_list = this.state.data.order;
-      var data = this.state.data.sets;
-      data = data.filter(function (x) {
-        return x.values > _this3.props.request_params.support / 100;
-      });
+      // Set condition to loop through if no genres are selected
+      var genres_tmp = ["all"];
 
-      if (this.props.queryParams['chordSel'].length > 0) {
+      if (this.state.request_params.tag_val.length > 0) {
+        genres_tmp = this.state.request_params.tag_val;
+      } // Iterate over genres and create new chart on selected svg
+
+
+      var _loop = function _loop(tag_ix) {
+        var svg = d3.select(_this3.refs[genres_tmp[tag_ix] + 'chartsvg']);
+        svg.selectAll("*").remove();
+        var width = svg.node().getBoundingClientRect().width;
+        var height = svg.node().getBoundingClientRect().height;
+        var node_list = _this3.state.data.order;
+        var data = _this3.state.data.sets;
+
+        if (_this3.state.request_params.tag_val.length > 0) {
+          data = data.filter(function (x) {
+            return x.tag == genres_tmp[tag_ix];
+          });
+        }
+
         data = data.filter(function (x) {
-          return x.labels.some(function (r) {
-            return _this3.props.queryParams['chordSel'].includes(r);
-          });
+          return x.values > _this3.props.request_params.support / 100;
         });
-      }
 
-      var margin = {
-        top: 20,
-        bottom: 20,
-        left: 60,
-        right: 10
-      }; // Number of parallel axes from max itemset length
+        if (_this3.props.queryParams['chordSel'].length > 0) {
+          data = data.filter(function (x) {
+            return x.labels.some(function (r) {
+              return _this3.props.queryParams['chordSel'].includes(r);
+            });
+          });
+        }
 
-      var n_ax = d3.max(data.map(function (x) {
-        return x.labels.length;
-      })); // Filter out nodes from order that all not in filtered sets
+        var margin = {
+          top: 20,
+          bottom: 20,
+          left: 60,
+          right: 10
+        }; // Number of parallel axes from max itemset length
 
-      var filtered_set = (0, _construct2.default)(Array, (0, _toConsumableArray2.default)(new Set(data.flatMap(function (x) {
-        return x['labels'];
-      }))));
-      node_list = node_list.filter(function (x) {
-        return filtered_set.includes(x);
-      }); // Colour map
+        var n_ax = d3.max(data.map(function (x) {
+          return x.labels.length;
+        })); // Filter out nodes from order that all not in filtered sets
 
-      var cmap = (0, _colorMap.genreColormap)(this.state.request_params.tag_val); // Add axes field to data by taking index of node in data node lists
+        var filtered_set = (0, _construct2.default)(Array, (0, _toConsumableArray2.default)(new Set(data.flatMap(function (x) {
+          return x['labels'];
+        }))));
+        node_list = node_list.filter(function (x) {
+          return filtered_set.includes(x);
+        }); // Colour map
 
-      var data_ax = data.map(function (d) {
-        return {
-          labels: d.labels.map(function (l, i) {
+        var cmap = (0, _colorMap.genreColormap)(_this3.state.request_params.tag_val); // Add axes field to data by taking index of node in data node lists
+
+        var data_ax = data.map(function (d) {
+          return {
+            labels: d.labels.map(function (l, i) {
+              return {
+                node: l,
+                ax: i
+              };
+            }),
+            values: d.values,
+            tag: d.tag,
+            km_label: d.km_label
+          };
+        });
+        var scY = []; // Add axis field for n axes from node list
+
+        var node_list_ax = []; // Categorical y scale
+
+        var _loop2 = function _loop2(i) {
+          //const ax_nodes = new Array(... new Set(data_ax.filter(x => x.labels[i]).map(x => x.labels[i].node)))
+          //scY.push(d3.scalePoint().domain(node_list.filter(x=>ax_nodes.includes(x))).range([margin.top, height - margin.bottom]))
+          var ax_nodes = node_list;
+          scY.push(d3.scalePoint().domain(node_list).range([margin.top, height - margin.bottom]));
+          node_list_ax.push.apply(node_list_ax, (0, _toConsumableArray2.default)(ax_nodes.map(function (x) {
             return {
-              node: l,
-              ax: i
+              ax: i,
+              node: x
             };
-          }),
-          values: d.values,
-          tag: d.tag,
-          km_label: d.km_label
+          })));
         };
-      });
-      var scY = []; // Add axis field for n axes from node list
 
-      var node_list_ax = []; // Categorical y scale
+        for (var i = 0; i < n_ax; i++) {
+          _loop2(i);
+        } // Linear x scale for parallel axes
 
-      var _loop = function _loop(i) {
-        //const ax_nodes = new Array(... new Set(data_ax.filter(x => x.labels[i]).map(x => x.labels[i].node)))
-        //scY.push(d3.scalePoint().domain(node_list.filter(x=>ax_nodes.includes(x))).range([margin.top, height - margin.bottom]))
-        var ax_nodes = node_list;
-        scY.push(d3.scalePoint().domain(node_list).range([margin.top, height - margin.bottom]));
-        node_list_ax.push.apply(node_list_ax, (0, _toConsumableArray2.default)(ax_nodes.map(function (x) {
-          return {
-            ax: i,
-            node: x
+
+        var scX = d3.scaleLinear().domain([0, n_ax - 1]).range([margin.left, width - margin.right]); // Calculate bundling control points based on cluster values
+
+        var control_points = [];
+
+        var _loop3 = function _loop3(_i) {
+          // Get labels for this axes i
+          var ax_data = data.filter(function (x) {
+            return x.labels.length > _i + 1;
+          }).map(function (x) {
+            return {
+              ln: scY[_i](x.labels[_i]),
+              rn: scY[_i](x.labels[_i + 1]),
+              km_label: x.km_label[_i]
+            };
+          }); // Get node positions for each cluster
+
+          var node_pos_ln = {};
+          var node_pos_rn = {};
+          ax_data.forEach(function (x) {
+            if (x.km_label in node_pos_ln) {
+              node_pos_ln[x.km_label].push(x.ln);
+              node_pos_rn[x.km_label].push(x.rn);
+            } else {
+              node_pos_ln[x.km_label] = [x.ln];
+              node_pos_rn[x.km_label] = [x.rn];
+            }
+          }); // Get average positions for each cluster 
+
+          var mean_ln = {};
+          var mean_rn = {};
+
+          for (var _i4 = 0, _Object$entries2 = Object.entries(node_pos_ln); _i4 < _Object$entries2.length; _i4++) {
+            var _Object$entries2$_i = (0, _slicedToArray2.default)(_Object$entries2[_i4], 2),
+                _key = _Object$entries2$_i[0],
+                _value = _Object$entries2$_i[1];
+
+            if (_value.length > 1) {
+              mean_ln[_key] = {
+                "x": scX(_i),
+                "y": d3.mean(_value)
+              };
+            } else {
+              mean_ln[_key] = {
+                "x": scX(_i),
+                "y": _value[0]
+              };
+            }
+          }
+
+          for (var _i5 = 0, _Object$entries3 = Object.entries(node_pos_rn); _i5 < _Object$entries3.length; _i5++) {
+            var _Object$entries3$_i = (0, _slicedToArray2.default)(_Object$entries3[_i5], 2),
+                _key2 = _Object$entries3$_i[0],
+                _value2 = _Object$entries3$_i[1];
+
+            if (_value2.length > 1) {
+              mean_rn[_key2] = {
+                "x": scX(_i + 1),
+                "y": d3.mean(_value2)
+              };
+            } else {
+              mean_rn[_key2] = {
+                "x": scX(_i + 1),
+                "y": _value2[0]
+              };
+            }
+          }
+
+          var ax_cetroids = {
+            "ln": mean_ln,
+            "rn": mean_rn
           };
-        })));
-      };
-
-      for (var i = 0; i < n_ax; i++) {
-        _loop(i);
-      } // Linear x scale for parallel axes
-
-
-      var scX = d3.scaleLinear().domain([0, n_ax - 1]).range([margin.left, width - margin.right]); // Calculate bundling control points based on cluster values
-
-      var control_points = [];
-
-      var _loop2 = function _loop2(_i) {
-        // Get labels for this axes i
-        var ax_data = data.filter(function (x) {
-          return x.labels.length > _i + 1;
-        }).map(function (x) {
-          return {
-            ln: scY[_i](x.labels[_i]),
-            rn: scY[_i](x.labels[_i + 1]),
-            km_label: x.km_label[_i]
-          };
-        }); // Get node positions for each cluster
-
-        var node_pos_ln = {};
-        var node_pos_rn = {};
-        ax_data.forEach(function (x) {
-          if (x.km_label in node_pos_ln) {
-            node_pos_ln[x.km_label].push(x.ln);
-            node_pos_rn[x.km_label].push(x.rn);
-          } else {
-            node_pos_ln[x.km_label] = [x.ln];
-            node_pos_rn[x.km_label] = [x.rn];
-          }
-        }); // Get average positions for each cluster 
-
-        var mean_ln = {};
-        var mean_rn = {};
-
-        for (var _i4 = 0, _Object$entries2 = Object.entries(node_pos_ln); _i4 < _Object$entries2.length; _i4++) {
-          var _Object$entries2$_i = (0, _slicedToArray2.default)(_Object$entries2[_i4], 2),
-              _key = _Object$entries2$_i[0],
-              _value = _Object$entries2$_i[1];
-
-          if (_value.length > 1) {
-            mean_ln[_key] = {
-              "x": scX(_i),
-              "y": d3.mean(_value)
-            };
-          } else {
-            mean_ln[_key] = {
-              "x": scX(_i),
-              "y": _value[0]
-            };
-          }
-        }
-
-        for (var _i5 = 0, _Object$entries3 = Object.entries(node_pos_rn); _i5 < _Object$entries3.length; _i5++) {
-          var _Object$entries3$_i = (0, _slicedToArray2.default)(_Object$entries3[_i5], 2),
-              _key2 = _Object$entries3$_i[0],
-              _value2 = _Object$entries3$_i[1];
-
-          if (_value2.length > 1) {
-            mean_rn[_key2] = {
-              "x": scX(_i + 1),
-              "y": d3.mean(_value2)
-            };
-          } else {
-            mean_rn[_key2] = {
-              "x": scX(_i + 1),
-              "y": _value2[0]
-            };
-          }
-        }
-
-        var ax_cetroids = {
-          "ln": mean_ln,
-          "rn": mean_rn
+          control_points.push(ax_cetroids);
         };
-        control_points.push(ax_cetroids);
-      };
 
-      for (var _i = 0; _i < n_ax; _i++) {
-        _loop2(_i);
-      } // Shift control points towards eachother control point positions
+        for (var _i = 0; _i < n_ax; _i++) {
+          _loop3(_i);
+        } // Shift control points towards eachother control point positions
 
 
-      for (var ax = 0; ax < control_points.length; ax++) {
-        var r = 0.2;
+        for (var ax = 0; ax < control_points.length; ax++) {
+          var r = 0.2;
 
-        for (var _i2 = 0, _Object$entries = Object.entries(control_points[ax].ln); _i2 < _Object$entries.length; _i2++) {
-          var _Object$entries$_i = (0, _slicedToArray2.default)(_Object$entries[_i2], 2),
-              key = _Object$entries$_i[0],
-              value = _Object$entries$_i[1];
+          for (var _i2 = 0, _Object$entries = Object.entries(control_points[ax].ln); _i2 < _Object$entries.length; _i2++) {
+            var _Object$entries$_i = (0, _slicedToArray2.default)(_Object$entries[_i2], 2),
+                key = _Object$entries$_i[0],
+                value = _Object$entries$_i[1];
 
-          var ln_old_x = control_points[ax].ln[key].x;
-          var ln_old_y = control_points[ax].ln[key].y;
-          control_points[ax].ln[key].x = control_points[ax].ln[key].x - r * (control_points[ax].ln[key].x - control_points[ax].rn[key].x);
-          control_points[ax].ln[key].y = control_points[ax].ln[key].y - r * (control_points[ax].ln[key].y - control_points[ax].rn[key].y);
-          control_points[ax].rn[key].x = control_points[ax].rn[key].x - r * (control_points[ax].rn[key].x - ln_old_x);
-          control_points[ax].rn[key].y = control_points[ax].rn[key].y - r * (control_points[ax].rn[key].y - ln_old_y);
-        }
-      } // Add node groups to create parallel axes
-
-
-      var nodes_group = svg.selectAll("g").data(node_list_ax).enter().append("g").attr("transform", function (d) {
-        return "translate(" + scX(d.ax) + "," + scY[d.ax](d.node) + ")";
-      }); // Append circle to node groups
-
-      var nodes = nodes_group.append("circle").attr("r", 2); // Append labels to node groups
-
-      var labels = nodes_group.append("text").text(function (d) {
-        return d.node;
-      }).attr("class", "label").attr("font-size", 10).attr("dx", -4).attr("dy", 2).attr("text-anchor", "end").attr("fill", function (d) {
-        return _this3.props.queryParams['chordSel'].includes(d.node) ? "red" : "black";
-      }).attr("font-weight", function (d) {
-        return _this3.props.queryParams['chordSel'].includes(d.node) ? 700 : 400;
-      }); // Add transparent rectangle to labels for easier hover selection
-
-      var label_bg = nodes_group.append("rect").attr("width", 30).attr("height", 20).attr("fill", "transparent").attr("transform", "translate(-34,-6)"); // Path generator
-
-      var lineGen = d3.line().y(function (d) {
-        return d.y;
-      }).x(function (d) {
-        return d.x;
-      }).curve(d3.curveBundle.beta(1));
-
-      var create_points = function create_points(d, i) {
-        var line = [{
-          "x": scX(d.labels[i].ax),
-          "y": scY[d.labels[i].ax](d.labels[i].node)
-        }, {
-          "x": control_points[d.labels[i].ax].ln[d.km_label[i]].x,
-          "y": control_points[d.labels[i].ax].ln[d.km_label[i]].y
-        }, {
-          "x": control_points[d.labels[i].ax].rn[d.km_label[i]].x,
-          "y": control_points[d.labels[i].ax].rn[d.km_label[i]].y
-        }, {
-          "x": scX(d.labels[i + 1].ax),
-          "y": scY[d.labels[i + 1].ax](d.labels[i + 1].node)
-        }];
-        return line;
-      };
-
-      var node_cmap_sc = d3.scalePoint().range([0, 1]).domain(node_list); // Append lines for each axes seperately to allow each to be coloured based on start node
-
-      var data_filt = [];
-
-      var _loop3 = function _loop3(_i3) {
-        data_filt.push.apply(data_filt, (0, _toConsumableArray2.default)(data_ax.filter(function (x) {
-          return x.labels.length > _i3 + 1;
-        }).map(function (d) {
-          return Object.assign(d, {
-            ax: _i3
-          });
-        })));
-      };
-
-      for (var _i3 = 0; _i3 < n_ax; _i3++) {
-        _loop3(_i3);
-      } // Append paths
+            var ln_old_x = control_points[ax].ln[key].x;
+            var ln_old_y = control_points[ax].ln[key].y;
+            control_points[ax].ln[key].x = control_points[ax].ln[key].x - r * (control_points[ax].ln[key].x - control_points[ax].rn[key].x);
+            control_points[ax].ln[key].y = control_points[ax].ln[key].y - r * (control_points[ax].ln[key].y - control_points[ax].rn[key].y);
+            control_points[ax].rn[key].x = control_points[ax].rn[key].x - r * (control_points[ax].rn[key].x - ln_old_x);
+            control_points[ax].rn[key].y = control_points[ax].rn[key].y - r * (control_points[ax].rn[key].y - ln_old_y);
+          }
+        } // Add node groups to create parallel axes
 
 
-      var links = svg.selectAll("path").select(".link").data(data_filt).enter().append("path").attr("class", "link").attr("d", function (d) {
-        return lineGen(create_points(d, d.ax));
-      }).attr("fill", "none").attr("stroke", function (d) {
-        return _this3.props.request_params.cPath ? d3.interpolateTurbo(node_cmap_sc(d.labels[d.ax].node)) : cmap[d.tag];
-      }).attr("fill", "none").attr("stroke-width", function (d) {
-        return Math.pow(d.values, 1.5) * 50;
-      }).attr("stroke-opacity", function (d) {
-        return Math.pow(d.values / d3.max(data.map(function (x) {
-          return x.values;
-        })), _this3.props.request_params.focus);
-      }); // Highlight paths when hovering on node
+        var nodes_group = svg.selectAll("g").data(node_list_ax).enter().append("g").attr("transform", function (d) {
+          return "translate(" + scX(d.ax) + "," + scY[d.ax](d.node) + ")";
+        }); // Append circle to node groups
 
-      label_bg.on("mouseenter", function (sel) {
-        d3.selectAll(".label").filter(function (l) {
-          return l == sel;
-        }).transition(0.1).attr("font-size", 15);
-        d3.selectAll(".link") //.filter(d=>d.labels.includes(sel.label))
-        .filter(function (d) {
-          return d.labels[sel.ax] ? d.labels[sel.ax].node === sel.node : null;
-        }).transition(0.1).attr("stroke", "red").attr("stroke-width", 3).attr("stroke-opacity", function (d) {
-          return Math.pow(d.values / d3.max(data.map(function (x) {
-            return x.values;
-          })), 1);
-        });
-      });
-      label_bg.on("mouseleave", function (sel) {
-        d3.selectAll(".label").filter(function (l) {
-          return l == sel;
-        }).transition(0.1).attr("font-size", 10);
-        d3.selectAll(".link").filter(function (d) {
-          return d.labels[sel.ax] ? d.labels[sel.ax].node === sel.node : null;
-        }).transition(0.1).attr("stroke", function (d) {
+        var nodes = nodes_group.append("circle").attr("r", 2); // Append labels to node groups
+
+        var labels = nodes_group.append("text").text(function (d) {
+          return d.node;
+        }).attr("class", "label").attr("font-size", 10).attr("dx", -4).attr("dy", 2).attr("text-anchor", "end").attr("fill", function (d) {
+          return _this3.props.queryParams['chordSel'].includes(d.node) ? "red" : "black";
+        }).attr("font-weight", function (d) {
+          return _this3.props.queryParams['chordSel'].includes(d.node) ? 700 : 400;
+        }); // Add transparent rectangle to labels for easier hover selection
+
+        var label_bg = nodes_group.append("rect").attr("width", 30).attr("height", 20).attr("fill", "transparent").attr("transform", "translate(-34,-6)"); // Path generator
+
+        var lineGen = d3.line().y(function (d) {
+          return d.y;
+        }).x(function (d) {
+          return d.x;
+        }).curve(d3.curveBundle.beta(1));
+
+        var create_points = function create_points(d, i) {
+          var line = [{
+            "x": scX(d.labels[i].ax),
+            "y": scY[d.labels[i].ax](d.labels[i].node)
+          }, {
+            "x": control_points[d.labels[i].ax].ln[d.km_label[i]].x,
+            "y": control_points[d.labels[i].ax].ln[d.km_label[i]].y
+          }, {
+            "x": control_points[d.labels[i].ax].rn[d.km_label[i]].x,
+            "y": control_points[d.labels[i].ax].rn[d.km_label[i]].y
+          }, {
+            "x": scX(d.labels[i + 1].ax),
+            "y": scY[d.labels[i + 1].ax](d.labels[i + 1].node)
+          }];
+          return line;
+        };
+
+        var node_cmap_sc = d3.scalePoint().range([0, 1]).domain(node_list); // Append lines for each axes seperately to allow each to be coloured based on start node
+
+        var data_filt = [];
+
+        var _loop4 = function _loop4(_i3) {
+          data_filt.push.apply(data_filt, (0, _toConsumableArray2.default)(data_ax.filter(function (x) {
+            return x.labels.length > _i3 + 1;
+          }).map(function (d) {
+            return Object.assign(d, {
+              ax: _i3
+            });
+          })));
+        };
+
+        for (var _i3 = 0; _i3 < n_ax; _i3++) {
+          _loop4(_i3);
+        } // Append paths
+
+
+        var links = svg.selectAll("path").select(".link").data(data_filt).enter().append("path").attr("class", "link").attr("d", function (d) {
+          return lineGen(create_points(d, d.ax));
+        }).attr("fill", "none").attr("stroke", function (d) {
           return _this3.props.request_params.cPath ? d3.interpolateTurbo(node_cmap_sc(d.labels[d.ax].node)) : cmap[d.tag];
-        }).attr("stroke-width", function (d) {
+        }).attr("fill", "none").attr("stroke-width", function (d) {
           return Math.pow(d.values, 1.5) * 50;
         }).attr("stroke-opacity", function (d) {
           return Math.pow(d.values / d3.max(data.map(function (x) {
             return x.values;
           })), _this3.props.request_params.focus);
-        });
-      });
-      label_bg.on("click", function (sel) {
-        var currentQState = _this3.props.queryParams['chordSel'];
+        }); // Highlight paths when hovering on node
 
-        if (currentQState.includes(sel.node)) {
-          currentQState.splice(currentQState.indexOf(sel.node), 1);
-        } else {
-          currentQState.push(sel.node);
-        }
-
-        _this3.props.setQueryParams({
-          "chordSel": currentQState
-        });
-      }); // Raise label groups above paths
-
-      nodes_group.raise();
-      label_bg.raise();
-      this.setState({
-        sets: data
-      });
-    }
-  }, {
-    key: "updateFocus",
-    value: function updateFocus() {
-      var _this4 = this;
-
-      var svg = d3.select(this.refs[this.props.id + 'chartsvg']);
-      svg.selectAll(".link").attr("stroke-opacity", function (d) {
-        return Math.pow(d.values / d3.max(_this4.state.sets.map(function (x) {
-          return x.values;
-        })), _this4.props.request_params.focus);
-      });
-    }
-  }, {
-    key: "render",
-    value: function render() {
-      return /*#__PURE__*/_react.default.createElement("svg", {
-        ref: this.props.id + 'chartsvg',
-        width: this.props.width,
-        height: this.props.height,
-        style: {
-          display: "block",
-          margin: "auto"
-        }
-      });
-    }
-  }]);
-  return ChartParallelClust;
-}(_react.default.Component);
-
-exports.ChartParallelClust = ChartParallelClust;
-},{"@babel/runtime/helpers/slicedToArray":"node_modules/@babel/runtime/helpers/slicedToArray.js","@babel/runtime/helpers/construct":"node_modules/@babel/runtime/helpers/construct.js","@babel/runtime/helpers/toConsumableArray":"node_modules/@babel/runtime/helpers/toConsumableArray.js","@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js","@babel/runtime/helpers/inherits":"node_modules/@babel/runtime/helpers/inherits.js","@babel/runtime/helpers/possibleConstructorReturn":"node_modules/@babel/runtime/helpers/possibleConstructorReturn.js","@babel/runtime/helpers/getPrototypeOf":"node_modules/@babel/runtime/helpers/getPrototypeOf.js","react":"node_modules/react/index.js","d3":"node_modules/d3/index.js","./colorMap":"src/colorMap.js"}],"src/chartParallelSeq.js":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.ChartParallelSeq = void 0;
-
-var _construct2 = _interopRequireDefault(require("@babel/runtime/helpers/construct"));
-
-var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toConsumableArray"));
-
-var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
-
-var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
-
-var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits"));
-
-var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
-
-var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
-
-var _react = _interopRequireDefault(require("react"));
-
-var d3 = _interopRequireWildcard(require("d3"));
-
-var _colorMap = require("./colorMap");
-
-function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = (0, _getPrototypeOf2.default)(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2.default)(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2.default)(this, result); }; }
-
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
-
-var ChartParallelSeq = /*#__PURE__*/function (_React$Component) {
-  (0, _inherits2.default)(ChartParallelSeq, _React$Component);
-
-  var _super = _createSuper(ChartParallelSeq);
-
-  function ChartParallelSeq(props) {
-    var _this;
-
-    (0, _classCallCheck2.default)(this, ChartParallelSeq);
-    _this = _super.call(this, props);
-    _this.state = {
-      data: null,
-      request_params: null
-    };
-    return _this;
-  }
-
-  (0, _createClass2.default)(ChartParallelSeq, [{
-    key: "fetchData",
-    value: function fetchData(request_params) {
-      var _this2 = this;
-
-      var r_url = "";
-
-      if (request_params.tag_val.length > 0) {
-        r_url = "http://127.0.0.1:5000/parallelSeq?fi_type=sequence&tag_val=" + request_params.tag_val.join() + "&tag_name=" + request_params.tag_name;
-      } else {
-        r_url = "http://127.0.0.1:5000/parallelSeq?fi_type=sequence&";
-      }
-
-      if (request_params.optType) {
-        r_url = r_url + "&order_opt=" + request_params.optType;
-      }
-
-      fetch(r_url, {
-        mode: 'cors'
-      }).then(function (r) {
-        return r.json();
-      }).then(function (r) {
-        return _this2.setState({
-          data: r,
-          request_params: request_params
-        }, function () {
-          _this2.createChart();
-        });
-      });
-    }
-  }, {
-    key: "componentDidMount",
-    value: function componentDidMount() {
-      this.fetchData(this.props.request_params);
-    }
-  }, {
-    key: "componentDidUpdate",
-    value: function componentDidUpdate(prevProps) {
-      if (prevProps.request_params !== this.props.request_params) {
-        if (prevProps.request_params.support !== this.props.request_params.support) {
-          this.createChart();
-        } else if (prevProps.request_params.focus !== this.props.request_params.focus) {
-          this.updateFocus();
-        } else {
-          this.fetchData(this.props.request_params);
-        }
-      }
-    }
-  }, {
-    key: "createChart",
-    value: function createChart() {
-      var _this3 = this;
-
-      var svg = d3.select(this.refs[this.props.id + 'chartsvg']);
-      svg.selectAll("*").remove();
-      var width = this.props.width;
-      var height = this.props.height;
-      var node_list = this.state.data.order;
-      var data = this.state.data.sets;
-      data = data.filter(function (x) {
-        return x.values > _this3.props.request_params.support / 100;
-      });
-      var margin = {
-        top: 20,
-        bottom: 20,
-        left: 60,
-        right: 10
-      }; // Number of parallel axes from max itemset length
-
-      var n_ax = d3.max(data.map(function (x) {
-        return x.labels.length;
-      })); // Filter out nodes from order that all not in filtered sets
-
-      var filtered_set = (0, _construct2.default)(Array, (0, _toConsumableArray2.default)(new Set(data.flatMap(function (x) {
-        return x['labels'];
-      }))));
-      node_list = node_list.filter(function (x) {
-        return filtered_set.includes(x);
-      }); // Colour map
-
-      var cmap = (0, _colorMap.genreColormap)(this.state.request_params.tag_val); // Add axes field to data by taking index of node in data node lists
-
-      var data_ax = data.map(function (d) {
-        return {
-          labels: d.labels.map(function (l, i) {
-            return {
-              node: l,
-              ax: i
-            };
-          }),
-          values: d.values,
-          tag: d.tag,
-          km_label: d.km_label
-        };
-      });
-      var scY = []; // Add axis field for n axes from node list
-
-      var node_list_ax = []; // Categorical y scale
-
-      var _loop = function _loop(i) {
-        //const ax_nodes = new Array(... new Set(data_ax.filter(x => x.labels[i]).map(x => x.labels[i].node)))
-        //scY.push(d3.scalePoint().domain(node_list.filter(x=>ax_nodes.includes(x))).range([margin.top, height - margin.bottom]))
-        var ax_nodes = node_list;
-        scY.push(d3.scalePoint().domain(node_list).range([margin.top, height - margin.bottom]));
-        node_list_ax.push.apply(node_list_ax, (0, _toConsumableArray2.default)(ax_nodes.map(function (x) {
-          return {
-            ax: i,
-            node: x
-          };
-        })));
-      };
-
-      for (var i = 0; i < n_ax; i++) {
-        _loop(i);
-      } // Linear x scale for parallel axes
-
-
-      var scX = d3.scaleLinear().domain([0, n_ax - 1]).range([margin.left, width - margin.right]); // Add node groups to create parallel axes
-
-      var nodes_group = svg.selectAll("g").data(node_list_ax).enter().append("g").attr("transform", function (d) {
-        return "translate(" + scX(d.ax) + "," + scY[d.ax](d.node) + ")";
-      }); // Append circle to node groups
-
-      var nodes = nodes_group.append("circle").attr("r", 2); // Append labels to node groups
-
-      var labels = nodes_group.append("text").text(function (d) {
-        return d.node;
-      }).attr("class", "label").attr("font-size", 10).attr("dx", -4).attr("dy", 2).attr("text-anchor", "end"); // Add transparent rectangle to labels for easier hover selection
-
-      var label_bg = nodes_group.append("rect").attr("width", 30).attr("height", 20).attr("fill", "transparent").attr("transform", "translate(-34,-6)"); // Path generator
-
-      var lineGen = d3.line().y(function (d) {
-        return d.y;
-      }).x(function (d) {
-        return d.x;
-      });
-
-      var create_points = function create_points(d, i) {
-        var line = [{
-          "x": scX(d.labels[i].ax),
-          "y": scY[d.labels[i].ax](d.labels[i].node)
-        }, {
-          "x": scX(d.labels[i + 1].ax),
-          "y": scY[d.labels[i + 1].ax](d.labels[i + 1].node)
-        }];
-        return line;
-      };
-
-      var node_cmap_sc = d3.scalePoint().range([0, 1]).domain(node_list); // Append lines for each axes seperately to allow each to be coloured based on start node
-
-      var data_filt = [];
-
-      var _loop2 = function _loop2(_i) {
-        data_filt.push.apply(data_filt, (0, _toConsumableArray2.default)(data_ax.filter(function (x) {
-          return x.labels.length > _i + 1;
-        }).map(function (d) {
-          return Object.assign(d, {
-            ax: _i
+        label_bg.on("mouseenter", function (sel) {
+          d3.selectAll(".label").filter(function (l) {
+            return l == sel;
+          }).transition(0.1).attr("font-size", 15);
+          d3.selectAll(".link") //.filter(d=>d.labels.includes(sel.label))
+          .filter(function (d) {
+            return d.labels[sel.ax] ? d.labels[sel.ax].node === sel.node : null;
+          }).transition(0.1).attr("stroke", "red").attr("stroke-width", 3).attr("stroke-opacity", function (d) {
+            return Math.pow(d.values / d3.max(data.map(function (x) {
+              return x.values;
+            })), 1);
           });
-        })));
-      };
-
-      for (var _i = 0; _i < n_ax; _i++) {
-        _loop2(_i);
-      } // Append paths
-
-
-      var links = svg.selectAll("path").select(".link").data(data_filt).enter().append("path").attr("class", "link").attr("d", function (d) {
-        return lineGen(create_points(d, d.ax));
-      }).attr("fill", "none").attr("stroke", function (d) {
-        return _this3.props.request_params.cPath ? d3.interpolateTurbo(node_cmap_sc(d.labels[d.ax].node)) : cmap[d.tag];
-      }).attr("fill", "none").attr("stroke-width", function (d) {
-        return Math.pow(d.values, 1.5) * 5;
-      }).attr("stroke-opacity", function (d) {
-        return Math.pow(d.values / d3.max(data.map(function (x) {
-          return x.values;
-        })), _this3.props.request_params.focus);
-      }); // Highlight paths when hovering on node
-
-      label_bg.on("mouseenter", function (sel) {
-        d3.selectAll(".label").filter(function (l) {
-          return l == sel;
-        }).transition(0.1).attr("font-size", 15);
-        d3.selectAll(".link") //.filter(d=>d.labels.includes(sel.label))
-        .filter(function (d) {
-          return d.labels[sel.ax] ? d.labels[sel.ax].node === sel.node : null;
-        }).transition(0.1).attr("stroke", "red").attr("stroke-width", 3).attr("stroke-opacity", function (d) {
-          return Math.pow(d.values / d3.max(data.map(function (x) {
-            return x.values;
-          })), 1);
         });
-      });
-      label_bg.on("mouseleave", function (sel) {
-        d3.selectAll(".label").filter(function (l) {
-          return l == sel;
-        }).transition(0.1).attr("font-size", 10);
-        d3.selectAll(".link").filter(function (d) {
-          return d.labels[sel.ax] ? d.labels[sel.ax].node === sel.node : null;
-        }).transition(0.1).attr("stroke", function (d) {
-          return _this3.props.request_params.cPath ? d3.interpolateTurbo(node_cmap_sc(d.labels[d.ax].node)) : cmap[d.tag];
-        }).attr("stroke-width", function (d) {
-          return Math.pow(d.values, 1.5) * 5;
-        }).attr("stroke-opacity", function (d) {
-          return Math.pow(d.values / d3.max(data.map(function (x) {
-            return x.values;
-          })), _this3.props.request_params.focus);
+        label_bg.on("mouseleave", function (sel) {
+          d3.selectAll(".label").filter(function (l) {
+            return l == sel;
+          }).transition(0.1).attr("font-size", 10);
+          d3.selectAll(".link").filter(function (d) {
+            return d.labels[sel.ax] ? d.labels[sel.ax].node === sel.node : null;
+          }).transition(0.1).attr("stroke", function (d) {
+            return _this3.props.request_params.cPath ? d3.interpolateTurbo(node_cmap_sc(d.labels[d.ax].node)) : cmap[d.tag];
+          }).attr("stroke-width", function (d) {
+            return Math.pow(d.values, 1.5) * 50;
+          }).attr("stroke-opacity", function (d) {
+            return Math.pow(d.values / d3.max(data.map(function (x) {
+              return x.values;
+            })), _this3.props.request_params.focus);
+          });
+        });
+        label_bg.on("click", function (sel) {
+          var currentQState = _this3.props.queryParams['chordSel'];
+
+          if (currentQState.includes(sel.node)) {
+            currentQState.splice(currentQState.indexOf(sel.node), 1);
+          } else {
+            currentQState.push(sel.node);
+          }
+
+          _this3.props.setQueryParams({
+            "chordSel": currentQState
+          });
         }); // Raise label groups above paths
 
         nodes_group.raise();
@@ -76509,20 +76436,18 @@ var ChartParallelSeq = /*#__PURE__*/function (_React$Component) {
         _this3.setState({
           sets: data
         });
-      }); // Raise label groups above paths
+      };
 
-      nodes_group.raise();
-      label_bg.raise();
-      this.setState({
-        sets: data
-      });
+      for (var tag_ix = 0; tag_ix < genres_tmp.length; tag_ix++) {
+        _loop(tag_ix);
+      }
     }
   }, {
     key: "updateFocus",
     value: function updateFocus() {
       var _this4 = this;
 
-      var svg = d3.select(this.refs[this.props.id + 'chartsvg']);
+      var svg = d3.select("svg");
       svg.selectAll(".link").attr("stroke-opacity", function (d) {
         return Math.pow(d.values / d3.max(_this4.state.sets.map(function (x) {
           return x.values;
@@ -76532,8 +76457,10 @@ var ChartParallelSeq = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "render",
     value: function render() {
-      return /*#__PURE__*/_react.default.createElement("svg", {
-        ref: this.props.id + 'chartsvg',
+      var _this5 = this;
+
+      var svg_list = /*#__PURE__*/_react.default.createElement("svg", {
+        ref: 'allchartsvg',
         width: this.props.width,
         height: this.props.height,
         style: {
@@ -76541,13 +76468,30 @@ var ChartParallelSeq = /*#__PURE__*/function (_React$Component) {
           margin: "auto"
         }
       });
+
+      if (this.state.request_params && this.state.request_params.tag_val.length > 0) {
+        svg_list = this.state.request_params.tag_val.map(function (x, i) {
+          return /*#__PURE__*/_react.default.createElement("svg", {
+            key: i,
+            ref: x + 'chartsvg',
+            width: _this5.props.width / 2,
+            height: _this5.props.height / 2,
+            style: {
+              display: "block",
+              margin: "auto"
+            }
+          });
+        });
+      }
+
+      return /*#__PURE__*/_react.default.createElement("div", null, svg_list);
     }
   }]);
-  return ChartParallelSeq;
+  return ChartParallelClust;
 }(_react.default.Component);
 
-exports.ChartParallelSeq = ChartParallelSeq;
-},{"@babel/runtime/helpers/construct":"node_modules/@babel/runtime/helpers/construct.js","@babel/runtime/helpers/toConsumableArray":"node_modules/@babel/runtime/helpers/toConsumableArray.js","@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js","@babel/runtime/helpers/inherits":"node_modules/@babel/runtime/helpers/inherits.js","@babel/runtime/helpers/possibleConstructorReturn":"node_modules/@babel/runtime/helpers/possibleConstructorReturn.js","@babel/runtime/helpers/getPrototypeOf":"node_modules/@babel/runtime/helpers/getPrototypeOf.js","react":"node_modules/react/index.js","d3":"node_modules/d3/index.js","./colorMap":"src/colorMap.js"}],"src/queryTable.js":[function(require,module,exports) {
+exports.ChartParallelClust = ChartParallelClust;
+},{"@babel/runtime/helpers/slicedToArray":"node_modules/@babel/runtime/helpers/slicedToArray.js","@babel/runtime/helpers/construct":"node_modules/@babel/runtime/helpers/construct.js","@babel/runtime/helpers/toConsumableArray":"node_modules/@babel/runtime/helpers/toConsumableArray.js","@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js","@babel/runtime/helpers/inherits":"node_modules/@babel/runtime/helpers/inherits.js","@babel/runtime/helpers/possibleConstructorReturn":"node_modules/@babel/runtime/helpers/possibleConstructorReturn.js","@babel/runtime/helpers/getPrototypeOf":"node_modules/@babel/runtime/helpers/getPrototypeOf.js","react":"node_modules/react/index.js","d3":"node_modules/d3/index.js","./colorMap":"src/colorMap.js"}],"src/queryTable.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -76754,8 +76698,6 @@ var _chartClust = require("./chartClust");
 
 var _chartParallelClust = require("./chartParallelClust");
 
-var _chartParallelSeq = require("./chartParallelSeq");
-
 var _queryTable = require("./queryTable");
 
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
@@ -76837,14 +76779,12 @@ var _default = function _default() {
   };
 
   var chart = "";
-  var width = 800;
-  var height = 800;
 
   if (requestParams.chartType === "Circular") {
     chart = /*#__PURE__*/_react.default.createElement(_chartCircular.ChartCircular, {
       id: 1,
-      width: width,
-      height: height,
+      width: 800,
+      height: 800,
       request_params: requestParams,
       queryParams: queryParams,
       setQueryParams: setQueryParams
@@ -76852,8 +76792,8 @@ var _default = function _default() {
   } else if (requestParams.chartType === "Parallel") {
     chart = /*#__PURE__*/_react.default.createElement(_chartParallel.ChartParallel, {
       id: 1,
-      width: width,
-      height: height,
+      width: 800,
+      height: 800,
       request_params: requestParams,
       queryParams: queryParams,
       setQueryParams: setQueryParams
@@ -76861,8 +76801,8 @@ var _default = function _default() {
   } else if (requestParams.chartType === "Circular Hierarchical") {
     chart = /*#__PURE__*/_react.default.createElement(_chartHier.ChartHier, {
       id: 1,
-      width: width,
-      height: height,
+      width: 800,
+      height: 800,
       request_params: requestParams,
       queryParams: queryParams,
       setQueryParams: setQueryParams
@@ -76870,8 +76810,8 @@ var _default = function _default() {
   } else if (requestParams.chartType === "Circular Hierarchical - Single Hue") {
     chart = /*#__PURE__*/_react.default.createElement(_chartHierSingleHue.ChartHierSingleHue, {
       id: 1,
-      width: width,
-      height: height,
+      width: 800,
+      height: 800,
       request_params: requestParams,
       queryParams: queryParams,
       setQueryParams: setQueryParams
@@ -76879,8 +76819,8 @@ var _default = function _default() {
   } else if (requestParams.chartType === "Circular Clustered") {
     chart = /*#__PURE__*/_react.default.createElement(_chartClust.ChartClust, {
       id: 1,
-      width: width,
-      height: height,
+      width: 800,
+      height: 800,
       request_params: requestParams,
       queryParams: queryParams,
       setQueryParams: setQueryParams
@@ -76888,17 +76828,17 @@ var _default = function _default() {
   } else if (requestParams.chartType === "Parallel Clustered") {
     chart = /*#__PURE__*/_react.default.createElement(_chartParallelClust.ChartParallelClust, {
       id: 1,
-      width: width,
-      height: height,
+      width: 800,
+      height: 800,
       request_params: requestParams,
       queryParams: queryParams,
       setQueryParams: setQueryParams
     });
   } else if (requestParams.chartType === "Parallel Sequence") {
-    chart = /*#__PURE__*/_react.default.createElement(_chartParallelSeq.ChartParallelSeq, {
+    chart = /*#__PURE__*/_react.default.createElement(ChartParallelSeq, {
       id: 1,
-      width: width,
-      height: height,
+      width: 800,
+      height: 800,
       request_params: requestParams,
       queryParams: queryParams,
       setQueryParams: setQueryParams
@@ -76935,7 +76875,7 @@ var _default = function _default() {
 };
 
 exports.default = _default;
-},{"@babel/runtime/helpers/defineProperty":"node_modules/@babel/runtime/helpers/defineProperty.js","@babel/runtime/helpers/slicedToArray":"node_modules/@babel/runtime/helpers/slicedToArray.js","react":"node_modules/react/index.js","./chartCircular":"src/chartCircular.js","./chartParallel":"src/chartParallel.js","./chartHier":"src/chartHier.js","./options":"src/options.js","./visparams":"src/visparams.js","./legend":"src/legend.js","react-bootstrap":"node_modules/react-bootstrap/esm/index.js","./chartHierSingleHue":"src/chartHierSingleHue.js","./chartClust":"src/chartClust.js","./chartParallelClust":"src/chartParallelClust.js","./chartParallelSeq":"src/chartParallelSeq.js","./queryTable":"src/queryTable.js"}],"src/index.js":[function(require,module,exports) {
+},{"@babel/runtime/helpers/defineProperty":"node_modules/@babel/runtime/helpers/defineProperty.js","@babel/runtime/helpers/slicedToArray":"node_modules/@babel/runtime/helpers/slicedToArray.js","react":"node_modules/react/index.js","./chartCircular":"src/chartCircular.js","./chartParallel":"src/chartParallel.js","./chartHier":"src/chartHier.js","./options":"src/options.js","./visparams":"src/visparams.js","./legend":"src/legend.js","react-bootstrap":"node_modules/react-bootstrap/esm/index.js","./chartHierSingleHue":"src/chartHierSingleHue.js","./chartClust":"src/chartClust.js","./chartParallelClust":"src/chartParallelClust.js","./queryTable":"src/queryTable.js"}],"src/index.js":[function(require,module,exports) {
 "use strict";
 
 var _react = _interopRequireDefault(require("react"));
