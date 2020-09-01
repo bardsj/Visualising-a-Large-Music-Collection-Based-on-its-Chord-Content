@@ -73625,27 +73625,46 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
         width: this.props.width,
         height: this.props.height,
         style: {
-          display: "block",
           margin: "auto"
         }
       });
 
       if (this.state.request_params && this.state.request_params.tag_val.length > 0) {
-        svg_list = this.state.request_params.tag_val.map(function (x, i) {
-          return /*#__PURE__*/_react.default.createElement("svg", {
-            key: i,
-            ref: x + 'chartsvg',
-            width: _this5.props.width / 2,
-            height: _this5.props.height / 2,
-            style: {
-              display: "block",
-              margin: "auto"
-            }
+        if (this.state.request_params.tag_val.length > 1) {
+          svg_list = this.state.request_params.tag_val.map(function (x, i) {
+            return /*#__PURE__*/_react.default.createElement("svg", {
+              key: i,
+              ref: x + 'chartsvg',
+              width: _this5.props.width / 2,
+              height: _this5.props.height / 2,
+              style: {
+                margin: "auto",
+                gridColumn: i % 2 + 1,
+                gridRow: Math.floor(i / 2) + 1
+              }
+            });
           });
-        });
+        } else {
+          svg_list = this.state.request_params.tag_val.map(function (x, i) {
+            return /*#__PURE__*/_react.default.createElement("svg", {
+              key: i,
+              ref: x + 'chartsvg',
+              width: _this5.props.width,
+              height: _this5.props.height,
+              style: {
+                margin: "auto"
+              }
+            });
+          });
+        }
       }
 
-      return /*#__PURE__*/_react.default.createElement("div", null, svg_list);
+      return /*#__PURE__*/_react.default.createElement("div", {
+        style: {
+          display: "grid",
+          gridTemplateColumns: "50% 50%"
+        }
+      }, svg_list);
     }
   }]);
   return ChartCircular;
@@ -74008,27 +74027,46 @@ var ChartParallel = /*#__PURE__*/function (_React$Component) {
         width: this.props.width,
         height: this.props.height,
         style: {
-          display: "block",
           margin: "auto"
         }
       });
 
       if (this.state.request_params && this.state.request_params.tag_val.length > 0) {
-        svg_list = this.state.request_params.tag_val.map(function (x, i) {
-          return /*#__PURE__*/_react.default.createElement("svg", {
-            key: i,
-            ref: x + 'chartsvg',
-            width: _this5.props.width / 2,
-            height: _this5.props.height / 2,
-            style: {
-              display: "block",
-              margin: "auto"
-            }
+        if (this.state.request_params.tag_val.length > 1) {
+          svg_list = this.state.request_params.tag_val.map(function (x, i) {
+            return /*#__PURE__*/_react.default.createElement("svg", {
+              key: i,
+              ref: x + 'chartsvg',
+              width: _this5.props.width / 2,
+              height: _this5.props.height / 2,
+              style: {
+                margin: "auto",
+                gridColumn: i % 2 + 1,
+                gridRow: Math.floor(i / 2) + 1
+              }
+            });
           });
-        });
+        } else {
+          svg_list = this.state.request_params.tag_val.map(function (x, i) {
+            return /*#__PURE__*/_react.default.createElement("svg", {
+              key: i,
+              ref: x + 'chartsvg',
+              width: _this5.props.width,
+              height: _this5.props.height,
+              style: {
+                margin: "auto"
+              }
+            });
+          });
+        }
       }
 
-      return /*#__PURE__*/_react.default.createElement("div", null, svg_list);
+      return /*#__PURE__*/_react.default.createElement("div", {
+        style: {
+          display: "grid",
+          gridTemplateColumns: "50% 50%"
+        }
+      }, svg_list);
     }
   }]);
   return ChartParallel;
@@ -74407,27 +74445,46 @@ var ChartHier = /*#__PURE__*/function (_React$Component) {
         width: this.props.width,
         height: this.props.height,
         style: {
-          display: "block",
           margin: "auto"
         }
       });
 
       if (this.state.request_params && this.state.request_params.tag_val.length > 0) {
-        svg_list = this.state.request_params.tag_val.map(function (x, i) {
-          return /*#__PURE__*/_react.default.createElement("svg", {
-            key: i,
-            ref: x + 'chartsvg',
-            width: _this5.props.width / 2,
-            height: _this5.props.height / 2,
-            style: {
-              display: "block",
-              margin: "auto"
-            }
+        if (this.state.request_params.tag_val.length > 1) {
+          svg_list = this.state.request_params.tag_val.map(function (x, i) {
+            return /*#__PURE__*/_react.default.createElement("svg", {
+              key: i,
+              ref: x + 'chartsvg',
+              width: _this5.props.width / 2,
+              height: _this5.props.height / 2,
+              style: {
+                margin: "auto",
+                gridColumn: i % 2 + 1,
+                gridRow: Math.floor(i / 2) + 1
+              }
+            });
           });
-        });
+        } else {
+          svg_list = this.state.request_params.tag_val.map(function (x, i) {
+            return /*#__PURE__*/_react.default.createElement("svg", {
+              key: i,
+              ref: x + 'chartsvg',
+              width: _this5.props.width,
+              height: _this5.props.height,
+              style: {
+                margin: "auto"
+              }
+            });
+          });
+        }
       }
 
-      return /*#__PURE__*/_react.default.createElement("div", null, svg_list);
+      return /*#__PURE__*/_react.default.createElement("div", {
+        style: {
+          display: "grid",
+          gridTemplateColumns: "50% 50%"
+        }
+      }, svg_list);
     }
   }]);
   return ChartHier;
@@ -75333,27 +75390,46 @@ var ChartHierSingleHue = /*#__PURE__*/function (_React$Component) {
         width: this.props.width,
         height: this.props.height,
         style: {
-          display: "block",
           margin: "auto"
         }
       });
 
       if (this.state.request_params && this.state.request_params.tag_val.length > 0) {
-        svg_list = this.state.request_params.tag_val.map(function (x, i) {
-          return /*#__PURE__*/_react.default.createElement("svg", {
-            key: i,
-            ref: x + 'chartsvg',
-            width: _this5.props.width / 2,
-            height: _this5.props.height / 2,
-            style: {
-              display: "block",
-              margin: "auto"
-            }
+        if (this.state.request_params.tag_val.length > 1) {
+          svg_list = this.state.request_params.tag_val.map(function (x, i) {
+            return /*#__PURE__*/_react.default.createElement("svg", {
+              key: i,
+              ref: x + 'chartsvg',
+              width: _this5.props.width / 2,
+              height: _this5.props.height / 2,
+              style: {
+                margin: "auto",
+                gridColumn: i % 2 + 1,
+                gridRow: Math.floor(i / 2) + 1
+              }
+            });
           });
-        });
+        } else {
+          svg_list = this.state.request_params.tag_val.map(function (x, i) {
+            return /*#__PURE__*/_react.default.createElement("svg", {
+              key: i,
+              ref: x + 'chartsvg',
+              width: _this5.props.width,
+              height: _this5.props.height,
+              style: {
+                margin: "auto"
+              }
+            });
+          });
+        }
       }
 
-      return /*#__PURE__*/_react.default.createElement("div", null, svg_list);
+      return /*#__PURE__*/_react.default.createElement("div", {
+        style: {
+          display: "grid",
+          gridTemplateColumns: "50% 50%"
+        }
+      }, svg_list);
     }
   }]);
   return ChartHierSingleHue;
@@ -75986,27 +76062,46 @@ var ChartClust = /*#__PURE__*/function (_React$Component) {
         width: this.props.width,
         height: this.props.height,
         style: {
-          display: "block",
           margin: "auto"
         }
       });
 
       if (this.state.request_params && this.state.request_params.tag_val.length > 0) {
-        svg_list = this.state.request_params.tag_val.map(function (x, i) {
-          return /*#__PURE__*/_react.default.createElement("svg", {
-            key: i,
-            ref: x + 'chartsvg',
-            width: _this5.props.width / 2,
-            height: _this5.props.height / 2,
-            style: {
-              display: "block",
-              margin: "auto"
-            }
+        if (this.state.request_params.tag_val.length > 1) {
+          svg_list = this.state.request_params.tag_val.map(function (x, i) {
+            return /*#__PURE__*/_react.default.createElement("svg", {
+              key: i,
+              ref: x + 'chartsvg',
+              width: _this5.props.width / 2,
+              height: _this5.props.height / 2,
+              style: {
+                margin: "auto",
+                gridColumn: i % 2 + 1,
+                gridRow: Math.floor(i / 2) + 1
+              }
+            });
           });
-        });
+        } else {
+          svg_list = this.state.request_params.tag_val.map(function (x, i) {
+            return /*#__PURE__*/_react.default.createElement("svg", {
+              key: i,
+              ref: x + 'chartsvg',
+              width: _this5.props.width,
+              height: _this5.props.height,
+              style: {
+                margin: "auto"
+              }
+            });
+          });
+        }
       }
 
-      return /*#__PURE__*/_react.default.createElement("div", null, svg_list);
+      return /*#__PURE__*/_react.default.createElement("div", {
+        style: {
+          display: "grid",
+          gridTemplateColumns: "50% 50%"
+        }
+      }, svg_list);
     }
   }]);
   return ChartClust;
@@ -76464,27 +76559,46 @@ var ChartParallelClust = /*#__PURE__*/function (_React$Component) {
         width: this.props.width,
         height: this.props.height,
         style: {
-          display: "block",
           margin: "auto"
         }
       });
 
       if (this.state.request_params && this.state.request_params.tag_val.length > 0) {
-        svg_list = this.state.request_params.tag_val.map(function (x, i) {
-          return /*#__PURE__*/_react.default.createElement("svg", {
-            key: i,
-            ref: x + 'chartsvg',
-            width: _this5.props.width / 2,
-            height: _this5.props.height / 2,
-            style: {
-              display: "block",
-              margin: "auto"
-            }
+        if (this.state.request_params.tag_val.length > 1) {
+          svg_list = this.state.request_params.tag_val.map(function (x, i) {
+            return /*#__PURE__*/_react.default.createElement("svg", {
+              key: i,
+              ref: x + 'chartsvg',
+              width: _this5.props.width / 2,
+              height: _this5.props.height / 2,
+              style: {
+                margin: "auto",
+                gridColumn: i % 2 + 1,
+                gridRow: Math.floor(i / 2) + 1
+              }
+            });
           });
-        });
+        } else {
+          svg_list = this.state.request_params.tag_val.map(function (x, i) {
+            return /*#__PURE__*/_react.default.createElement("svg", {
+              key: i,
+              ref: x + 'chartsvg',
+              width: _this5.props.width,
+              height: _this5.props.height,
+              style: {
+                margin: "auto"
+              }
+            });
+          });
+        }
       }
 
-      return /*#__PURE__*/_react.default.createElement("div", null, svg_list);
+      return /*#__PURE__*/_react.default.createElement("div", {
+        style: {
+          display: "grid",
+          gridTemplateColumns: "50% 50%"
+        }
+      }, svg_list);
     }
   }]);
   return ChartParallelClust;

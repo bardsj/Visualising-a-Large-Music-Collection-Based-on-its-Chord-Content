@@ -242,17 +242,26 @@ export class ChartCircular extends React.Component {
 
 
     render() {
-        let svg_list = <svg ref={'allchartsvg'} width={this.props.width} height={this.props.height} style={{ display: "block", margin: "auto" }}></svg>
+        let svg_list = <svg ref={'allchartsvg'} width={this.props.width} height={this.props.height} style={{margin: "auto" }}></svg>
 
         if (this.state.request_params && this.state.request_params.tag_val.length > 0) {
+            if(this.state.request_params.tag_val.length>1){
             svg_list = this.state.request_params.tag_val.map((x, i) => {
                 return (
-                    <svg key={i} ref={x + 'chartsvg'} width={this.props.width / 2} height={this.props.height / 2} style={{ display: "block", margin: "auto" }}></svg>
+                    <svg key={i} ref={x + 'chartsvg'} width={this.props.width / 2} height={this.props.height / 2} style={{margin: "auto" ,gridColumn:(i%2)+1,gridRow:Math.floor(i/2)+1}}></svg>
                 )
             })
         }
+        else {
+            svg_list = this.state.request_params.tag_val.map((x, i) => {
+                return (
+                    <svg key={i} ref={x + 'chartsvg'} width={this.props.width} height={this.props.height} style={{margin: "auto"}}></svg>
+                )
+            })   
+        }
+        }
         return (
-            <div>
+            <div style={{display:"grid",gridTemplateColumns: `50% 50%`}}>
                 {svg_list}
             </div>
         )
