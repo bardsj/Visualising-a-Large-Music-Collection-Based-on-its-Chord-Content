@@ -114,7 +114,7 @@ export class ChartParallel extends React.Component {
             const labels = nodes_group.append("text")
                 .text(d => d.node)
                 .attr("class", "label")
-                .attr("font-size", 10)
+                .attr("font-size", height/60)
                 .attr("dx", -4)
                 .attr("dy", 2)
                 .attr("text-anchor", "end")
@@ -165,7 +165,7 @@ export class ChartParallel extends React.Component {
                 d3.selectAll(".label")
                     .filter(l => l == sel)
                     .transition(0.1)
-                    .attr("font-size", 15)
+                    .attr("font-size", height/30)
 
 
                 d3.selectAll(".link")
@@ -182,7 +182,7 @@ export class ChartParallel extends React.Component {
                 d3.selectAll(".label")
                     .filter(l => l == sel)
                     .transition(0.1)
-                    .attr("font-size", 10)
+                    .attr("font-size", height/60)
 
                 d3.selectAll(".link")
                     .filter(d => d.labels[sel.ax] ? d.labels[sel.ax].node === sel.node : null)

@@ -73535,7 +73535,7 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
           return d.coords.x * labelOffset;
         }).attr("dy", function (d) {
           return -d.coords.y * labelOffset;
-        }).attr("text-anchor", "middle").attr("font-size", 10).attr("font-weight", function (d) {
+        }).attr("text-anchor", "middle").attr("font-size", height / 60).attr("font-weight", function (d) {
           return _this3.props.queryParams['chordSel'].includes(d.label) ? 700 : 400;
         });
         var beta = 0;
@@ -73867,7 +73867,7 @@ var ChartParallel = /*#__PURE__*/function (_React$Component) {
 
         var labels = nodes_group.append("text").text(function (d) {
           return d.node;
-        }).attr("class", "label").attr("font-size", 10).attr("dx", -4).attr("dy", 2).attr("text-anchor", "end").attr("fill", function (d) {
+        }).attr("class", "label").attr("font-size", height / 60).attr("dx", -4).attr("dy", 2).attr("text-anchor", "end").attr("fill", function (d) {
           return _this3.props.queryParams['chordSel'].includes(d.node) ? "red" : "black";
         }).attr("font-weight", function (d) {
           return _this3.props.queryParams['chordSel'].includes(d.node) ? 700 : 400;
@@ -73926,7 +73926,7 @@ var ChartParallel = /*#__PURE__*/function (_React$Component) {
         label_bg.on("mouseenter", function (sel) {
           d3.selectAll(".label").filter(function (l) {
             return l == sel;
-          }).transition(0.1).attr("font-size", 15);
+          }).transition(0.1).attr("font-size", height / 30);
           d3.selectAll(".link") //.filter(d=>d.labels.includes(sel.label))
           .filter(function (d) {
             return d.labels[sel.ax] ? d.labels[sel.ax].node === sel.node : null;
@@ -73939,7 +73939,7 @@ var ChartParallel = /*#__PURE__*/function (_React$Component) {
         label_bg.on("mouseleave", function (sel) {
           d3.selectAll(".label").filter(function (l) {
             return l == sel;
-          }).transition(0.1).attr("font-size", 10);
+          }).transition(0.1).attr("font-size", height / 60);
           d3.selectAll(".link").filter(function (d) {
             return d.labels[sel.ax] ? d.labels[sel.ax].node === sel.node : null;
           }).transition(0.1).attr("stroke", function (d) {
@@ -74310,7 +74310,7 @@ var ChartHier = /*#__PURE__*/function (_React$Component) {
           return d.coords.x * labelOffset;
         }).attr("dy", function (d) {
           return -d.coords.y * labelOffset;
-        }).attr("text-anchor", "middle").attr("font-size", 10).attr("font-weight", function (d) {
+        }).attr("text-anchor", "middle").attr("font-size", height / 60).attr("font-weight", function (d) {
           return _this3.props.queryParams['chordSel'].includes(d.label) ? 700 : 400;
         });
         var beta = _this3.props.request_params.beta;
@@ -75236,7 +75236,7 @@ var ChartHierSingleHue = /*#__PURE__*/function (_React$Component) {
           return d.coords.x * labelOffset;
         }).attr("dy", function (d) {
           return -d.coords.y * labelOffset;
-        }).attr("text-anchor", "middle").attr("font-size", 10).attr("font-weight", function (d) {
+        }).attr("text-anchor", "middle").attr("font-size", height / 60).attr("font-weight", function (d) {
           return _this3.props.queryParams['chordSel'].includes(d.label) ? 700 : 400;
         });
         var beta = _this3.props.request_params.beta;
@@ -75818,7 +75818,7 @@ var ChartClust = /*#__PURE__*/function (_React$Component) {
           return d.coords.x * labelOffset;
         }).attr("dy", function (d) {
           return -d.coords.y * labelOffset;
-        }).attr("text-anchor", "middle").attr("font-size", 10).attr("font-weight", function (d) {
+        }).attr("text-anchor", "middle").attr("font-size", height / 60).attr("font-weight", function (d) {
           return _this3.props.queryParams['chordSel'].includes(d.label) ? 700 : 400;
         });
         var lineGenMid = d3.line().x(function (d) {
@@ -76325,7 +76325,7 @@ var ChartParallelClust = /*#__PURE__*/function (_React$Component) {
 
         var labels = nodes_group.append("text").text(function (d) {
           return d.node;
-        }).attr("class", "label").attr("font-size", 10).attr("dx", -4).attr("dy", 2).attr("text-anchor", "end").attr("fill", function (d) {
+        }).attr("class", "label").attr("font-size", height / 60).attr("dx", -4).attr("dy", 2).attr("text-anchor", "end").attr("fill", function (d) {
           return _this3.props.queryParams['chordSel'].includes(d.node) ? "red" : "black";
         }).attr("font-weight", function (d) {
           return _this3.props.queryParams['chordSel'].includes(d.node) ? 700 : 400;
@@ -76390,7 +76390,7 @@ var ChartParallelClust = /*#__PURE__*/function (_React$Component) {
         label_bg.on("mouseenter", function (sel) {
           d3.selectAll(".label").filter(function (l) {
             return l == sel;
-          }).transition(0.1).attr("font-size", 15);
+          }).transition(0.1).attr("font-size", height / 30);
           d3.selectAll(".link") //.filter(d=>d.labels.includes(sel.label))
           .filter(function (d) {
             return d.labels[sel.ax] ? d.labels[sel.ax].node === sel.node : null;
@@ -76403,7 +76403,7 @@ var ChartParallelClust = /*#__PURE__*/function (_React$Component) {
         label_bg.on("mouseleave", function (sel) {
           d3.selectAll(".label").filter(function (l) {
             return l == sel;
-          }).transition(0.1).attr("font-size", 10);
+          }).transition(0.1).attr("font-size", height / 60);
           d3.selectAll(".link").filter(function (d) {
             return d.labels[sel.ax] ? d.labels[sel.ax].node === sel.node : null;
           }).transition(0.1).attr("stroke", function (d) {

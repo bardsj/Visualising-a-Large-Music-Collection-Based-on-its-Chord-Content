@@ -190,7 +190,7 @@ export class ChartHierSingleHue extends React.Component {
                 .attr("dx", (d) => d.coords.x * labelOffset)
                 .attr("dy", (d) => -d.coords.y * labelOffset)
                 .attr("text-anchor", "middle")
-                .attr("font-size", 10)
+                .attr("font-size", height/60)
                 .attr("font-weight", d => this.props.queryParams['chordSel'].includes(d.label) ? 700 : 400)
 
 
