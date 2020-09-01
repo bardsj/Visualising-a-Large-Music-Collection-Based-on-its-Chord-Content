@@ -73431,7 +73431,7 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
         //sets = sets.filter(x => x.labels.some(i=>i.includes(this.props.queryParams['chordSel'])))
 
         if (_this3.props.queryParams['chordSel'].length > 0) {
-          sets_ch = sets.filter(function (x) {
+          sets = sets.filter(function (x) {
             return x.labels.some(function (r) {
               return _this3.props.queryParams['chordSel'].includes(r);
             });
@@ -77047,7 +77047,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "58859" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "58285" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

@@ -74,7 +74,7 @@ export class ChartCircular extends React.Component {
             // Filter sets based on query params
             //sets = sets.filter(x => x.labels.some(i=>i.includes(this.props.queryParams['chordSel'])))
             if (this.props.queryParams['chordSel'].length > 0) {
-                sets_ch = sets.filter(x => x.labels.some(r => this.props.queryParams['chordSel'].includes(r)))
+                sets = sets.filter(x => x.labels.some(r => this.props.queryParams['chordSel'].includes(r)))
             }
             const r = (height / 2) - height / 16;
 
