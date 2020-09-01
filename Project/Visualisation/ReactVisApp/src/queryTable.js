@@ -65,6 +65,7 @@ export class QueryTable extends React.Component {
                 )
                 return (
                     <tr key={i}>
+                        <td><img src={x['image']} style={{width:"50%"}}></img></td>
                         <td>{x['name']}</td>
                         <td>{x['artist_name']}</td>
                         <td>{<OverlayTrigger trigger="click" placement="right" overlay={popover} rootClose>
@@ -91,6 +92,7 @@ export class QueryTable extends React.Component {
                 <Table bordered size='sm'>
                     <thead>
                         <tr>
+                            <th>{"Cover Image"}</th>
                             <th>{"Track Name"}</th>
                             <th>{"Artist"}</th>
                             <th>{"Chords"}</th>

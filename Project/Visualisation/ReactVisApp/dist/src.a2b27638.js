@@ -76738,7 +76738,12 @@ var QueryTable = /*#__PURE__*/function (_React$Component) {
 
           return /*#__PURE__*/_react.default.createElement("tr", {
             key: i
-          }, /*#__PURE__*/_react.default.createElement("td", null, x['name']), /*#__PURE__*/_react.default.createElement("td", null, x['artist_name']), /*#__PURE__*/_react.default.createElement("td", null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.OverlayTrigger, {
+          }, /*#__PURE__*/_react.default.createElement("td", null, /*#__PURE__*/_react.default.createElement("img", {
+            src: x['image'],
+            style: {
+              width: "50%"
+            }
+          })), /*#__PURE__*/_react.default.createElement("td", null, x['name']), /*#__PURE__*/_react.default.createElement("td", null, x['artist_name']), /*#__PURE__*/_react.default.createElement("td", null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.OverlayTrigger, {
             trigger: "click",
             placement: "right",
             overlay: popover,
@@ -76771,7 +76776,7 @@ var QueryTable = /*#__PURE__*/function (_React$Component) {
       }, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Table, {
         bordered: true,
         size: "sm"
-      }, /*#__PURE__*/_react.default.createElement("thead", null, /*#__PURE__*/_react.default.createElement("tr", null, /*#__PURE__*/_react.default.createElement("th", null, "Track Name"), /*#__PURE__*/_react.default.createElement("th", null, "Artist"), /*#__PURE__*/_react.default.createElement("th", null, "Chords"), /*#__PURE__*/_react.default.createElement("th", null, "Genre Tags"), /*#__PURE__*/_react.default.createElement("th", null, "Audio"))), /*#__PURE__*/_react.default.createElement("tbody", null, tableRows)), this.state.loading ? spinner : null, this.state.tableData ? this.state.tableData.length == 0 ? /*#__PURE__*/_react.default.createElement("div", {
+      }, /*#__PURE__*/_react.default.createElement("thead", null, /*#__PURE__*/_react.default.createElement("tr", null, /*#__PURE__*/_react.default.createElement("th", null, "Cover Image"), /*#__PURE__*/_react.default.createElement("th", null, "Track Name"), /*#__PURE__*/_react.default.createElement("th", null, "Artist"), /*#__PURE__*/_react.default.createElement("th", null, "Chords"), /*#__PURE__*/_react.default.createElement("th", null, "Genre Tags"), /*#__PURE__*/_react.default.createElement("th", null, "Audio"))), /*#__PURE__*/_react.default.createElement("tbody", null, tableRows)), this.state.loading ? spinner : null, this.state.tableData ? this.state.tableData.length == 0 ? /*#__PURE__*/_react.default.createElement("div", {
         style: {
           "textAlign": "center",
           "width": "100%"
