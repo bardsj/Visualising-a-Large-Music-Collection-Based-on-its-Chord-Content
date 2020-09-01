@@ -76837,12 +76837,14 @@ var _default = function _default() {
   };
 
   var chart = "";
+  var width = 800;
+  var height = 800;
 
   if (requestParams.chartType === "Circular") {
     chart = /*#__PURE__*/_react.default.createElement(_chartCircular.ChartCircular, {
       id: 1,
-      width: 800,
-      height: 800,
+      width: width,
+      height: height,
       request_params: requestParams,
       queryParams: queryParams,
       setQueryParams: setQueryParams
@@ -76850,8 +76852,8 @@ var _default = function _default() {
   } else if (requestParams.chartType === "Parallel") {
     chart = /*#__PURE__*/_react.default.createElement(_chartParallel.ChartParallel, {
       id: 1,
-      width: 800,
-      height: 800,
+      width: width,
+      height: height,
       request_params: requestParams,
       queryParams: queryParams,
       setQueryParams: setQueryParams
@@ -76859,8 +76861,8 @@ var _default = function _default() {
   } else if (requestParams.chartType === "Circular Hierarchical") {
     chart = /*#__PURE__*/_react.default.createElement(_chartHier.ChartHier, {
       id: 1,
-      width: 800,
-      height: 800,
+      width: width,
+      height: height,
       request_params: requestParams,
       queryParams: queryParams,
       setQueryParams: setQueryParams
@@ -76868,8 +76870,8 @@ var _default = function _default() {
   } else if (requestParams.chartType === "Circular Hierarchical - Single Hue") {
     chart = /*#__PURE__*/_react.default.createElement(_chartHierSingleHue.ChartHierSingleHue, {
       id: 1,
-      width: 800,
-      height: 800,
+      width: width,
+      height: height,
       request_params: requestParams,
       queryParams: queryParams,
       setQueryParams: setQueryParams
@@ -76877,8 +76879,8 @@ var _default = function _default() {
   } else if (requestParams.chartType === "Circular Clustered") {
     chart = /*#__PURE__*/_react.default.createElement(_chartClust.ChartClust, {
       id: 1,
-      width: 800,
-      height: 800,
+      width: width,
+      height: height,
       request_params: requestParams,
       queryParams: queryParams,
       setQueryParams: setQueryParams
@@ -76886,8 +76888,8 @@ var _default = function _default() {
   } else if (requestParams.chartType === "Parallel Clustered") {
     chart = /*#__PURE__*/_react.default.createElement(_chartParallelClust.ChartParallelClust, {
       id: 1,
-      width: 800,
-      height: 800,
+      width: width,
+      height: height,
       request_params: requestParams,
       queryParams: queryParams,
       setQueryParams: setQueryParams
@@ -76895,8 +76897,8 @@ var _default = function _default() {
   } else if (requestParams.chartType === "Parallel Sequence") {
     chart = /*#__PURE__*/_react.default.createElement(_chartParallelSeq.ChartParallelSeq, {
       id: 1,
-      width: 800,
-      height: 800,
+      width: width,
+      height: height,
       request_params: requestParams,
       queryParams: queryParams,
       setQueryParams: setQueryParams
@@ -76973,7 +76975,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61430" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "58859" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

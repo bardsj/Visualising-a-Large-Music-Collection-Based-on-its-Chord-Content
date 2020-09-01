@@ -369,7 +369,7 @@ def queryData():
 
         # Generate filter based on selected chords
         #exprs = [{'chordRatio.'+ch:{"$exists":True}} for ch in rch]
-        exprs = [{"$and":[{'chordRatio.'+ch:{"$exists":True}},{'chordRatio.'+ch:{"$gt":0.1}}]} for ch in rch]
+        exprs = [{"$and":[{'chordRatio.'+ch:{"$exists":True}},{'chordRatio.'+ch:{"$gt":0.05}}]} for ch in rch]
 
         # Include valid id based on genre selection
         #exprs.append({'_id':{'$in':valid_ids}})
