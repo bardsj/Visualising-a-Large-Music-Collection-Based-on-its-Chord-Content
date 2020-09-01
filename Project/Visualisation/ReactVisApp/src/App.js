@@ -76,7 +76,7 @@ export default () => {
 
 
   return (<>
-    <Container fluid>
+    <Container fluid style={{ paddingLeft: 0, paddingRight: 0 }}>
       <Row>
         <Col>
           <Options requestParams={requestParams} setRequestParams={setRequestParams} handleFilter={handleFilter} handleChartType={handleChartType}/>

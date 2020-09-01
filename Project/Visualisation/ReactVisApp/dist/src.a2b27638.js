@@ -73625,7 +73625,8 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
         width: this.props.width,
         height: this.props.height,
         style: {
-          margin: "auto"
+          margin: "auto",
+          textAlign: "center"
         }
       });
 
@@ -73947,7 +73948,7 @@ var ChartParallel = /*#__PURE__*/function (_React$Component) {
         label_bg.on("mouseenter", function (sel) {
           d3.selectAll(".label").filter(function (l) {
             return l == sel;
-          }).transition(0.1).attr("font-size", height / 40);
+          }).transition(0.1).attr("font-size", height / 45);
           d3.selectAll(".link") //.filter(d=>d.labels.includes(sel.label))
           .filter(function (d) {
             return d.labels[sel.ax] ? d.labels[sel.ax].node === sel.node : null;
@@ -76970,7 +76971,11 @@ var _default = function _default() {
   }
 
   return /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Container, {
-    fluid: true
+    fluid: true,
+    style: {
+      paddingLeft: 0,
+      paddingRight: 0
+    }
   }, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Row, null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Col, null, /*#__PURE__*/_react.default.createElement(_options.Options, {
     requestParams: requestParams,
     setRequestParams: setRequestParams,

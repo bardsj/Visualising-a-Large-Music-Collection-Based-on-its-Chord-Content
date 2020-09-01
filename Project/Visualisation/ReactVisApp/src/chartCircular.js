@@ -242,7 +242,7 @@ export class ChartCircular extends React.Component {
 
 
     render() {
-        let svg_list = <svg ref={'allchartsvg'} width={this.props.width} height={this.props.height} style={{margin: "auto" }}></svg>
+        let svg_list = <svg ref={'allchartsvg'} width={this.props.width} height={this.props.height} style={{margin: "auto",textAlign:"center" }}></svg>
 
         if (this.state.request_params && this.state.request_params.tag_val.length > 0) {
             if(this.state.request_params.tag_val.length>1){
@@ -255,7 +255,7 @@ export class ChartCircular extends React.Component {
         else {
             svg_list = this.state.request_params.tag_val.map((x, i) => {
                 return (
-                    <svg key={i} ref={x + 'chartsvg'} width={this.props.width} height={this.props.height} style={{margin: "auto"}}></svg>
+                    <svg key={i} ref={x + 'chartsvg'} width={this.props.width} height={this.props.height} style={{margin:"auto"}}></svg>
                 )
             })   
         }
