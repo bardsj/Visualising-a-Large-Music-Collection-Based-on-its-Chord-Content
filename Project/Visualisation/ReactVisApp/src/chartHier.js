@@ -271,7 +271,7 @@ export class ChartHier extends React.Component {
             if(this.state.request_params.tag_val.length>1){
             svg_list = this.state.request_params.tag_val.map((x, i) => {
                 return (
-                    <svg key={i} ref={x + 'chartsvg'} width={this.props.width / 2} height={this.props.height / 2} style={{margin: "auto" ,gridColumn:(i%2)+1,gridRow:Math.floor(i/2)+1}}></svg>
+                    <svg key={i} ref={x + 'chartsvg'} width={this.props.width / 1.5} height={this.props.height / 1.5} style={{margin: "auto" ,gridColumn:(i%2)+1,gridRow:Math.floor(i/2)+1}}></svg>
                 )
             })
         }

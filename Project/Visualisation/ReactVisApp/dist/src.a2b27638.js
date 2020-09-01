@@ -73431,7 +73431,7 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
         //sets = sets.filter(x => x.labels.some(i=>i.includes(this.props.queryParams['chordSel'])))
 
         if (_this3.props.queryParams['chordSel'].length > 0) {
-          sets = sets.filter(function (x) {
+          sets_ch = sets.filter(function (x) {
             return x.labels.some(function (r) {
               return _this3.props.queryParams['chordSel'].includes(r);
             });
@@ -73636,8 +73636,8 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
             return /*#__PURE__*/_react.default.createElement("svg", {
               key: i,
               ref: x + 'chartsvg',
-              width: _this5.props.width / 2,
-              height: _this5.props.height / 2,
+              width: _this5.props.width / 1.5,
+              height: _this5.props.height / 1.5,
               style: {
                 margin: "auto",
                 gridColumn: i % 2 + 1,
@@ -74040,8 +74040,8 @@ var ChartParallel = /*#__PURE__*/function (_React$Component) {
             return /*#__PURE__*/_react.default.createElement("svg", {
               key: i,
               ref: x + 'chartsvg',
-              width: _this5.props.width / 2,
-              height: _this5.props.height / 2,
+              width: _this5.props.width / 1.5,
+              height: _this5.props.height / 1.5,
               style: {
                 margin: "auto",
                 gridColumn: i % 2 + 1,
@@ -74458,8 +74458,8 @@ var ChartHier = /*#__PURE__*/function (_React$Component) {
             return /*#__PURE__*/_react.default.createElement("svg", {
               key: i,
               ref: x + 'chartsvg',
-              width: _this5.props.width / 2,
-              height: _this5.props.height / 2,
+              width: _this5.props.width / 1.5,
+              height: _this5.props.height / 1.5,
               style: {
                 margin: "auto",
                 gridColumn: i % 2 + 1,
@@ -75403,8 +75403,8 @@ var ChartHierSingleHue = /*#__PURE__*/function (_React$Component) {
             return /*#__PURE__*/_react.default.createElement("svg", {
               key: i,
               ref: x + 'chartsvg',
-              width: _this5.props.width / 2,
-              height: _this5.props.height / 2,
+              width: _this5.props.width / 1.5,
+              height: _this5.props.height / 1.5,
               style: {
                 margin: "auto",
                 gridColumn: i % 2 + 1,
@@ -76075,8 +76075,8 @@ var ChartClust = /*#__PURE__*/function (_React$Component) {
             return /*#__PURE__*/_react.default.createElement("svg", {
               key: i,
               ref: x + 'chartsvg',
-              width: _this5.props.width / 2,
-              height: _this5.props.height / 2,
+              width: _this5.props.width / 1.5,
+              height: _this5.props.height / 1.5,
               style: {
                 margin: "auto",
                 gridColumn: i % 2 + 1,
@@ -76572,8 +76572,8 @@ var ChartParallelClust = /*#__PURE__*/function (_React$Component) {
             return /*#__PURE__*/_react.default.createElement("svg", {
               key: i,
               ref: x + 'chartsvg',
-              width: _this5.props.width / 2,
-              height: _this5.props.height / 2,
+              width: _this5.props.width / 1.5,
+              height: _this5.props.height / 1.5,
               style: {
                 margin: "auto",
                 gridColumn: i % 2 + 1,

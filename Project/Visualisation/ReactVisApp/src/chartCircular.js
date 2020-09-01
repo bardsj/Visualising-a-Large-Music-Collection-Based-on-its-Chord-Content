@@ -74,7 +74,7 @@ export class ChartCircular extends React.Component {
             // Filter sets based on query params
             //sets = sets.filter(x => x.labels.some(i=>i.includes(this.props.queryParams['chordSel'])))
             if (this.props.queryParams['chordSel'].length > 0) {
-                sets = sets.filter(x => x.labels.some(r => this.props.queryParams['chordSel'].includes(r)))
+                sets_ch = sets.filter(x => x.labels.some(r => this.props.queryParams['chordSel'].includes(r)))
             }
             const r = (height / 2) - height / 16;
 
@@ -248,7 +248,7 @@ export class ChartCircular extends React.Component {
             if(this.state.request_params.tag_val.length>1){
             svg_list = this.state.request_params.tag_val.map((x, i) => {
                 return (
-                    <svg key={i} ref={x + 'chartsvg'} width={this.props.width / 2} height={this.props.height / 2} style={{margin: "auto" ,gridColumn:(i%2)+1,gridRow:Math.floor(i/2)+1}}></svg>
+                    <svg key={i} ref={x + 'chartsvg'} width={this.props.width / 1.5} height={this.props.height / 1.5} style={{margin: "auto" ,gridColumn:(i%2)+1,gridRow:Math.floor(i/2)+1}}></svg>
                 )
             })
         }
