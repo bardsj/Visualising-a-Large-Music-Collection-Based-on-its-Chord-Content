@@ -76738,12 +76738,16 @@ var QueryTable = /*#__PURE__*/function (_React$Component) {
 
           return /*#__PURE__*/_react.default.createElement("tr", {
             key: i
-          }, /*#__PURE__*/_react.default.createElement("td", null, /*#__PURE__*/_react.default.createElement("img", {
+          }, /*#__PURE__*/_react.default.createElement("td", {
+            style: {
+              width: "10%"
+            }
+          }, /*#__PURE__*/_react.default.createElement("img", {
             src: x['image'],
             style: {
-              width: "50%"
+              width: "100%"
             }
-          })), /*#__PURE__*/_react.default.createElement("td", null, x['name']), /*#__PURE__*/_react.default.createElement("td", null, x['artist_name']), /*#__PURE__*/_react.default.createElement("td", null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.OverlayTrigger, {
+          })), /*#__PURE__*/_react.default.createElement("td", null, x['name'].replace("&amp;", "&")), /*#__PURE__*/_react.default.createElement("td", null, x['artist_name'].replace("&amp;", "&")), /*#__PURE__*/_react.default.createElement("td", null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.OverlayTrigger, {
             trigger: "click",
             placement: "right",
             overlay: popover,

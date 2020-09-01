@@ -65,9 +65,9 @@ export class QueryTable extends React.Component {
                 )
                 return (
                     <tr key={i}>
-                        <td><img src={x['image']} style={{width:"50%"}}></img></td>
-                        <td>{x['name']}</td>
-                        <td>{x['artist_name']}</td>
+                        <td style={{width:"10%"}}><img src={x['image']} style={{width:"100%"}}></img></td>
+                        <td>{x['name'].replace("&amp;","&")}</td>
+                        <td>{x['artist_name'].replace("&amp;","&")}</td>
                         <td>{<OverlayTrigger trigger="click" placement="right" overlay={popover} rootClose>
                             <Button variant="success">Chords</Button>
                             </OverlayTrigger>}</td>
