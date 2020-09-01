@@ -39,7 +39,7 @@ export class Legend extends React.Component {
                 .attr("height", 20)
 
             labels.append("text")
-                .text(d => d)
+                .text(d => d[0].toUpperCase() + d.slice(1))
                 .attr("dx", 25)
                 .attr("dy", 15)
                 .attr("font-size", 15)

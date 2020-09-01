@@ -70,7 +70,7 @@ export class QueryTable extends React.Component {
                         <td>{<OverlayTrigger trigger="click" placement="right" overlay={popover} rootClose>
                             <Button variant="success">Chords</Button>
                             </OverlayTrigger>}</td>
-                        <td>{x.musicinfo.tags.genres.join(", ")}</td>
+                        <td>{x.musicinfo.tags.genres.map(x=>x[0].toUpperCase() + x.slice(1)).join(", ")}</td>
                         <td>
                             <audio controls style={{ "height": 30 }}>
                                 <source src={x['audio']} type="audio/mpeg" />

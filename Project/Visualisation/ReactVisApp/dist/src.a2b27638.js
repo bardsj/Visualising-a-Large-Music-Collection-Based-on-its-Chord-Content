@@ -74990,7 +74990,7 @@ var Legend = /*#__PURE__*/function (_React$Component) {
           return cmap[d];
         }).attr("width", 20).attr("height", 20);
         labels.append("text").text(function (d) {
-          return d;
+          return d[0].toUpperCase() + d.slice(1);
         }).attr("dx", 25).attr("dy", 15).attr("font-size", 15);
       } else {
         var xoffset = 20;
@@ -76745,7 +76745,9 @@ var QueryTable = /*#__PURE__*/function (_React$Component) {
             rootClose: true
           }, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Button, {
             variant: "success"
-          }, "Chords"))), /*#__PURE__*/_react.default.createElement("td", null, x.musicinfo.tags.genres.join(", ")), /*#__PURE__*/_react.default.createElement("td", null, /*#__PURE__*/_react.default.createElement("audio", {
+          }, "Chords"))), /*#__PURE__*/_react.default.createElement("td", null, x.musicinfo.tags.genres.map(function (x) {
+            return x[0].toUpperCase() + x.slice(1);
+          }).join(", ")), /*#__PURE__*/_react.default.createElement("td", null, /*#__PURE__*/_react.default.createElement("audio", {
             controls: true,
             style: {
               "height": 30
