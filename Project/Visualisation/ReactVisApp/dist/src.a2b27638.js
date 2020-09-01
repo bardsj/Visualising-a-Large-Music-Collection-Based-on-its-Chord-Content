@@ -73661,6 +73661,8 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
 
       return /*#__PURE__*/_react.default.createElement("div", {
         style: {
+          textAlign: "center",
+          margin: "auto",
           display: "grid",
           gridTemplateColumns: "50% 50%"
         }
@@ -73945,7 +73947,7 @@ var ChartParallel = /*#__PURE__*/function (_React$Component) {
         label_bg.on("mouseenter", function (sel) {
           d3.selectAll(".label").filter(function (l) {
             return l == sel;
-          }).transition(0.1).attr("font-size", height / 30);
+          }).transition(0.1).attr("font-size", height / 40);
           d3.selectAll(".link") //.filter(d=>d.labels.includes(sel.label))
           .filter(function (d) {
             return d.labels[sel.ax] ? d.labels[sel.ax].node === sel.node : null;
@@ -76485,7 +76487,7 @@ var ChartParallelClust = /*#__PURE__*/function (_React$Component) {
         label_bg.on("mouseenter", function (sel) {
           d3.selectAll(".label").filter(function (l) {
             return l == sel;
-          }).transition(0.1).attr("font-size", height / 30);
+          }).transition(0.1).attr("font-size", height / 45);
           d3.selectAll(".link") //.filter(d=>d.labels.includes(sel.label))
           .filter(function (d) {
             return d.labels[sel.ax] ? d.labels[sel.ax].node === sel.node : null;

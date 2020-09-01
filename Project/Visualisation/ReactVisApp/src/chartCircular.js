@@ -261,7 +261,7 @@ export class ChartCircular extends React.Component {
         }
         }
         return (
-            <div style={{display:"grid",gridTemplateColumns: `50% 50%`}}>
+            <div style={{textAlign:"center",margin:"auto",display:"grid",gridTemplateColumns: `50% 50%`}}>
                 {svg_list}
             </div>
         )

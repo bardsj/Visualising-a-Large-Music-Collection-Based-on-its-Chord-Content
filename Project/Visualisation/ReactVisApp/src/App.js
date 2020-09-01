@@ -87,7 +87,7 @@ export default () => {
           <VisParams requestParams={requestParams} setRequestParams={setRequestParams} handleOptType={handleOptType}/>
         </Col>
         <Col>
-          {chart}
+            {chart}
         </Col>
         <Col sm={2}>
           {legend}

@@ -226,7 +226,7 @@ export class ChartParallelClust extends React.Component {
                 d3.selectAll(".label")
                     .filter(l => l == sel)
                     .transition(0.1)
-                    .attr("font-size", height/30)
+                    .attr("font-size", height/45)
 
 
                 d3.selectAll(".link")
