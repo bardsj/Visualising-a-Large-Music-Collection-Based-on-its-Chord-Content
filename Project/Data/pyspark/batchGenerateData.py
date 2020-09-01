@@ -37,25 +37,6 @@ for i,genre in enumerate(['pop','rock','electronic','hiphop','jazz','classical',
     else:
         tag_filt = None
 
-    items = SparkFrequentItemsetsPrefixSpan(spark,limit=None,params=params,tag_filter=tag_filt,majmin_agg=False)
-    itemsets = items.get_itemsets()
-    count = items.getDataframeCount()
-    # Convert to dict for storage
-    itemsets['sequence'] = itemsets['sequence'].apply(lambda x: list(chain(*x)))
-    itemsets = itemsets.to_dict()
-
-    write_results.append({
-        "_id":str(i).zfill(4)+"-"+str(params['minSupport'])+"-"+str(params['filterRatio'])+"-"+str(params['filterConfidence'])+"-"+str(majmin_agg)+"s",
-        "filter_params":params,
-        "tag_params":tag_filt,
-        "itemsets":itemsets,
-        "majmin_agg":majmin_agg,
-        "dfCount":count,
-        "fi_type":'sequential'
-    })
-
-
-
     for majmin_agg in [False,True]:
         items = SparkFrequentItemsetsFPG(spark,limit=None,params=params,tag_filter=tag_filt,majmin_agg=majmin_agg)
         itemsets = items.get_itemsets()
