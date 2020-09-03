@@ -25,22 +25,26 @@ st = time.time()
 write_results = []
 
 for i,genre in enumerate(['pop','rock','electronic','hiphop','jazz','classical','ambient','folk','metal','latin','rnb','reggae','house','blues',None]):
+    if genre:
+        tag_filt = {"tag_name":"genres","tag_val":genre}
+    else:
+        tag_filt = None
+
     # Get valid ids based on metadata params
     if not genre:
         valid_ids = [int(d['_id']) for d in col_meta.find({})]
     else:
         valid_ids = [int(d['_id']) for d in col_meta.find({'musicinfo.tags.genres':genre})]
-    # Get tracks based on 
+    # Get tracks based on params
     transactions = [(x['_id'],[y for y in x['chordRatio'].items() if y[1] > params['filterRatio']]) for x in col_chord.find({'_id':{'$in':valid_ids}}) if float(x['confidence']) > params['filterConfidence']]
-    print(transactions[0])
     # Mine itemsets
     itemsets = FHM(transactions,external_utilities,minutil=params['minUtil']).run_FHM()
     count = len(transactions)
     # Convert to dict for storage
-    itemsets = [{"itemset":i[0],"minutil":i[1]} for i in itemsets]
+    itemsets = [{"itemset":i[0],"minUtil":i[1]} for i in itemsets]
 
     write_results.append({
-        "_id":str(i).zfill(4)+"-"+str(params['minutil'])+"-"+str(params['filterRatio'])+"-"+str(params['filterConfidence'])+"-"+str(majmin_agg)+"hui",
+        "_id":str(i).zfill(4)+"-"+str(params['minUtil'])+"-"+str(params['filterRatio'])+"-"+str(params['filterConfidence'])+"-"+"hui",
         "filter_params":params,
         "tag_params":tag_filt,
         "itemsets":itemsets,
