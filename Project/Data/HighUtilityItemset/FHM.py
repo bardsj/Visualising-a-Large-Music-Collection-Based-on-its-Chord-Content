@@ -34,13 +34,21 @@ class FHM:
             The transaction weighted utility list for each item
         order : dict
             The ordering of the TWU list by ascending value
+        minutil_pc (optional, default = True) : bool
+            Use the actual utility value threshold (false) or set the threshold as a 
+            percentage of the total database utilities
 
     """
-    def __init__(self,transactions,eutil,minutil):
+    def __init__(self,transactions,eutil,minutil,minutil_pc=True):
         self.transactions = [Transaction(t[0],t[1]) for t in transactions]
         self.eutil = eutil
         self.total_db_util = self._totalDBUtility()
-        self.minutil = minutil*self.total_db_util
+        # Check if real or percentage minutil specified and set minutil val accordingly
+        self.minutil_pc = minutil_pc
+        if minutil_pc:
+            self.minutil = minutil*self.total_db_util
+        else:
+            self.minutil = minutil
         self.hui_list = []
         self.util_lists = {}
         self.TWU_list = sorted([(x,self._TWU([x])) for x in self.eutil.keys()],key=lambda x: x[1])
@@ -132,10 +140,10 @@ class FHM:
 
             Returns
             -------
-            list
-                Utility list for itemset x
+            dict
+                Utility list for itemset x with key value set to transaction id
         """
-        return [self._utilListItem(t,x) for t in filter(lambda i: set(x).issubset([j[0] for j in i.items]),self.transactions)]
+        return {t.tid:self._utilListItem(t,x) for t in filter(lambda i: set(x).issubset([j[0] for j in i.items]),self.transactions)}
 
 
     def _FHM_construct(self,P,Px,Py):
@@ -143,17 +151,20 @@ class FHM:
             Construct algorithm for joining utility lists for Px and Py to 
             generate utility list for Pxy
         """
-        Pxy_util_list = []
-        for ex in self.util_lists[frozenset(Px)]:
-            ey = list(filter(lambda x: x.tid == ex.tid,self.util_lists[frozenset([Py])]))
+        Pxy_util_list = {}
+        for ex in self.util_lists[frozenset(Px)].values():
+            # Search for matching key, set to none if not present
+            try:
+                ey = self.util_lists[frozenset([Py])][ex.tid]
+            except:
+                ey = None
             if ey:
-                ey = ey[0]
                 if P:
-                    e = list(filter(lambda x: x.tid == ex.tid,self.util_lists[frozenset(P)]))[0]
+                    e = self.util_lists[frozenset(P)][ex.tid]
                     exy = UtilListItem(ex.tid,ex.iutil+ey.iutil-e.iutil,ey.rutil)
                 else:
                     exy = UtilListItem(ex.tid,ex.iutil+ey.iutil,ey.rutil)
-                Pxy_util_list.append(exy)
+                Pxy_util_list[exy.tid] = exy
 
         return Pxy_util_list
 
@@ -164,12 +175,16 @@ class FHM:
         """
         for Px in extensionsOfP:
             utility_list_px = self.util_lists[frozenset(Px)]
-            Px_iutils = [x[1] for x in utility_list_px]
-            Px_rutils = [x[2] for x in utility_list_px]
+            Px_iutils = [x.iutil for x in utility_list_px.values()]
+            Px_rutils = [x.rutil for x in utility_list_px.values()]
 
             if sum(Px_iutils) >= self.minutil:
-                self.hui_list.append((Px,sum(Px_iutils)/self.total_db_util))
-                
+                # Return as pc value or actual value
+                if self.minutil_pc:
+                    self.hui_list.append((Px,sum(Px_iutils)/self.total_db_util))
+                else:
+                    self.hui_list.append((Px,sum(Px_iutils)))
+
             if sum(Px_iutils) + sum(Px_rutils) >= self.minutil:
                 Py_list = [x[-1] for x in extensionsOfP]
                 Py_list = sorted(Py_list,key=lambda x: self.order[x])

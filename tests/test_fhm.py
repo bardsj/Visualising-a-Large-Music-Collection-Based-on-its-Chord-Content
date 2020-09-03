@@ -20,5 +20,5 @@ class FHMTest(unittest.TestCase):
             }
 
     def testFHMMining(self):
-        hui = FHM(self.transactions,self.external_utilities,0.45).run_FHM()
+        hui = FHM(self.transactions,self.external_utilities,20,minutil_pc=False).run_FHM()
         self.assertEqual(hui,[(['Coke 12oz', 'Chips'], 30.02), (['Chips'], 20.93)])
