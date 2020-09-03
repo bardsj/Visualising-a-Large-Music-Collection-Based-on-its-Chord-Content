@@ -6,6 +6,7 @@ package-lock.json
 __pycache__
 pymongoConnection
 sparkConnection
+chordTest.py
 
 # local data, too large for github
 jamendo_api_scrape.pkl
