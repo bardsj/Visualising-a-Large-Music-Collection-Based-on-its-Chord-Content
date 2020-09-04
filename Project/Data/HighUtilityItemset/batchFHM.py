@@ -5,6 +5,7 @@ from pymongo import MongoClient
 import os
 import time
 from FHM import FHM
+import json
 
 url_chord = os.environ['MSC_CHORD_DB_URI']
 client_chord = MongoClient(url_chord)

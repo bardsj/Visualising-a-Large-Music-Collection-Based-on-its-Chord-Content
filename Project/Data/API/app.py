@@ -76,8 +76,8 @@ def getData(request):
     # frequent itemsets and relevant metadata
     fi_type = 'frequent'
     if 'fi_type' in request.args:
-        if request.args['fi_type'] == 'sequence':
-            fi_type = 'sequential'
+        if request.args['fi_type'] == 'hui':
+            fi_type = 'hui'
         else:
             fi_type = 'frequent'
 

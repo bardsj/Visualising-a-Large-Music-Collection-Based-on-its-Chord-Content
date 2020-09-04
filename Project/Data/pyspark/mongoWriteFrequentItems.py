@@ -8,7 +8,7 @@ import json
 
 with MongoClient(os.environ['MSC_MONGO_PERSONAL_URI']) as client:
     col = client.jamendo.itemsetData
-    with open("Project/Data/pyspark/itemsets.json", "r") as filename:
+    with open("Project/Data/pyspark/itemsets_hui.json", "r") as filename:
         data = json.load(filename)
         for d in data:
             col.update_one({"_id": d['_id']}, {"$set":
