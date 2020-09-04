@@ -73286,6 +73286,10 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
         r_url = r_url + "&majmin_agg=" + request_params.majMinSel;
       }
 
+      if (request_params.fi_type) {
+        r_url = r_url + "&fi_type=" + request_params.fi_type;
+      }
+
       fetch(r_url, {
         mode: 'cors'
       }).then(function (r) {
@@ -73702,6 +73706,10 @@ var ChartParallel = /*#__PURE__*/function (_React$Component) {
         r_url = r_url + "&majmin_agg=" + request_params.majMinSel;
       }
 
+      if (request_params.fi_type) {
+        r_url = r_url + "&fi_type=" + request_params.fi_type;
+      }
+
       fetch(r_url, {
         mode: 'cors'
       }).then(function (r) {
@@ -74098,6 +74106,10 @@ var ChartHier = /*#__PURE__*/function (_React$Component) {
         r_url = r_url + "&majmin_agg=" + request_params.majMinSel;
       }
 
+      if (request_params.fi_type) {
+        r_url = r_url + "&fi_type=" + request_params.fi_type;
+      }
+
       fetch(r_url, {
         mode: 'cors'
       }).then(function (r) {
@@ -74490,7 +74502,12 @@ var Options = /*#__PURE__*/function (_React$Component) {
         id: "popover-basic"
       }, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Popover.Title, {
         as: "h3"
-      }, "Filter Options"), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Popover.Content, null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form, null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Control, {
+      }, "Filter Options"), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Popover.Content, null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form, null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Label, {
+        style: {
+          paddingRight: 5,
+          fontWeight: 700
+        }
+      }, "Chart Type"), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Control, {
         defaultValue: this.props.requestParams.chartType,
         as: "select",
         onChange: function onChange(e) {
@@ -74498,7 +74515,12 @@ var Options = /*#__PURE__*/function (_React$Component) {
             chartType: e.target.value
           }));
         }
-      }, /*#__PURE__*/_react.default.createElement("option", null, "Circular"), /*#__PURE__*/_react.default.createElement("option", null, "Parallel"), /*#__PURE__*/_react.default.createElement("option", null, "Circular Hierarchical"), /*#__PURE__*/_react.default.createElement("option", null, "Circular Hierarchical - Single Hue"), /*#__PURE__*/_react.default.createElement("option", null, "Circular Clustered"), /*#__PURE__*/_react.default.createElement("option", null, "Parallel Clustered")), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Label, null, "Genre"), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Group, null, genres.map(function (genre, index) {
+      }, /*#__PURE__*/_react.default.createElement("option", null, "Circular"), /*#__PURE__*/_react.default.createElement("option", null, "Parallel"), /*#__PURE__*/_react.default.createElement("option", null, "Circular Hierarchical"), /*#__PURE__*/_react.default.createElement("option", null, "Circular Hierarchical - Single Hue"), /*#__PURE__*/_react.default.createElement("option", null, "Circular Clustered"), /*#__PURE__*/_react.default.createElement("option", null, "Parallel Clustered")), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Label, {
+        style: {
+          paddingTop: 10,
+          fontWeight: 700
+        }
+      }, "Genre"), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Group, null, genres.map(function (genre, index) {
         return /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Check, {
           onChange: function onChange(e) {
             return _this.props.handleFilter(e);
@@ -74512,9 +74534,17 @@ var Options = /*#__PURE__*/function (_React$Component) {
       })), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Label, {
         style: {
           paddingRight: 5,
-          color: "white"
+          fontWeight: 700
         }
-      }, "Chart Type"))));
+      }, "Data Type"), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Control, {
+        defaultValue: this.props.requestParams.chartType,
+        as: "select",
+        onChange: function onChange(e) {
+          return _this.props.setRequestParams(_objectSpread(_objectSpread({}, _this.props.requestParams), {}, {
+            fi_type: e.target.value == "Frequent Itemsets" ? "frequent" : "hui"
+          }));
+        }
+      }, /*#__PURE__*/_react.default.createElement("option", null, "Frequent Itemsets"), /*#__PURE__*/_react.default.createElement("option", null, "High Utility Itemsets")))));
 
       return /*#__PURE__*/_react.default.createElement(_reactBootstrap.Navbar, {
         bg: "dark",
@@ -74591,7 +74621,7 @@ function VisParams(props) {
       style: {
         display: "grid",
         paddingLeft: 20,
-        gridTemplateColumns: "60px 120px 50px"
+        gridTemplateColumns: "90px 120px 50px"
       }
     }, /*#__PURE__*/_react.default.createElement("p", {
       style: {
@@ -74688,7 +74718,7 @@ function VisParams(props) {
       style: {
         display: "grid",
         paddingLeft: 20,
-        gridTemplateColumns: "60px 120px 50px"
+        gridTemplateColumns: "90px 120px 50px"
       }
     }, /*#__PURE__*/_react.default.createElement("p", {
       style: {
@@ -74778,7 +74808,7 @@ function VisParams(props) {
       style: {
         display: "grid",
         paddingLeft: 20,
-        gridTemplateColumns: "60px 120px 50px"
+        gridTemplateColumns: "90px 120px 50px"
       }
     }, /*#__PURE__*/_react.default.createElement("p", {
       style: {
@@ -74824,7 +74854,7 @@ function VisParams(props) {
         gridColumn: 1,
         fontSize: 12
       }
-    }, "Support"), /*#__PURE__*/_react.default.createElement("input", {
+    }, "Support/Utility"), /*#__PURE__*/_react.default.createElement("input", {
       style: {
         float: "left",
         marginTop: -25,
@@ -75032,6 +75062,10 @@ var ChartHierSingleHue = /*#__PURE__*/function (_React$Component) {
 
       if (request_params.majMinSel) {
         r_url = r_url + "&majmin_agg=" + request_params.majMinSel;
+      }
+
+      if (request_params.fi_type) {
+        r_url = r_url + "&fi_type=" + request_params.fi_type;
       }
 
       fetch(r_url, {
@@ -75487,6 +75521,10 @@ var ChartClust = /*#__PURE__*/function (_React$Component) {
 
       if (request_params.majMinSel) {
         r_url = r_url + "&majmin_agg=" + request_params.majMinSel;
+      }
+
+      if (request_params.fi_type) {
+        r_url = r_url + "&fi_type=" + request_params.fi_type;
       }
 
       fetch(r_url, {
@@ -76153,6 +76191,10 @@ var ChartParallelClust = /*#__PURE__*/function (_React$Component) {
         r_url = r_url + "&majmin_agg=" + request_params.majMinSel;
       }
 
+      if (request_params.fi_type) {
+        r_url = r_url + "&fi_type=" + request_params.fi_type;
+      }
+
       fetch(r_url, {
         mode: 'cors'
       }).then(function (r) {
@@ -76809,7 +76851,8 @@ var _default = function _default() {
     beta: 1,
     optType: null,
     cPath: false,
-    majMinSel: false
+    majMinSel: false,
+    fi_type: "frequent"
   }),
       _useState2 = (0, _slicedToArray2.default)(_useState, 2),
       requestParams = _useState2[0],

@@ -15,7 +15,7 @@ import { QueryTable } from "./queryTable";
 
 export default () => {
 
-  const [requestParams, setRequestParams] = useState({tag_val:["jazz"], tag_name:"genres",chartType:"Circular",focus:1,support:1,beta:1,optType:null,cPath:false,majMinSel:false})
+  const [requestParams, setRequestParams] = useState({tag_val:["jazz"], tag_name:"genres",chartType:"Circular",focus:1,support:1,beta:1,optType:null,cPath:false,majMinSel:false,fi_type:"frequent"})
   const [queryParams, setQueryParams] = useState({"chordSel":[]})
 
   const handleFilter = (e) => {

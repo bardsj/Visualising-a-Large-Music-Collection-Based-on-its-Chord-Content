@@ -105,8 +105,12 @@ def getData(request):
             # Parse into suitable format/data structure
             sets = []
             for d in data_mult:
-                for i,s in zip(d['itemsets']['items'].values(),d['itemsets']['supportPc'].values()):
-                    sets.append({"labels":i, "values":s,"tag":d['tag_params']['tag_val']})
+                if fi_type == 'frequent':
+                    for i,s in zip(d['itemsets']['items'].values(),d['itemsets']['supportPc'].values()):
+                        sets.append({"labels":i, "values":s,"tag":d['tag_params']['tag_val']})
+                else:
+                    for i in d['itemsets']:
+                        sets.append({"labels":i['itemset'], "values":i['minUtil'],"tag":d['tag_params']['tag_val']})
         except errors.PyMongoError as e:
             abort(500,description="Could not connect to the database - " + str(e))
     else:
@@ -127,7 +131,10 @@ def getData(request):
                 data = col_res.find_one({"tag_params":None,"majmin_agg":False,"fi_type":fi_type})
             if not data:
                 abort(404,description="Error retrieving data")
-            sets = [{"labels":l,"values":v,"tag":None} for l,v in zip(data['itemsets']['items'].values(),data['itemsets']['supportPc'].values())]
+            if fi_type == 'frequent':
+                sets = [{"labels":l,"values":v,"tag":None} for l,v in zip(data['itemsets']['items'].values(),data['itemsets']['supportPc'].values())]
+            else:
+                sets = [{"labels":i['itemset'],"values":i['minUtil'],"tag":None} for i in data['itemsets']]
         except errors.PyMongoError as e:
             abort(500,description="Could not connect to the database - " + str(e))
     

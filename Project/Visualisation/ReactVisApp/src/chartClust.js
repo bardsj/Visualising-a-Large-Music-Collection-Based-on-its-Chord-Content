@@ -24,6 +24,9 @@ export class ChartClust extends React.Component {
         if (request_params.majMinSel) {
             r_url = r_url + "&majmin_agg=" + request_params.majMinSel
         }
+        if (request_params.fi_type) {
+            r_url = r_url + "&fi_type=" + request_params.fi_type
+        }
         fetch(r_url, { mode: 'cors' })
             .then(r => r.json())
             .then(r => this.setState({ data: r, request_params: request_params }, () => { this.createChart() }))
