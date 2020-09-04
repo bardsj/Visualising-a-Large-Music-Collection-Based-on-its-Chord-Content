@@ -76,8 +76,8 @@ export class ChartParallel extends React.Component {
             const n_ax = d3.max(data.map(x => x.labels.length))
 
             // Filter out nodes from order that all not in filtered sets
-            const filtered_set = new Array(... new Set(data.flatMap(x => x['labels'])))
-            node_list = node_list.filter(x => filtered_set.includes(x))
+            //const filtered_set = new Array(... new Set(data.flatMap(x => x['labels'])))
+            //node_list = node_list.filter(x => filtered_set.includes(x))
 
             // Colour map
             const cmap = genreColormap(this.state.request_params.tag_val)

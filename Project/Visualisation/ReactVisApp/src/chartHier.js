@@ -74,8 +74,8 @@ export class ChartHier extends React.Component {
             const r = (height / 2) - height / 16;
 
             // Filter out nodes from order that all not in filtered sets
-            const filtered_set = new Array(... new Set(sets.flatMap(x => x['labels'])))
-            order = order.filter(x => filtered_set.includes(x))
+            //const filtered_set = new Array(... new Set(sets.flatMap(x => x['labels'])))
+            //order = order.filter(x => filtered_set.includes(x))
 
             // Calculate radial coordinate from ordered list of nodes
             const sc_radial = d3.scalePoint().domain(order).range([0, Math.PI * 2 - (Math.PI * 2 / order.length)])
