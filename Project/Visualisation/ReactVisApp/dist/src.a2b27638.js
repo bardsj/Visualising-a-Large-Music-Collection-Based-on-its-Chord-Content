@@ -74537,7 +74537,7 @@ var Options = /*#__PURE__*/function (_React$Component) {
           fontWeight: 700
         }
       }, "Data Type"), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Control, {
-        defaultValue: this.props.requestParams.chartType,
+        defaultValue: this.props.requestParams.fi_type == "frequent" ? "Frequent Itemsets" : "High Utility Itemsets",
         as: "select",
         onChange: function onChange(e) {
           return _this.props.setRequestParams(_objectSpread(_objectSpread({}, _this.props.requestParams), {}, {

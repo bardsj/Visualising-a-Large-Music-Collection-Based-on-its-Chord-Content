@@ -37,7 +37,7 @@ export class Options extends React.Component {
                             }
                         </Form.Group>
                         <Form.Label style={{ paddingRight: 5, fontWeight: 700 }}>Data Type</Form.Label>
-                        <Form.Control defaultValue={this.props.requestParams.chartType} as="select" onChange={(e) => this.props.setRequestParams({ ...this.props.requestParams, fi_type: e.target.value == "Frequent Itemsets" ? "frequent" : "hui" })}>
+                        <Form.Control defaultValue={this.props.requestParams.fi_type == "frequent" ? "Frequent Itemsets" : "High Utility Itemsets"} as="select" onChange={(e) => this.props.setRequestParams({ ...this.props.requestParams, fi_type: e.target.value == "Frequent Itemsets" ? "frequent" : "hui" })}>
                             <option>Frequent Itemsets</option>
                             <option>High Utility Itemsets</option>
                         </Form.Control>
