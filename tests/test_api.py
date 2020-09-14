@@ -26,3 +26,7 @@ class ApiTest(unittest.TestCase):
     def test_parallelClust_route(self):
         r = self.app.get("/parallelClust")
         self.assertEqual(r.status_code,200)
+
+    def test_query_data(self):
+        r = self.app.get("/queryData")
+        self.assertEqual(r.status_code,200)

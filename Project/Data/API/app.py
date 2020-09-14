@@ -341,19 +341,6 @@ def returnPrallelClust():
 import json
 
 
-@app.route('/parallelSeq',methods=['GET'])
-def returnDataParallelSeq():
-    """
-        API route - data for the parallel coordinates layout with sequential data
-    """
-
-    sets = getData(request)
-
-    # Remove singletons
-    sets = [s for s in sets if len(s['labels']) > 1]
-
-    return jsonify({"sets":sets,"order":default_order})
-
 @app.route('/queryData',methods=['GET'])
 def queryData():
     """
