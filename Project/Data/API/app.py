@@ -182,6 +182,10 @@ def returnDataParallel():
     sets = getData(request)
     # Get singletons
     single_sets = [s for s in sets if len(s['labels']) == 1]
+    # Add sets that aren't present as singletons to bottom of the list if 
+    # HUI mining selected as downward closure doesn't apply in the same way
+    missing = set(default_order).difference(*[x['labels'] for x in single_sets])
+    single_sets += [{'labels':[k],'values':0} for k in sorted(missing)]
     # Remove duplicates and keep the highest support val (duplicates occur when more than one genre is selected)
     max_vals = {}
     for s in single_sets:
