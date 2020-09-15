@@ -74621,7 +74621,7 @@ function VisParams(props) {
       style: {
         display: "grid",
         paddingLeft: 20,
-        gridTemplateColumns: "90px 120px 50px"
+        gridTemplateColumns: "50px 120px 50px"
       }
     }, /*#__PURE__*/_react.default.createElement("p", {
       style: {
@@ -74667,7 +74667,7 @@ function VisParams(props) {
         gridColumn: 1,
         fontSize: 12
       }
-    }, "Support"), /*#__PURE__*/_react.default.createElement("input", {
+    }, props.requestParams.fi_type == "hui" ? "Utility" : "Support"), /*#__PURE__*/_react.default.createElement("input", {
       style: {
         float: "left",
         marginTop: -25,
@@ -74718,7 +74718,7 @@ function VisParams(props) {
       style: {
         display: "grid",
         paddingLeft: 20,
-        gridTemplateColumns: "90px 120px 50px"
+        gridTemplateColumns: "50px 120px 50px"
       }
     }, /*#__PURE__*/_react.default.createElement("p", {
       style: {
@@ -74764,7 +74764,7 @@ function VisParams(props) {
         gridColumn: 1,
         fontSize: 12
       }
-    }, "Support"), /*#__PURE__*/_react.default.createElement("input", {
+    }, props.requestParams.fi_type == "hui" ? "Utility" : "Support"), /*#__PURE__*/_react.default.createElement("input", {
       style: {
         float: "left",
         marginTop: -25,
@@ -74808,7 +74808,7 @@ function VisParams(props) {
       style: {
         display: "grid",
         paddingLeft: 20,
-        gridTemplateColumns: "90px 120px 50px"
+        gridTemplateColumns: "50px 120px 50px"
       }
     }, /*#__PURE__*/_react.default.createElement("p", {
       style: {
@@ -74854,7 +74854,7 @@ function VisParams(props) {
         gridColumn: 1,
         fontSize: 12
       }
-    }, "Support/Utility"), /*#__PURE__*/_react.default.createElement("input", {
+    }, props.requestParams.fi_type == "hui" ? "Utility" : "Support"), /*#__PURE__*/_react.default.createElement("input", {
       style: {
         float: "left",
         marginTop: -25,
