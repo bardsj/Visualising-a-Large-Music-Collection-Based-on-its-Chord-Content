@@ -73495,7 +73495,7 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
           }).transition(0.1).attr("stroke", function (d) {
             return cmap[d.tag];
           }).attr("stroke-width", function (d) {
-            return Math.pow(d.values, 1.5) * 50;
+            return Math.pow(d.values, 1.5) * (_this3.state.request_params.fi_type == "hui" ? 150 : 50);
           }).attr("stroke-opacity", function (d) {
             return Math.pow(d.values / d3.max(sets.map(function (x) {
               return x.values;
