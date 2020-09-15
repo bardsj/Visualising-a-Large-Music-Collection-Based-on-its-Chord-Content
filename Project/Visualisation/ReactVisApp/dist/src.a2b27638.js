@@ -73473,7 +73473,7 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
         }).attr("stroke", function (d) {
           return cmap[d.tag];
         }).attr("fill", "none").attr("stroke-width", function (d) {
-          return Math.pow(d.values, 1.5) * 50;
+          return Math.pow(d.values, 1.5) * (_this3.state.request_params.fi_type == "hui" ? 150 : 50);
         }).attr("stroke-opacity", function (d) {
           return Math.pow(d.values / d3.max(sets.map(function (x) {
             return x.values;
@@ -73894,7 +73894,7 @@ var ChartParallel = /*#__PURE__*/function (_React$Component) {
         }).attr("fill", "none").attr("stroke", function (d) {
           return _this3.props.request_params.cPath ? d3.interpolateTurbo(node_cmap_sc(d.labels[d.ax].node)) : cmap[d.tag];
         }).attr("fill", "none").attr("stroke-width", function (d) {
-          return Math.pow(d.values, 1.5) * 50;
+          return Math.pow(d.values, 1.5) * (_this3.state.request_params.fi_type == "hui" ? 150 : 50);
         }).attr("stroke-opacity", function (d) {
           return Math.pow(d.values / d3.max(data.map(function (x) {
             return x.values;
@@ -73923,7 +73923,7 @@ var ChartParallel = /*#__PURE__*/function (_React$Component) {
           }).transition(0.1).attr("stroke", function (d) {
             return _this3.props.request_params.cPath ? d3.interpolateTurbo(node_cmap_sc(d.labels[d.ax].node)) : cmap[d.tag];
           }).attr("stroke-width", function (d) {
-            return Math.pow(d.values, 1.5) * 50;
+            return Math.pow(d.values, 1.5) * (_this3.state.request_params.fi_type == "hui" ? 150 : 50);
           }).attr("stroke-opacity", function (d) {
             return Math.pow(d.values / d3.max(data.map(function (x) {
               return x.values;
@@ -74324,7 +74324,7 @@ var ChartHier = /*#__PURE__*/function (_React$Component) {
         }).attr("stroke", function (d) {
           return cmap[d.tag];
         }).attr("fill", "none").attr("stroke-width", function (d) {
-          return Math.pow(d.values, 1.5) * 50;
+          return Math.pow(d.values, 1.5) * (_this3.state.request_params.fi_type == "hui" ? 150 : 50);
         }).attr("stroke-opacity", function (d) {
           return Math.pow(d.values / d3.max(sets.map(function (x) {
             return x.values;
@@ -74346,7 +74346,7 @@ var ChartHier = /*#__PURE__*/function (_React$Component) {
           }).transition(0.1).attr("stroke", function (d) {
             return cmap[d.tag];
           }).attr("stroke-width", function (d) {
-            return Math.pow(d.values, 1.5) * 50;
+            return Math.pow(d.values, 1.5) * (_this3.state.request_params.fi_type == "hui" ? 150 : 50);
           }).attr("stroke-opacity", function (d) {
             return Math.pow(d.values / d3.max(sets.map(function (x) {
               return x.values;
@@ -75283,7 +75283,7 @@ var ChartHierSingleHue = /*#__PURE__*/function (_React$Component) {
         }).attr("stroke", function (d) {
           return scColor(d.values);
         }).attr("fill", "none").attr("stroke-width", function (d) {
-          return Math.pow(d.values, 1.5) * 50;
+          return Math.pow(d.values, 1.5) * (_this3.state.request_params.fi_type == "hui" ? 150 : 50);
         }).attr("stroke-opacity", function (d) {
           return Math.pow(d.values / d3.max(sets.map(function (x) {
             return x.values;
@@ -75305,7 +75305,7 @@ var ChartHierSingleHue = /*#__PURE__*/function (_React$Component) {
           }).transition(0.1).attr("stroke", function (d) {
             return scColor(d.values);
           }).attr("stroke-width", function (d) {
-            return Math.pow(d.values, 1.5) * 50;
+            return Math.pow(d.values, 1.5) * (_this3.state.request_params.fi_type == "hui" ? 150 : 50);
           }).attr("stroke-opacity", function (d) {
             return Math.pow(d.values / d3.max(sets.map(function (x) {
               return x.values;
@@ -75955,7 +75955,7 @@ var ChartClust = /*#__PURE__*/function (_React$Component) {
           return cmap[d.tag];
         }) //.attr("stroke", d => d.km_label == 2 ? "red" : cmap[d.tag])
         .attr("fill", "none").attr("stroke-width", function (d) {
-          return Math.pow(d.values, 1.5) * 50;
+          return Math.pow(d.values, 1.5) * (_this3.state.request_params.fi_type == "hui" ? 150 : 50);
         }).attr("stroke-opacity", function (d) {
           return Math.pow(d.values / d3.max(sets.map(function (x) {
             return x.values;
@@ -75967,7 +75967,7 @@ var ChartClust = /*#__PURE__*/function (_React$Component) {
           return cmap[d.tag];
         }) //.attr("stroke", d => d.km_label == 2 ? "red" : cmap[d.tag])
         .attr("fill", "none").attr("stroke-width", function (d) {
-          return Math.pow(d.values, 1.5) * 50;
+          return Math.pow(d.values, 1.5) * (_this3.state.request_params.fi_type == "hui" ? 150 : 50);
         }).attr("stroke-opacity", function (d) {
           return Math.pow(d.values / d3.max(sets.map(function (x) {
             return x.values;
@@ -75979,7 +75979,7 @@ var ChartClust = /*#__PURE__*/function (_React$Component) {
           return cmap[d.tag];
         }) //.attr("stroke", d => d.km_label == 2 ? "red" : cmap[d.tag])
         .attr("fill", "none").attr("stroke-width", function (d) {
-          return Math.pow(d.values, 1.5) * 50;
+          return Math.pow(d.values, 1.5) * (_this3.state.request_params.fi_type == "hui" ? 150 : 50);
         }).attr("stroke-opacity", function (d) {
           return Math.pow(d.values / d3.max(sets.map(function (x) {
             return x.values;
@@ -76001,7 +76001,7 @@ var ChartClust = /*#__PURE__*/function (_React$Component) {
           }).transition(0.1).attr("stroke", function (d) {
             return cmap[d.tag];
           }).attr("stroke-width", function (d) {
-            return Math.pow(d.values, 1.5) * 50;
+            return Math.pow(d.values, 1.5) * (_this3.state.request_params.fi_type == "hui" ? 150 : 50);
           }).attr("stroke-opacity", function (d) {
             return Math.pow(d.values / d3.max(sets.map(function (x) {
               return x.values;
@@ -76480,7 +76480,7 @@ var ChartParallelClust = /*#__PURE__*/function (_React$Component) {
         }).attr("fill", "none").attr("stroke", function (d) {
           return _this3.props.request_params.cPath ? d3.interpolateTurbo(node_cmap_sc(d.labels[d.ax].node)) : cmap[d.tag];
         }).attr("fill", "none").attr("stroke-width", function (d) {
-          return Math.pow(d.values, 1.5) * 50;
+          return Math.pow(d.values, 1.5) * (_this3.state.request_params.fi_type == "hui" ? 150 : 50);
         }).attr("stroke-opacity", function (d) {
           return Math.pow(d.values / d3.max(data.map(function (x) {
             return x.values;
@@ -76509,7 +76509,7 @@ var ChartParallelClust = /*#__PURE__*/function (_React$Component) {
           }).transition(0.1).attr("stroke", function (d) {
             return _this3.props.request_params.cPath ? d3.interpolateTurbo(node_cmap_sc(d.labels[d.ax].node)) : cmap[d.tag];
           }).attr("stroke-width", function (d) {
-            return Math.pow(d.values, 1.5) * 50;
+            return Math.pow(d.values, 1.5) * (_this3.state.request_params.fi_type == "hui" ? 150 : 50);
           }).attr("stroke-opacity", function (d) {
             return Math.pow(d.values / d3.max(data.map(function (x) {
               return x.values;
@@ -77050,7 +77050,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62009" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61308" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

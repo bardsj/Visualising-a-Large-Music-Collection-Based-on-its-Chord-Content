@@ -219,7 +219,7 @@ export class ChartHier extends React.Component {
                 node2point(d.labels[1])]))
                 .attr("stroke", d => cmap[d.tag])
                 .attr("fill", "none")
-                .attr("stroke-width", d => d.values ** 1.5 * 50)
+                .attr("stroke-width", d => d.values ** 1.5 * (this.state.request_params.fi_type == "hui" ? 150 : 50))
                 .attr("stroke-opacity", d => (d.values / d3.max(sets.map(x => x.values))) ** this.props.request_params.focus)
 
             nodes_group.on("mouseenter", (sel) => {
@@ -238,7 +238,7 @@ export class ChartHier extends React.Component {
                     .filter(d => d.labels.includes(sel.label))
                     .transition(0.1)
                     .attr("stroke", d => cmap[d.tag])
-                    .attr("stroke-width", d => d.values ** 1.5 * 50)
+                    .attr("stroke-width", d => d.values ** 1.5 * (this.state.request_params.fi_type == "hui" ? 150 : 50))
                     .attr("stroke-opacity", d => (d.values / d3.max(sets.map(x => x.values))) ** this.props.request_params.focus)
                 nodes_group.raise()
             })

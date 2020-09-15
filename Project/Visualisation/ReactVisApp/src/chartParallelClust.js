@@ -218,7 +218,7 @@ export class ChartParallelClust extends React.Component {
                 .attr("fill", "none")
                 .attr("stroke", d => this.props.request_params.cPath ? d3.interpolateTurbo(node_cmap_sc(d.labels[d.ax].node)) : cmap[d.tag])
                 .attr("fill", "none")
-                .attr("stroke-width", d => d.values ** 1.5 * 50)
+                .attr("stroke-width", d => d.values ** 1.5 * (this.state.request_params.fi_type == "hui" ? 150 : 50))
                 .attr("stroke-opacity", d => (d.values / d3.max(data.map(x => x.values))) ** this.props.request_params.focus)
 
 
@@ -252,7 +252,7 @@ export class ChartParallelClust extends React.Component {
                     .filter(d => d.labels[sel.ax] ? d.labels[sel.ax].node === sel.node : null)
                     .transition(0.1)
                     .attr("stroke", d => this.props.request_params.cPath ? d3.interpolateTurbo(node_cmap_sc(d.labels[d.ax].node)) : cmap[d.tag])
-                    .attr("stroke-width", d => d.values ** 1.5 * 50)
+                    .attr("stroke-width", d => d.values ** 1.5 * (this.state.request_params.fi_type == "hui" ? 150 : 50))
                     .attr("stroke-opacity", d => (d.values / d3.max(data.map(x => x.values))) ** this.props.request_params.focus)
             })
 
