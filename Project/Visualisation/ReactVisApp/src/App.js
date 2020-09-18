@@ -43,6 +43,9 @@ export default () => {
     if (e == "Root Node Order") {
       setRequestParams({...requestParams,optType:null})
     }
+    if (e == "Order by Support") {
+      setRequestParams({...requestParams,optType:"sorder"})
+    }
   }
  
   let chart = ""

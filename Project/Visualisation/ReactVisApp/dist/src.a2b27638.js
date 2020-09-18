@@ -74720,7 +74720,20 @@ function VisParams(props) {
         paddingLeft: 20,
         gridTemplateColumns: "50px 120px 50px"
       }
-    }, /*#__PURE__*/_react.default.createElement("p", {
+    }, /*#__PURE__*/_react.default.createElement("div", {
+      style: {
+        paddingLeft: 20,
+        paddingBottom: 5,
+        width: "200px"
+      }
+    }, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Group, {
+      onChange: function onChange(e) {
+        return props.handleOptType(e.target.value);
+      }
+    }, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Control, {
+      size: "sm",
+      as: "select"
+    }, /*#__PURE__*/_react.default.createElement("option", null, "Root Node Order"), /*#__PURE__*/_react.default.createElement("option", null, "Order by Support")))), /*#__PURE__*/_react.default.createElement("p", {
       style: {
         float: "left",
         paddingRight: 10,
@@ -76907,6 +76920,12 @@ var _default = function _default() {
         optType: null
       }));
     }
+
+    if (e == "Order by Support") {
+      setRequestParams(_objectSpread(_objectSpread({}, requestParams), {}, {
+        optType: "sorder"
+      }));
+    }
   };
 
   var chart = "";
@@ -77050,7 +77069,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61308" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57415" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

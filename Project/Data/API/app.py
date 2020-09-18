@@ -195,8 +195,11 @@ def returnDataParallel():
             if s['values'] > max_vals[s['labels'][0]]:
                 max_vals[s['labels'][0]] = s['values']
 
-    # Sort singletons by support to get order
-    order = [s for s in sorted(max_vals,key=lambda s: s[1],reverse=True)]
+    order = default_order
+    if 'order_opt' in request.args:
+        if request.args['order_opt'] == 'sorder':
+            # Sort singletons by support to get order
+            order = [s for s in sorted(max_vals,key=lambda s: s[1],reverse=True)]
     #order = list(chain(*order))
     # Remove singletons from sets
     sets = [s for s in sets if len(s['labels']) > 1]
