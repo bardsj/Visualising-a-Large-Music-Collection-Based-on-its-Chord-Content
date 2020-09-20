@@ -210,6 +210,13 @@ class AVSDF(OptimiserBase):
                     if av not in self.order:
                         #stack.insert(0,av)
                         stack.append(av)
+                    
+                if len(stack) == 0 and len(self.order) != len(self.nodes):
+                    for n in self.nodes[np.argsort(self.nodes_degree)[::]]:
+                        if n not in self.order:
+                            stack.append(n)
+                            break
+
 
         if self.local_adjusting:
             self._local_adjusting()

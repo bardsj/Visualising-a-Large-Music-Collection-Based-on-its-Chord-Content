@@ -34,6 +34,9 @@ export default () => {
   }
 
   const handleOptType = (e) => {
+    if (e == "AVSDF (w/ Local Adjusting)") {
+      setRequestParams({...requestParams,optType:"avsdf_la"})
+    }
     if (e == "AVSDF") {
       setRequestParams({...requestParams,optType:"avsdf"})
     }

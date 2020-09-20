@@ -58,6 +58,7 @@ export function VisParams(props) {
                         <Form.Control size="sm" as="select">
                             <option>Root Node Order</option>
                             <option>AVSDF</option>
+                            <option>AVSDF (w/ Local Adjusting)</option>
                             <option>Baur Brandes</option>
                         </Form.Control>
                     </Form.Group>

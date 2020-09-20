@@ -156,6 +156,8 @@ def returnDataCirc():
     if "order_opt" in request.args:
         if request.args['order_opt'] == "avsdf":
             order = AVSDF([s['labels'] for s in sets],local_adjusting=False).run_AVSDF()
+        elif request.args['order_opt'] == "avsdf_la":
+            order = AVSDF([s['labels'] for s in sets],local_adjusting=True).run_AVSDF()
         elif request.args['order_opt'] == "bb":
             order = BaurBrandes([s['labels'] for s in sets]).run_bb()
         else:
@@ -251,6 +253,8 @@ def returnCircClust():
     if "order_opt" in request.args:
         if request.args['order_opt'] == "avsdf":
             order = AVSDF([s['labels'] for s in sets],local_adjusting=False).run_AVSDF()
+        elif request.args['order_opt'] == "avsdf_la":
+            order = AVSDF([s['labels'] for s in sets],local_adjusting=True).run_AVSDF()
         elif request.args['order_opt'] == "bb":
             order = BaurBrandes([s['labels'] for s in sets]).run_bb()
         else:

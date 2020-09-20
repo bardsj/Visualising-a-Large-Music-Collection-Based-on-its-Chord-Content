@@ -74817,7 +74817,7 @@ function VisParams(props) {
     }, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Control, {
       size: "sm",
       as: "select"
-    }, /*#__PURE__*/_react.default.createElement("option", null, "Root Node Order"), /*#__PURE__*/_react.default.createElement("option", null, "AVSDF"), /*#__PURE__*/_react.default.createElement("option", null, "Baur Brandes")))), /*#__PURE__*/_react.default.createElement("div", {
+    }, /*#__PURE__*/_react.default.createElement("option", null, "Root Node Order"), /*#__PURE__*/_react.default.createElement("option", null, "AVSDF"), /*#__PURE__*/_react.default.createElement("option", null, "AVSDF (w/ Local Adjusting)"), /*#__PURE__*/_react.default.createElement("option", null, "Baur Brandes")))), /*#__PURE__*/_react.default.createElement("div", {
       style: {
         display: "grid",
         paddingLeft: 20,
@@ -76903,6 +76903,12 @@ var _default = function _default() {
   };
 
   var handleOptType = function handleOptType(e) {
+    if (e == "AVSDF (w/ Local Adjusting)") {
+      setRequestParams(_objectSpread(_objectSpread({}, requestParams), {}, {
+        optType: "avsdf_la"
+      }));
+    }
+
     if (e == "AVSDF") {
       setRequestParams(_objectSpread(_objectSpread({}, requestParams), {}, {
         optType: "avsdf"
@@ -77069,7 +77075,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57415" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53771" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
