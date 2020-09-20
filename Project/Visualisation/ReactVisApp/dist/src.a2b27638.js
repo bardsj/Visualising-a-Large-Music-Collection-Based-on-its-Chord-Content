@@ -73520,7 +73520,11 @@ var ChartCircular = /*#__PURE__*/function (_React$Component) {
 
         _this3.setState({
           sets: sets
-        });
+        }); // Report density and edge nums
+
+
+        var density = sets.length / (order.length * (order.length - 1) / 2);
+        console.log("Density: " + density + ", num edges: " + sets.length);
       };
 
       for (var tag_ix = 0; tag_ix < genres_tmp.length; tag_ix++) {

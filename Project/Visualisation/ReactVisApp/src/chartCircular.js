@@ -233,6 +233,10 @@ export class ChartCircular extends React.Component {
 
             nodes_group.raise()
             this.setState({ sets: sets })
+
+            // Report density and edge nums
+            const density = sets.length/(order.length*(order.length-1)/2)
+            console.log("Density: "+density+", num edges: "+sets.length)
         }
     }
 
