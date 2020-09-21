@@ -151,7 +151,7 @@ export class ChartHier extends React.Component {
                     }
                 }
                 else {
-                    if (order.slice(0, 2) in i_nodes) {
+                    if (order[i].slice(0, 2) in i_nodes) {
                         i_nodes[order[i].slice(0, 2)].push(sc_radial(order[i]))
                     }
                     else {
@@ -160,12 +160,25 @@ export class ChartHier extends React.Component {
                 }
             }
 
+
             // Calculate mean angle for each root note
             let root_nodes = {}
             for (const [key, value] of Object.entries(i_nodes)) {
                 const mean_angle = Math.atan2(d3.sum(value.map(Math.sin)) / value.length, d3.sum(value.map(Math.cos)) / value.length)
                 root_nodes[key] = { x: r * Math.sin(mean_angle), y: r * Math.cos(mean_angle) }
             }
+
+            // Show control points
+            /*
+            svg.selectAll("circle")
+                .data(Object.entries(root_nodes).map(x=>x[1]))
+                .enter()
+                .append("circle")
+                .attr("cy",d=>centre.y - (d.y/1.4))
+                .attr("cx",d=>centre.x + (d.x/1.4))
+                .attr("r", 5)
+                .attr("fill","red")
+            */
 
             // Append node groups
             const nodes_group = svg.selectAll("g")

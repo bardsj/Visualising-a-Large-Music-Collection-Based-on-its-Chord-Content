@@ -60,11 +60,29 @@ for x in time_ind:
     time_res_la = time.time()-st_2
     cross_la = av_la._count_all_crossings(av_la.order,av_la.edge_list)
 
+    # No local adjusting
+    st_3 = time.time()
+    bb_nola = BaurBrandes(np.array(doubletons)[sample])
+    bb_nola.run_bb()
+    time_res_no_la_bb = time.time()-st_3
+    cross_nola_bb = bb_nola._count_all_crossings(bb_nola.order,bb_nola.edge_list)
+
+    # w/ local adjusting
+    st_4 = time.time()
+    bb_la = BaurBrandes(np.array(doubletons)[sample],local_adjusting=True)
+    bb_la.run_bb()
+    time_res_la_bb = time.time()-st_4
+    cross_la_bb = bb_la._count_all_crossings(bb_la.order,bb_la.edge_list)
+
     res.append({
-        "time_no_la":time_res_no_la,
-        "time_la":time_res_la,
-        "cross_nola":cross_nola,
-        "cross_la":cross_la,
+        "avsdf_time_no_la":time_res_no_la,
+        "avsdf_time_la":time_res_la,
+        "avsdf_cross_nola":cross_nola,
+        "avsdf_cross_la":cross_la,
+        "bb_time_no_la":time_res_no_la_bb,
+        "bb_time_la":time_res_la_bb,
+        "bb_cross_nola":cross_nola_bb,
+        "bb_cross_la":cross_la_bb,
         "cross_default":default_cross,
         "n":x
     })
@@ -78,22 +96,31 @@ with open("Project/Data/Optimisation/avsdf_results.json","r") as filename:
     data = json.load(filename)
 
 n = [x['n'] for x in data]
-time_no_la = [x['time_no_la'] for x in data]
-time_la = [x['time_la'] for x in data]
-cross_nola = [x['cross_nola'] for x in data]
-cross_la = [x['cross_la'] for x in data]
+avsdf_time_no_la = [x['avsdf_time_no_la'] for x in data]
+avsdf_time_la = [x['avsdf_time_la'] for x in data]
+avsdf_cross_nola = [x['avsdf_cross_nola'] for x in data]
+avsdf_cross_la = [x['avsdf_cross_la'] for x in data]
+bb_time_no_la = [x['bb_time_no_la'] for x in data]
+bb_time_la = [x['bb_time_la'] for x in data]
+bb_cross_nola = [x['bb_cross_nola'] for x in data]
+bb_cross_la = [x['bb_cross_la'] for x in data]
 default_cross = [x['cross_default'] for x in data]
 
-plt.scatter(n,time_no_la,marker='s',label='AVSDF')
-plt.scatter(n,time_la,marker='x',label='AVSDF (with local adjusting)')
+plt.figure(figsize=(7,5))
+plt.scatter(n,avsdf_time_no_la,marker='s',label='AVSDF')
+plt.scatter(n,avsdf_time_la,marker='x',label='AVSDF (with local adjusting)')
+plt.scatter(n,bb_time_no_la,marker='^',label='Baur Brandes')
+plt.scatter(n,bb_time_la,marker='D',label='Baur Brandes (with local adjusting)')
 plt.xlabel("Number of graph edges")
 plt.ylabel("Calculation time (seconds)")
 plt.legend()
 plt.show()
 
-
-plt.scatter(n,cross_nola,marker='s',label='AVSDF')
-plt.scatter(n,cross_la,marker='x',label='AVSDF (with local adjusting)')
+plt.figure(figsize=(7,5))
+plt.scatter(n,avsdf_cross_nola,marker='s',label='AVSDF')
+plt.scatter(n,avsdf_cross_la,marker='x',label='AVSDF (with local adjusting)')
+plt.scatter(n,bb_cross_nola,marker='+',label='Baur Brandes')
+plt.scatter(n,bb_cross_la,marker='D',label='Baur Brandes (with local adjusting)')
 plt.scatter(n,default_cross,marker='o',label='Root node ordering')
 plt.xlabel("Number of graph edges")
 plt.ylabel("Total number of edge crossings")

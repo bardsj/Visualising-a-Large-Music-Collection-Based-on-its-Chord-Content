@@ -84,12 +84,47 @@ class OptimiserBase:
                 edge_mat[j] = 1
         # Return sum of crossings
         return edge_mat.sum()
+    
+    def _local_adjusting(self):
+        """
+            Run local adjusting algorithm
+        """
+        crossNo = []
+        # For every vertex calculate the crossings on edges incident to them
+        incident_crossings = []
+        for node in self.nodes:
+            sum_incident_crossings = sum([self._count_crossings_edge(self.order,self.edge_list,e) for e in filter(lambda x: node in x,self.edge_list)])
+            incident_crossings.append([node,sum_incident_crossings])
+        # Sort the vertices according to descending number of crossings. Let variable, currentV,
+        # point to the vertex whose incident edges have the largest number of crossings.
+        vertices_desc_crossings = [x[0] for x in sorted(incident_crossings,key=lambda x: x[1],reverse=True)]
+        # for (all vertices) do
+        for currentV in vertices_desc_crossings:
+            # Get current number of crossings
+            cross_no = self._count_all_crossings(self.order,self.edge_list)
+            old_ix_edge_cross_no = sum([self._count_crossings_edge(self.order,self.edge_list,v) for v in self._adjacent_edges(currentV)])
+            # Index of current v in order
+            ix_old = self.order.index(currentV)
+            # Get the positions of adjacent vertices of currentV into pList array.
+            pList = self._adjacent_vertices(currentV)  
+            opt_order = self.order.copy()     
+            for p in pList:
+                temp_order = self.order.copy()
+                ix_new = self.order.index(p)
+                temp_order[ix_new] = currentV
+                temp_order[ix_old] = p
+                new_ix_edge_cross_no = sum([self._count_crossings_edge(temp_order,self.edge_list,v) for v in self._adjacent_edges(currentV)])
+                if (cross_no - old_ix_edge_cross_no + new_ix_edge_cross_no) < cross_no:
+                    opt_order = temp_order.copy()
+            
+            self.order = opt_order.copy()
 
 
 class BaurBrandes(OptimiserBase):
 
-    def __init__(self,edge_list):
+    def __init__(self,edge_list,local_adjusting=False):
         super().__init__(edge_list)
+        self.local_adjusting = local_adjusting
 
     def run_bb(self):
         while len(self.order) < len(self.nodes):
@@ -130,6 +165,8 @@ class BaurBrandes(OptimiserBase):
                 else:
                     self.order.insert(0,place_p)
 
+        if self.local_adjusting:
+            self._local_adjusting()
 
         return(self.order)
 
@@ -143,42 +180,7 @@ class AVSDF(OptimiserBase):
 
     def __init__(self,edge_list,local_adjusting=False):
         super().__init__(edge_list)
-        self.local_adjusting = local_adjusting
-
-    def _local_adjusting(self):
-        """
-            Run local adjusting algorithm
-        """
-        crossNo = []
-        # For every vertex calculate the crossings on edges incident to them
-        incident_crossings = []
-        for node in self.nodes:
-            sum_incident_crossings = sum([self._count_crossings_edge(self.order,self.edge_list,e) for e in filter(lambda x: node in x,self.edge_list)])
-            incident_crossings.append([node,sum_incident_crossings])
-        # Sort the vertices according to descending number of crossings. Let variable, currentV,
-        # point to the vertex whose incident edges have the largest number of crossings.
-        vertices_desc_crossings = [x[0] for x in sorted(incident_crossings,key=lambda x: x[1],reverse=True)]
-        # for (all vertices) do
-        for currentV in vertices_desc_crossings:
-            # Get current number of crossings
-            cross_no = self._count_all_crossings(self.order,self.edge_list)
-            old_ix_edge_cross_no = sum([self._count_crossings_edge(self.order,self.edge_list,v) for v in self._adjacent_edges(currentV)])
-            # Index of current v in order
-            ix_old = self.order.index(currentV)
-            # Get the positions of adjacent vertices of currentV into pList array.
-            pList = self._adjacent_vertices(currentV)  
-            opt_order = self.order.copy()     
-            for p in pList:
-                temp_order = self.order.copy()
-                ix_new = self.order.index(p)
-                temp_order[ix_new] = currentV
-                temp_order[ix_old] = p
-                new_ix_edge_cross_no = sum([self._count_crossings_edge(temp_order,self.edge_list,v) for v in self._adjacent_edges(currentV)])
-                if (cross_no - old_ix_edge_cross_no + new_ix_edge_cross_no) < cross_no:
-                    opt_order = temp_order.copy()
-            
-            self.order = opt_order.copy()
-                
+        self.local_adjusting = local_adjusting              
 
 
     def run_AVSDF(self):
@@ -211,12 +213,12 @@ class AVSDF(OptimiserBase):
                         #stack.insert(0,av)
                         stack.append(av)
                     
-                if len(stack) == 0 and len(self.order) != len(self.nodes):
-                    for n in self.nodes[np.argsort(self.nodes_degree)[::]]:
-                        if n not in self.order:
-                            stack.append(n)
-                            break
-
+            if len(stack) == 0 and (len(self.order) != len(self.nodes)):
+                for n in self.nodes[np.argsort(self.nodes_degree)[::]]:
+                    if n not in self.order:
+                        stack.append(n)
+                        break
+        
 
         if self.local_adjusting:
             self._local_adjusting()

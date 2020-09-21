@@ -151,7 +151,7 @@ export class ChartHierSingleHue extends React.Component {
                     }
                 }
                 else {
-                    if (order.slice(0, 2) in i_nodes) {
+                    if (order[i].slice(0, 2) in i_nodes) {
                         i_nodes[order[i].slice(0, 2)].push(sc_radial(order[i]))
                     }
                     else {

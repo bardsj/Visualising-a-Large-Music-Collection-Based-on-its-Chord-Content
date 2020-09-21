@@ -60,6 +60,7 @@ export function VisParams(props) {
                             <option>AVSDF</option>
                             <option>AVSDF (w/ Local Adjusting)</option>
                             <option>Baur Brandes</option>
+                            <option>Baur Brandes (w/ Local Adjusting)</option>
                         </Form.Control>
                     </Form.Group>
                 </div>

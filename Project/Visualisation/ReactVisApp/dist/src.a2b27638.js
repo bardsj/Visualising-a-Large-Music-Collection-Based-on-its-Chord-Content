@@ -74265,7 +74265,7 @@ var ChartHier = /*#__PURE__*/function (_React$Component) {
               i_nodes[order[_i2][0]] = [sc_radial(order[_i2])];
             }
           } else {
-            if (order.slice(0, 2) in i_nodes) {
+            if (order[_i2].slice(0, 2) in i_nodes) {
               i_nodes[order[_i2].slice(0, 2)].push(sc_radial(order[_i2]));
             } else {
               i_nodes[order[_i2].slice(0, 2)] = [sc_radial(order[_i2])];
@@ -74286,7 +74286,19 @@ var ChartHier = /*#__PURE__*/function (_React$Component) {
             x: r * Math.sin(mean_angle),
             y: r * Math.cos(mean_angle)
           };
-        } // Append node groups
+        } // Show control points
+
+        /*
+        svg.selectAll("circle")
+            .data(Object.entries(root_nodes).map(x=>x[1]))
+            .enter()
+            .append("circle")
+            .attr("cy",d=>centre.y - (d.y/1.4))
+            .attr("cx",d=>centre.x + (d.x/1.4))
+            .attr("r", 5)
+            .attr("fill","red")
+        */
+        // Append node groups
 
 
         var nodes_group = svg.selectAll("g").data(node_points).enter().append("g").attr("transform", function (d) {
@@ -74821,7 +74833,7 @@ function VisParams(props) {
     }, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Control, {
       size: "sm",
       as: "select"
-    }, /*#__PURE__*/_react.default.createElement("option", null, "Root Node Order"), /*#__PURE__*/_react.default.createElement("option", null, "AVSDF"), /*#__PURE__*/_react.default.createElement("option", null, "AVSDF (w/ Local Adjusting)"), /*#__PURE__*/_react.default.createElement("option", null, "Baur Brandes")))), /*#__PURE__*/_react.default.createElement("div", {
+    }, /*#__PURE__*/_react.default.createElement("option", null, "Root Node Order"), /*#__PURE__*/_react.default.createElement("option", null, "AVSDF"), /*#__PURE__*/_react.default.createElement("option", null, "AVSDF (w/ Local Adjusting)"), /*#__PURE__*/_react.default.createElement("option", null, "Baur Brandes"), /*#__PURE__*/_react.default.createElement("option", null, "Baur Brandes (w/ Local Adjusting)")))), /*#__PURE__*/_react.default.createElement("div", {
       style: {
         display: "grid",
         paddingLeft: 20,
@@ -75237,7 +75249,7 @@ var ChartHierSingleHue = /*#__PURE__*/function (_React$Component) {
               i_nodes[order[_i2][0]] = [sc_radial(order[_i2])];
             }
           } else {
-            if (order.slice(0, 2) in i_nodes) {
+            if (order[_i2].slice(0, 2) in i_nodes) {
               i_nodes[order[_i2].slice(0, 2)].push(sc_radial(order[_i2]));
             } else {
               i_nodes[order[_i2].slice(0, 2)] = [sc_radial(order[_i2])];
@@ -76925,6 +76937,12 @@ var _default = function _default() {
       }));
     }
 
+    if (e == "Baur Brandes (w/ Local Adjusting)") {
+      setRequestParams(_objectSpread(_objectSpread({}, requestParams), {}, {
+        optType: "bb_la"
+      }));
+    }
+
     if (e == "Root Node Order") {
       setRequestParams(_objectSpread(_objectSpread({}, requestParams), {}, {
         optType: null
@@ -77079,7 +77097,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53771" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "65152" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

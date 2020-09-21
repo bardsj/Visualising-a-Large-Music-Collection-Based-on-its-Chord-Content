@@ -43,6 +43,9 @@ export default () => {
     if (e == "Baur Brandes") {
       setRequestParams({...requestParams,optType:"bb"})
     }
+    if (e == "Baur Brandes (w/ Local Adjusting)") {
+      setRequestParams({...requestParams,optType:"bb_la"})
+    }
     if (e == "Root Node Order") {
       setRequestParams({...requestParams,optType:null})
     }

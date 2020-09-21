@@ -159,7 +159,9 @@ def returnDataCirc():
         elif request.args['order_opt'] == "avsdf_la":
             order = AVSDF([s['labels'] for s in sets],local_adjusting=True).run_AVSDF()
         elif request.args['order_opt'] == "bb":
-            order = BaurBrandes([s['labels'] for s in sets]).run_bb()
+            order = BaurBrandes([s['labels'] for s in sets],local_adjusting=False).run_bb()
+        elif request.args['order_opt'] == "bb_la":
+            order = BaurBrandes([s['labels'] for s in sets],local_adjusting=True).run_bb()
         else:
             abort(500,description="Optimisation type not recognised")
     else:
@@ -202,6 +204,9 @@ def returnDataParallel():
         if request.args['order_opt'] == 'sorder':
             # Sort singletons by support to get order
             order = [s for s in sorted(max_vals,key=lambda s: s[1],reverse=True)]
+    if 'majmin_agg' in request.args and order == default_order:
+        if request.args['majmin_agg']:
+            order = default_order_agg
     #order = list(chain(*order))
     # Remove singletons from sets
     sets = [s for s in sets if len(s['labels']) > 1]
@@ -256,7 +261,9 @@ def returnCircClust():
         elif request.args['order_opt'] == "avsdf_la":
             order = AVSDF([s['labels'] for s in sets],local_adjusting=True).run_AVSDF()
         elif request.args['order_opt'] == "bb":
-            order = BaurBrandes([s['labels'] for s in sets]).run_bb()
+            order = BaurBrandes([s['labels'] for s in sets],local_adjusting=False).run_bb()
+        elif request.args['order_opt'] == "bb_la":
+            order = BaurBrandes([s['labels'] for s in sets],local_adjusting=True).run_bb()
         else:
             abort(500,description="Optimisation type not recognised")
     else:
@@ -309,15 +316,31 @@ def returnPrallelClust():
 
     # Get data from db
     sets = getData(request)
+        # Get singletons
+    single_sets = [s for s in sets if len(s['labels']) == 1]
+    # Add sets that aren't present as singletons to bottom of the list if 
+    # HUI mining selected as downward closure doesn't apply in the same way
+    missing = set(default_order).difference(*[x['labels'] for x in single_sets])
+    single_sets += [{'labels':[k],'values':0} for k in sorted(missing)]
+    # Remove duplicates and keep the highest support val (duplicates occur when more than one genre is selected)
+    max_vals = {}
+    for s in single_sets:
+        if s['labels'][0] not in max_vals.keys():
+            max_vals[s['labels'][0]] = s['values']
+        else:
+            if s['values'] > max_vals[s['labels'][0]]:
+                max_vals[s['labels'][0]] = s['values']
+
+    order = default_order
+    if 'order_opt' in request.args:
+        if request.args['order_opt'] == 'sorder':
+            # Sort singletons by support to get order
+            order = [s for s in sorted(max_vals,key=lambda s: s[1],reverse=True)]
     # Filter for doubletons
     sets = [s for s in sets if len(s['labels']) > 1]
-    if 'majmin_agg' in request.args:
+    if 'majmin_agg' in request.args and order == default_order:
         if request.args['majmin_agg']:
             order = default_order_agg
-        else:
-            order = default_order
-    else:
-        order = default_order
 
     # Map vertex labels to order index
     order_map = {k:i for i,k in enumerate(order)}
