@@ -240,6 +240,7 @@ def returnDataHier():
 
     return jsonify({"sets":sets,"order":order})
 
+import time
 
 @app.route('/circClust',methods=['GET'])
 def returnCircClust():
@@ -248,7 +249,6 @@ def returnCircClust():
         Applies transformation and clustering to similar edges based on node positions
         to allow edges to be bundled together
     """
-
     # Get data from db
     sets = getData(request)
     # Filter for doubletons
@@ -286,7 +286,7 @@ def returnCircClust():
     df = pd.DataFrame(sets)
 
     # Sort by order as clustering will be affected by the order of the vertices in edge definitions
-    df['labels'] = df['labels'].apply(lambda x: sorted(x,key=lambda x: order_map[x]))
+    df['labels'] = df['labels'].apply(lambda x: sorted(x,key=lambda x: (np.sin((order_map[x]/len(order_map))*2*np.pi))))
     # Sort set labels in order
     s_labels_ordered = list(df['labels'])
     # Apply sin/cos transformation (takes into account circular nature of data)

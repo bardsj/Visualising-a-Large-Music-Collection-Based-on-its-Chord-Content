@@ -64,6 +64,11 @@ export class Legend extends React.Component {
                 .attr("fill", d => scColor(d))
 
             svg.append("text")
+                .text("Support Value")
+                .attr("x", xoffset)
+                .attr("y", yoffset + 230)
+
+            svg.append("text")
                 .text("0")
                 .attr("x", xoffset + 30)
                 .attr("y", yoffset + 5)

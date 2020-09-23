@@ -75002,6 +75002,7 @@ var Legend = /*#__PURE__*/function (_React$Component) {
         }).attr("fill", function (d) {
           return scColor(d);
         });
+        svg.append("text").text("Support Value").attr("x", xoffset).attr("y", yoffset + 230);
         svg.append("text").text("0").attr("x", xoffset + 30).attr("y", yoffset + 5);
         svg.append("text").text("0.2").attr("x", xoffset + 30).attr("y", yoffset + height + 5);
         svg.append("line").attr("x1", xoffset).attr("x2", xoffset + 25).attr("y1", yoffset).attr("y2", yoffset).attr("stroke", "black");
@@ -75596,7 +75597,8 @@ var ChartClust = /*#__PURE__*/function (_React$Component) {
     value: function createChart() {
       var _this3 = this;
 
-      // Set condition to loop through if no genres are selected
+      var t1 = performance.now(); // Set condition to loop through if no genres are selected
+
       var genres_tmp = ["all"];
 
       if (this.state.request_params.tag_val.length > 0) {
@@ -75895,14 +75897,14 @@ var ChartClust = /*#__PURE__*/function (_React$Component) {
               _value = _Object$entries2$_i[1];
 
           // Do for lhs nodes
-          var r_l = gss(gss_func, 0.5, 0, _key, i_nodes, root_nodes, "ln"); //const r_l = 0.1
+          var r_l = gss(gss_func, 0.5, 0, _key, i_nodes, root_nodes, "ln"); //const r_l = 0.2
 
           root_nodes[_key].ln = {
             "x": root_nodes[_key].centroid_ln.x + r_l * (root_nodes[_key].centroid_rn.x - root_nodes[_key].centroid_ln.x),
             "y": root_nodes[_key].centroid_ln.y + r_l * (root_nodes[_key].centroid_rn.y - root_nodes[_key].centroid_ln.y)
           }; // Do for rhs nodes
 
-          var r_r = gss(gss_func, 0.5, 0, _key, i_nodes, root_nodes, "rn"); //const r_r = 0.1
+          var r_r = gss(gss_func, 0.5, 0, _key, i_nodes, root_nodes, "rn"); //const r_r = 0.2
 
           root_nodes[_key].rn = {
             "x": root_nodes[_key].centroid_rn.x + r_r * (root_nodes[_key].centroid_ln.x - root_nodes[_key].centroid_rn.x),
@@ -76051,6 +76053,8 @@ var ChartClust = /*#__PURE__*/function (_React$Component) {
             "chordSel": currentQState
           });
         });
+        var t2 = performance.now();
+        console.log("Render time: " + (t2 - t1));
         nodes_group.raise();
 
         _this3.setState({
@@ -76264,7 +76268,8 @@ var ChartParallelClust = /*#__PURE__*/function (_React$Component) {
     value: function createChart() {
       var _this3 = this;
 
-      // Set condition to loop through if no genres are selected
+      var t1 = performance.now(); // Set condition to loop through if no genres are selected
+
       var genres_tmp = ["all"];
 
       if (this.state.request_params.tag_val.length > 0) {
@@ -76561,6 +76566,8 @@ var ChartParallelClust = /*#__PURE__*/function (_React$Component) {
 
         nodes_group.raise();
         label_bg.raise();
+        var t2 = performance.now();
+        console.log("Render time: " + (t2 - t1));
 
         _this3.setState({
           sets: data
@@ -77097,7 +77104,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "65152" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "58387" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

@@ -53,6 +53,7 @@ export class ChartParallelClust extends React.Component {
     }
 
     createChart() {
+        const t1 = performance.now()
         // Set condition to loop through if no genres are selected
         let genres_tmp = ["all"]
         if (this.state.request_params.tag_val.length > 0) {
@@ -272,6 +273,9 @@ export class ChartParallelClust extends React.Component {
             // Raise label groups above paths
             nodes_group.raise()
             label_bg.raise()
+
+            const t2 = performance.now()
+            console.log("Render time: "+(t2-t1))
 
             this.setState({ sets: data })
         }

@@ -55,6 +55,7 @@ export class ChartClust extends React.Component {
     }
 
     createChart() {
+        const t1 = performance.now()
         // Set condition to loop through if no genres are selected
         let genres_tmp = ["all"]
         if (this.state.request_params.tag_val.length > 0) {
@@ -276,7 +277,7 @@ export class ChartClust extends React.Component {
             for (const [key, value] of Object.entries(root_nodes)) {
                 // Do for lhs nodes
                 const r_l = gss(gss_func, 0.5, 0, key, i_nodes, root_nodes, "ln")
-                //const r_l = 0.1
+                //const r_l = 0.2
                 root_nodes[key].ln = {
                     "x": root_nodes[key].centroid_ln.x + (r_l * (root_nodes[key].centroid_rn.x - root_nodes[key].centroid_ln.x)),
                     "y": root_nodes[key].centroid_ln.y + (r_l * (root_nodes[key].centroid_rn.y - root_nodes[key].centroid_ln.y))
@@ -284,7 +285,7 @@ export class ChartClust extends React.Component {
 
                 // Do for rhs nodes
                 const r_r = gss(gss_func, 0.5, 0, key, i_nodes, root_nodes, "rn")
-                //const r_r = 0.1
+                //const r_r = 0.2
                 root_nodes[key].rn = {
                     "x": root_nodes[key].centroid_rn.x + (r_r * (root_nodes[key].centroid_ln.x - root_nodes[key].centroid_rn.x)),
                     "y": root_nodes[key].centroid_rn.y + (r_r * (root_nodes[key].centroid_ln.y - root_nodes[key].centroid_rn.y))
@@ -412,6 +413,9 @@ export class ChartClust extends React.Component {
                 this.props.setQueryParams({ "chordSel": currentQState })
 
             })
+
+            const t2 = performance.now()
+            console.log("Render time: "+ (t2-t1))
 
             nodes_group.raise()
             this.setState({ sets: sets })
