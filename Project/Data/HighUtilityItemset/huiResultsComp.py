@@ -1,3 +1,7 @@
+"""
+Plot distribution of support/utility values for frequent itemset
+and high utility itemset mining algos
+"""
 import matplotlib.pyplot as plt
 from pymongo import MongoClient
 import os

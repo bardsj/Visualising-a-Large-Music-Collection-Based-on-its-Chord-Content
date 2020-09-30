@@ -1,3 +1,6 @@
+"""
+Test FHM high utility itemset mining implementation
+"""
 from Project.Data.HighUtilityItemset.FHM import FHM
 import unittest
 

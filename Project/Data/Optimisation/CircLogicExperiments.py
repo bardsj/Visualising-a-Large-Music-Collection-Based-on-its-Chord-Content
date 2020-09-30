@@ -1,3 +1,6 @@
+"""
+Plot circular logic results
+"""
 from CircularGraphLogic import AVSDF,BaurBrandes,OptimiserBase
 from pymongo import MongoClient
 import os
@@ -6,7 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import json
 
-"""
+
 
 url_chord = os.environ['MSC_CHORD_DB_URI']
 client_chord = MongoClient(url_chord)
@@ -90,7 +93,7 @@ for x in time_ind:
 with open("Project/Data/Optimisation/avsdf_results.json","w") as filename:
     json.dump(res,filename)
 
-"""
+
 
 with open("Project/Data/Optimisation/avsdf_results.json","r") as filename:
     data = json.load(filename)

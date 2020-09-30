@@ -1,3 +1,6 @@
+"""
+Plot circular logic results
+"""
 from CircularGraphLogic import AVSDF,BaurBrandes,OptimiserBase
 from pymongo import MongoClient
 import os
@@ -22,7 +25,6 @@ default_order = ["Cmaj","Cmaj7","Cmin","Cmin7","C7", \
         "Bmaj","Bmaj7","Bmin","Bmin7","B7"
         ]
 
-"""
 
 res = []
 
@@ -200,7 +202,7 @@ plt.ylabel("Total number of edge crossings")
 plt.legend()
 plt.show()
 
-"""
+
 
 with open("Project/Data/Optimisation/results_allgenre.json","r") as filename:
     data = json.load(filename)

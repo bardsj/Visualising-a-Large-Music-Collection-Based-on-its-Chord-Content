@@ -1,3 +1,6 @@
+"""
+Test circular crossing logic on simple graph examples
+"""
 from Project.Data.Optimisation.CircularGraphLogic import AVSDF
 import unittest
 
