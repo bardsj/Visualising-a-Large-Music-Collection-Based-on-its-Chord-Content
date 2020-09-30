@@ -240,7 +240,6 @@ def returnDataHier():
 
     return jsonify({"sets":sets,"order":order})
 
-import time
 
 @app.route('/circClust',methods=['GET'])
 def returnCircClust():
@@ -371,8 +370,6 @@ def returnPrallelClust():
         sets_w_lab.append({"labels":set_lab,"values":s['values'],"tag":s['tag'], "km_label": res[i]})
 
     return jsonify({"sets":sets_w_lab,"order":order})
-
-import json
 
 
 @app.route('/queryData',methods=['GET'])
